@@ -1,0 +1,41 @@
+{
+  "name": "mines-casino-game",
+  "version": "1.0.0",
+  "description": "A complete Mines casino game with Firebase authentication and real-time multiplayer support",
+  "main": "mines-game.html",
+  "scripts": {
+    "start": "npx http-server . -p 3000 -c-1",
+    "deploy": "firebase deploy",
+    "init-firebase": "firebase init",
+    "serve": "firebase serve"
+  },
+  "keywords": [
+    "casino",
+    "mines",
+    "game",
+    "gambling",
+    "firebase",
+    "html5",
+    "javascript",
+    "responsive",
+    "multiplayer",
+    "betting"
+  ],
+  "author": "Mines Casino Game",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/mines-casino-game.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/mines-casino-game/issues"
+  },
+  "homepage": "https://github.com/yourusername/mines-casino-game#readme",
+  "devDependencies": {
+    "firebase-tools": "^12.9.1",
+    "http-server": "^14.1.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
