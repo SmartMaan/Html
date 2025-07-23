@@ -116,106 +116,86 @@
             color: white;
         }
 
-        /* Hero Section - Professional Travel Design */
+        /* Hero Section - Clean Professional Design */
         .hero {
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), 
-                        url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop') center/cover;
-            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 8rem 0 4rem;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-text h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+        }
+
+        .hero-search {
+            background: white;
+            border-radius: 50px;
+            padding: 1rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            position: relative;
             display: flex;
             align-items: center;
-            position: relative;
-            overflow: hidden;
         }
 
-        .hero-video-bg {
+        .search-input i {
             position: absolute;
-            top: 0;
-            left: 0;
+            left: 1rem;
+            color: #666;
+        }
+
+        .search-input input {
             width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.3;
+            padding: 1rem 1rem 1rem 3rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            background: #f8f9fa;
         }
 
-        .hero-video-bg video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 1;
-        }
-
-        .hero-floating-cards {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        .floating-card {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 1.5rem;
-            color: white;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .floating-card:nth-child(1) {
-            top: 20%;
-            right: 10%;
-            animation-delay: 0s;
-        }
-
-        .floating-card:nth-child(2) {
-            top: 60%;
-            left: 5%;
-            animation-delay: 2s;
-        }
-
-        .floating-card:nth-child(3) {
-            top: 40%;
-            right: 5%;
-            animation-delay: 4s;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .hero-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: center;
-            position: relative;
-            z-index: 3;
+        .search-input input:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 2px #2563eb;
         }
 
         .hero-stats {
             display: flex;
-            gap: 2rem;
-            margin-top: 2rem;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
         }
 
         .stat-item {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
             color: white;
+        }
+
+        .stat-item i {
+            font-size: 2rem;
+            opacity: 0.8;
         }
 
         .stat-number {
@@ -226,74 +206,7 @@
 
         .stat-label {
             font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .hero-text h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-
-        .hero-text p {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 2rem;
-        }
-
-        .hero-image {
-            position: relative;
-        }
-
-        .hero-image img {
-            width: 100%;
-            height: 400px;
-            object-fit: cover;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        .hero-features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 4rem;
-            position: relative;
-            z-index: 3;
-        }
-
-        .feature-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 2rem;
-            text-align: center;
-            color: white;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: #60a5fa;
-        }
-
-        .feature-card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-        }
-
-        .feature-card p {
-            opacity: 0.9;
-            line-height: 1.6;
+            opacity: 0.8;
         }
 
         /* Search Section */
@@ -1146,72 +1059,7 @@
             display: none;
         }
 
-        /* Dark Mode Styles */
-        .dark-mode {
-            background-color: #1a1a1a;
-            color: #e0e0e0;
-        }
 
-        .dark-mode header {
-            background: rgba(30, 30, 30, 0.95);
-        }
-
-        .dark-mode .nav-links a {
-            color: #e0e0e0;
-        }
-
-        .dark-mode .btn-outline {
-            color: #60a5fa;
-            border-color: #60a5fa;
-        }
-
-        .dark-mode .search-section {
-            background: #2d2d2d;
-        }
-
-        .dark-mode .search-box input {
-            background: #3d3d3d;
-            color: #e0e0e0;
-            border-color: #4d4d4d;
-        }
-
-        .dark-mode .category-btn {
-            background: #3d3d3d;
-            color: #e0e0e0;
-            border-color: #4d4d4d;
-        }
-
-        .dark-mode .trip-card {
-            background: #2d2d2d;
-            color: #e0e0e0;
-        }
-
-        .dark-mode .modal-content {
-            background: #2d2d2d;
-            color: #e0e0e0;
-        }
-
-        .dark-mode .admin-panel {
-            background: #2d2d2d;
-        }
-
-        .dark-mode .feed-post {
-            background: #2d2d2d;
-            color: #e0e0e0;
-        }
-
-        .dark-mode .auth-form {
-            background: #2d2d2d;
-            color: #e0e0e0;
-        }
-
-        .dark-mode .form-group input,
-        .dark-mode .form-group textarea,
-        .dark-mode .form-group select {
-            background: #3d3d3d;
-            color: #e0e0e0;
-            border-color: #4d4d4d;
-        }
 
         /* Utility Classes */
         .cursor-pointer {
@@ -1273,78 +1121,49 @@
 
     <!-- Hero Section -->
     <section class="hero" id="home">
-        <div class="hero-floating-cards">
-            <div class="floating-card animate__animated animate__fadeInRight animate__delay-1s">
-                <div class="feature-icon">✈️</div>
-                <h4>1000+ Destinations</h4>
-                <p>Explore amazing places</p>
-            </div>
-            <div class="floating-card animate__animated animate__fadeInLeft animate__delay-2s">
-                <div class="feature-icon">⭐</div>
-                <h4>50K+ Reviews</h4>
-                <p>Trusted by travelers</p>
-            </div>
-            <div class="floating-card animate__animated animate__fadeInUp animate__delay-3s">
-                <div class="feature-icon">🎯</div>
-                <h4>Best Prices</h4>
-                <p>Guaranteed lowest rates</p>
-            </div>
-        </div>
         <div class="container">
             <div class="hero-content">
-                <div class="hero-text" data-aos="fade-right">
-                    <h1 class="animate__animated animate__fadeInUp">Experience The Magic Of Travel!</h1>
-                    <p class="animate__animated animate__fadeInUp animate__delay-1s">Discover breathtaking destinations and create unforgettable memories with TrekWanders. Your adventure begins here.</p>
+                <div class="hero-text">
+                    <h1>Discover Your Next Adventure</h1>
+                    <p>Find and book amazing travel experiences around the world with TrekWanders</p>
+                    <div class="hero-search">
+                        <div class="search-form">
+                            <div class="search-input">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <input type="text" placeholder="Where do you want to go?" id="heroSearchInput">
+                            </div>
+                            <div class="search-input">
+                                <i class="fas fa-calendar-alt"></i>
+                                <input type="date" id="heroDateInput">
+                            </div>
+                            <button class="btn btn-primary" onclick="searchTrips()">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </div>
                     <div class="hero-stats">
                         <div class="stat-item">
-                            <span class="stat-number">1000+</span>
-                            <span class="stat-label">Destinations</span>
+                            <i class="fas fa-map-marked-alt"></i>
+                            <div>
+                                <span class="stat-number">1000+</span>
+                                <span class="stat-label">Destinations</span>
+                            </div>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number">50K+</span>
-                            <span class="stat-label">Happy Travelers</span>
+                            <i class="fas fa-users"></i>
+                            <div>
+                                <span class="stat-number">50K+</span>
+                                <span class="stat-label">Happy Travelers</span>
+                            </div>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number">15+</span>
-                            <span class="stat-label">Years Experience</span>
+                            <i class="fas fa-star"></i>
+                            <div>
+                                <span class="stat-number">4.9</span>
+                                <span class="stat-label">Average Rating</span>
+                            </div>
                         </div>
                     </div>
-                    <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-                        <button class="btn btn-primary animate__animated animate__fadeInUp animate__delay-2s" onclick="document.getElementById('destinations').scrollIntoView()">
-                            <i class="fas fa-plane"></i> Book A Trip Now
-                        </button>
-                        <button class="btn btn-outline animate__animated animate__fadeInUp animate__delay-2s" onclick="toggleDarkMode()">
-                            <i class="fas fa-moon"></i> Dark Mode
-                        </button>
-                        <button class="btn btn-outline animate__animated animate__fadeInUp animate__delay-2s" onclick="getUserLocation().then(loc => sendFreeNotification('Location Found', `Lat: ${loc.latitude.toFixed(2)}, Lng: ${loc.longitude.toFixed(2)}`, 'info')).catch(() => sendFreeNotification('Location Error', 'Could not get your location', 'error'))">
-                            <i class="fas fa-map-marker-alt"></i> My Location
-                        </button>
-                    </div>
-                </div>
-                <div class="hero-image">
-                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&h=400&fit=crop" alt="Beautiful Travel Destination">
-                </div>
-            </div>
-            <div class="hero-features">
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-globe-americas"></i></div>
-                    <h3>Global Adventures</h3>
-                    <p>Explore destinations across all continents with our expertly crafted travel packages.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
-                    <h3>Safe & Secure</h3>
-                    <p>Travel with confidence knowing your safety is our top priority with 24/7 support.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-heart"></i></div>
-                    <h3>Memorable Experiences</h3>
-                    <p>Create lifelong memories with our carefully curated experiences and local guides.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-dollar-sign"></i></div>
-                    <h3>Best Value</h3>
-                    <p>Get the most value for your money with our competitive prices and exclusive deals.</p>
                 </div>
             </div>
         </div>
@@ -1837,9 +1656,17 @@
             <span class="close" onclick="closeAuthModal()">&times;</span>
             <h2 id="authTitle">Login</h2>
             <form id="authFormElement">
+                <div class="form-group" id="usernameField" style="display: none;">
+                    <label for="authUsername">Username</label>
+                    <input type="text" id="authUsername">
+                </div>
                 <div class="form-group">
                     <label for="authEmail">Email</label>
                     <input type="email" id="authEmail" required>
+                </div>
+                <div class="form-group" id="phoneField" style="display: none;">
+                    <label for="authPhone">Phone Number</label>
+                    <input type="tel" id="authPhone">
                 </div>
                 <div class="form-group">
                     <label for="authPassword">Password</label>
@@ -1869,13 +1696,6 @@
     
     <!-- Chart.js for analytics - Free CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Animate.css for animations - Free CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    
-    <!-- AOS (Animate On Scroll) - Free animation library -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     
     <!-- Toastify for notifications - Free and unlimited -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
@@ -1910,15 +1730,7 @@
         let filteredTrips = [];
         let currentTripLocation = '';
 
-        // Initialize free services
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize AOS (Animate On Scroll)
-            AOS.init({
-                duration: 1000,
-                once: true,
-                offset: 100
-            });
-        });
+
 
         // Sample trips data with enhanced features
         const sampleTrips = [
@@ -2167,11 +1979,19 @@
                 document.getElementById('authSubmitText').textContent = 'Login';
                 document.getElementById('authSwitchText').textContent = "Don't have an account?";
                 document.getElementById('authSwitchLink').textContent = 'Sign up';
+                document.getElementById('usernameField').style.display = 'none';
+                document.getElementById('phoneField').style.display = 'none';
+                document.getElementById('authUsername').required = false;
+                document.getElementById('authPhone').required = false;
             } else {
                 document.getElementById('authTitle').textContent = 'Sign Up';
                 document.getElementById('authSubmitText').textContent = 'Sign Up';
                 document.getElementById('authSwitchText').textContent = 'Already have an account?';
                 document.getElementById('authSwitchLink').textContent = 'Login';
+                document.getElementById('usernameField').style.display = 'block';
+                document.getElementById('phoneField').style.display = 'block';
+                document.getElementById('authUsername').required = true;
+                document.getElementById('authPhone').required = true;
             }
         }
 
@@ -2198,16 +2018,21 @@
                 if (authMode === 'login') {
                     await auth.signInWithEmailAndPassword(email, password);
                 } else {
+                    const username = document.getElementById('authUsername').value;
+                    const phone = document.getElementById('authPhone').value;
+                    
                     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                     // Set default role as user with complete data in Realtime Database
                     const userRef = database.ref('users/' + userCredential.user.uid);
                     await userRef.set({
                         email: email,
                         uid: userCredential.user.uid,
+                        username: username,
+                        phone: phone,
                         role: 'user',
                         joinDate: firebase.database.ServerValue.TIMESTAMP,
                         createdAt: firebase.database.ServerValue.TIMESTAMP,
-                        displayName: email.split('@')[0],
+                        displayName: username || email.split('@')[0],
                         lastLogin: firebase.database.ServerValue.TIMESTAMP,
                         profilePicture: '',
                         isActive: true
@@ -2415,12 +2240,17 @@
             document.getElementById('adminSubmitText').style.display = 'none';
             
             try {
+                // Save to both Firestore and Realtime Database
                 await db.collection('trips').add(tripData);
+                await database.ref('trips').push(tripData);
+                
                 document.getElementById('adminForm').reset();
                 loadTripsFromFirestore();
-                alert('Trip added successfully!');
+                
+                sendFreeNotification('Success', 'Trip added successfully!', 'success');
             } catch (error) {
-                alert('Error adding trip: ' + error.message);
+                console.error('Error adding trip:', error);
+                sendFreeNotification('Error', 'Failed to add trip: ' + error.message, 'error');
             } finally {
                 document.getElementById('adminLoading').style.display = 'none';
                 document.getElementById('adminSubmitText').style.display = 'inline';
@@ -2463,16 +2293,16 @@
                 await db.collection('bookings').add(bookingData);
                 await database.ref('bookings').push(bookingData);
                 
-                                // Show success message with animation
+                                // Show success message
                 const successDiv = document.createElement('div');
-                successDiv.className = 'success-message animate__animated animate__fadeInUp';
+                successDiv.className = 'success-message';
                 successDiv.innerHTML = '<i class="fas fa-check-circle"></i> Booking request submitted successfully! Booking ID: ' + bookingData.bookingId + '. We will contact you soon.';
                 document.querySelector('.booking-card').insertBefore(successDiv, document.getElementById('bookingForm'));
                 
                 // Show weather info for destination
                 const weather = getSimulatedWeather(currentTripLocation);
                 const weatherDiv = document.createElement('div');
-                weatherDiv.className = 'weather-info animate__animated animate__fadeIn';
+                weatherDiv.className = 'weather-info';
                 weatherDiv.style.cssText = 'background: #e0f2fe; padding: 1rem; border-radius: 10px; margin: 1rem 0; color: #0277bd;';
                 weatherDiv.innerHTML = `
                     <h4><i class="fas fa-cloud-sun"></i> Weather in ${weather.location}</h4>
@@ -2487,7 +2317,7 @@
                 
                 // Add QR code and print option to success message
                 const qrDiv = document.createElement('div');
-                qrDiv.className = 'qr-section animate__animated animate__fadeIn animate__delay-1s';
+                qrDiv.className = 'qr-section';
                 qrDiv.style.cssText = 'text-align: center; margin: 1rem 0; padding: 1rem; background: white; border-radius: 10px;';
                 qrDiv.innerHTML = `
                     <img src="${generateBookingQR(bookingData.bookingId)}" alt="Booking QR Code" style="max-width: 150px;">
@@ -2549,26 +2379,20 @@
             };
             
             try {
+                // Save to both Firestore and Realtime Database
                 await db.collection('reviews').add(reviewData);
+                await database.ref('reviews').push(reviewData);
+                
                 document.getElementById('reviewForm').reset();
                 hideAddReviewForm();
                 loadTripReviews(currentTripId);
                 
-                // Show success message
-                const successDiv = document.createElement('div');
-                successDiv.className = 'success-message';
-                successDiv.innerHTML = '<i class="fas fa-check-circle"></i> Review added successfully!';
-                document.querySelector('.reviews-section').insertBefore(successDiv, document.getElementById('reviewsList'));
-                
-                // Remove success message after 3 seconds
-                setTimeout(() => {
-                    if (successDiv.parentNode) {
-                        successDiv.parentNode.removeChild(successDiv);
-                    }
-                }, 3000);
+                // Show success notification
+                sendFreeNotification('Review Added', 'Your review has been posted successfully!', 'success');
                 
             } catch (error) {
-                alert('Error adding review: ' + error.message);
+                console.error('Error adding review:', error);
+                sendFreeNotification('Error', 'Failed to add review. Please try again.', 'error');
             } finally {
                 // Hide loading state
                 document.getElementById('reviewLoading').style.display = 'none';
@@ -3158,22 +2982,27 @@
              printWindow.print();
          }
 
-         // Free dark mode toggle
-         function toggleDarkMode() {
-             document.body.classList.toggle('dark-mode');
-             const isDark = document.body.classList.contains('dark-mode');
-             localStorage.setItem('darkMode', isDark);
-             sendFreeNotification('Theme Changed', `Switched to ${isDark ? 'dark' : 'light'} mode`, 'info');
+         // Hero search function
+         function searchTrips() {
+             const location = document.getElementById('heroSearchInput').value;
+             const date = document.getElementById('heroDateInput').value;
+             
+             if (location) {
+                 // Filter trips by location
+                 filteredTrips = allTrips.filter(trip => 
+                     trip.location.toLowerCase().includes(location.toLowerCase()) ||
+                     trip.title.toLowerCase().includes(location.toLowerCase())
+                 );
+                 renderTrips();
+                 document.getElementById('destinations').scrollIntoView();
+                 sendFreeNotification('Search Results', `Found ${filteredTrips.length} trips for "${location}"`, 'info');
+             } else {
+                 sendFreeNotification('Search Error', 'Please enter a destination to search', 'error');
+             }
          }
 
          // Initialize free features
          function initializeFreeFeatures() {
-             // Load dark mode preference
-             const darkMode = localStorage.getItem('darkMode') === 'true';
-             if (darkMode) {
-                 document.body.classList.add('dark-mode');
-             }
-             
              // Initialize image gallery
              initImageGallery();
              
@@ -3181,10 +3010,6 @@
              document.addEventListener('keydown', function(e) {
                  if (e.ctrlKey || e.metaKey) {
                      switch(e.key) {
-                         case 'd':
-                             e.preventDefault();
-                             toggleDarkMode();
-                             break;
                          case 's':
                              e.preventDefault();
                              if (currentUser && isAdmin) {
