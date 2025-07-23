@@ -1059,45 +1059,65 @@
             padding: 4rem 0;
         }
 
+        /* Material 3 Design - Feed Grid (3 posts per row, 2 rows) */
         .feed-posts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
             margin-top: 2rem;
+            max-height: 600px;
+            overflow: hidden;
         }
 
         .feed-post {
             background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             height: fit-content;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            position: relative;
+            overflow: hidden;
         }
 
         .feed-post:hover {
-            transform: translateY(-5px);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         }
 
+        /* Material 3 Design - Bookings Grid (4 per row, 2 rows) */
         .bookings-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
             margin-top: 2rem;
+            max-height: 500px;
+            overflow: hidden;
         }
 
+        /* Material 3 Design - Booking Cards */
         .booking-card-item {
             background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
+            border-radius: 16px;
+            padding: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            font-size: 0.85rem;
+            line-height: 1.3;
+            height: fit-content;
         }
 
-        .booking-card-item:nth-child(n+5) {
-            filter: blur(2px);
-            opacity: 0.6;
+        .booking-card-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .booking-card-item:nth-child(n+9) {
+            filter: blur(1px);
+            opacity: 0.7;
             pointer-events: none;
         }
 
@@ -1105,6 +1125,224 @@
             grid-column: 1 / -1;
             text-align: center;
             margin-top: 1rem;
+        }
+
+        /* Material 3 Design - Footer */
+        .footer {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 3rem 0 1rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3, .footer-section h4 {
+            margin-bottom: 1rem;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-section p, .footer-section li {
+            color: #cbd5e1;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-links a:hover {
+            color: #60a5fa;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background: #60a5fa;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+        }
+
+        .footer-bottom-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-bottom-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .footer-bottom-links a:hover {
+            color: #60a5fa;
+        }
+
+        /* Footer Management Admin Panel */
+        .footer-management-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .contact-management, .social-management {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .contact-management h4, .social-management h4 {
+            color: #374151;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Load More Button */
+        .load-more-btn {
+            margin: 2rem auto;
+            display: block;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            border-radius: 25px;
+            transition: all 0.3s;
+        }
+
+        .load-more-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Material 3 Micro-animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .feed-post, .booking-card-item, .trip-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .feed-post:nth-child(even) {
+            animation-delay: 0.1s;
+        }
+
+        .feed-post:nth-child(3n) {
+            animation-delay: 0.2s;
+        }
+
+        .btn:active {
+            animation: pulse 0.2s ease-in-out;
+        }
+
+        .admin-btn:hover {
+            animation: pulse 0.3s ease-in-out infinite;
+        }
+
+        .star:hover {
+            animation: pulse 0.2s ease-in-out;
+            transform: scale(1.2);
+        }
+
+        /* Responsive Design for Mobile */
+        @media (max-width: 768px) {
+            .feed-posts-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .bookings-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .footer-bottom-content {
+                flex-direction: column;
+                text-align: center;
+            }
         }
 
         .booking-header {
@@ -1585,7 +1823,8 @@
                  <div class="admin-tabs">
              <button class="admin-tab active" onclick="showAdminTab('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</button>
              <button class="admin-tab" onclick="showAdminTab('trips')"><i class="fas fa-map-marked-alt"></i> Manage Trips</button>
-             <button class="admin-tab" onclick="showAdminTab('images')"><i class="fas fa-images"></i> Hero Images</button>
+                             <button class="admin-tab" onclick="showAdminTab('images')"><i class="fas fa-images"></i> Hero Images</button>
+                <button class="admin-tab" onclick="showAdminTab('footer')"><i class="fas fa-edit"></i> Footer</button>
              <button class="admin-tab" onclick="showAdminTab('bookings')"><i class="fas fa-calendar-check"></i> Bookings</button>
              <button class="admin-tab" onclick="showAdminTab('users')"><i class="fas fa-users"></i> Users</button>
              <button class="admin-tab" onclick="showAdminTab('analytics')"><i class="fas fa-analytics"></i> Analytics</button>
@@ -1611,7 +1850,7 @@
                  </div>
                  <div class="stat-card" style="background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; padding: 2rem; border-radius: 15px; text-align: center;">
                      <i class="fas fa-dollar-sign" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-                     <h3 id="totalRevenue">$0</h3>
+                                             <h3 id="totalRevenue">₹0</h3>
                      <p>Revenue</p>
                  </div>
              </div>
@@ -1684,7 +1923,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="tripPrice">Price</label>
-                        <input type="text" id="tripPrice" placeholder="e.g., $2,999" required>
+                        <input type="text" id="tripPrice" placeholder="e.g., ₹1,99,999" required>
                     </div>
                     <div class="form-group">
                         <label for="tripRating">Rating (1-5)</label>
@@ -1778,6 +2017,62 @@
 
                 <div class="hero-images-grid" id="heroImagesGrid">
                     <!-- Hero images will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer & Social Media Management -->
+        <div class="admin-content" id="footerAdmin">
+            <div class="footer-manager">
+                <h3><i class="fas fa-edit"></i> Footer & Social Media Management</h3>
+                <p>Manage contact information and social media links displayed in the footer.</p>
+                
+                <div class="footer-management-grid">
+                    <div class="contact-management">
+                        <h4><i class="fas fa-address-book"></i> Contact Information</h4>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="adminContactEmail" placeholder="info@trekwanders.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="adminContactPhone" placeholder="+91 98765 43210">
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <input type="text" id="adminContactAddress" placeholder="Mumbai, Maharashtra, India">
+                        </div>
+                        <button class="btn btn-primary" onclick="updateContactInfo()">
+                            <i class="fas fa-save"></i> Update Contact Info
+                        </button>
+                    </div>
+                    
+                    <div class="social-management">
+                        <h4><i class="fas fa-share-alt"></i> Social Media Links</h4>
+                        <div class="form-group">
+                            <label><i class="fab fa-facebook-f"></i> Facebook</label>
+                            <input type="url" id="adminFacebookLink" placeholder="https://facebook.com/trekwanders">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fab fa-twitter"></i> Twitter</label>
+                            <input type="url" id="adminTwitterLink" placeholder="https://twitter.com/trekwanders">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fab fa-instagram"></i> Instagram</label>
+                            <input type="url" id="adminInstagramLink" placeholder="https://instagram.com/trekwanders">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fab fa-linkedin-in"></i> LinkedIn</label>
+                            <input type="url" id="adminLinkedinLink" placeholder="https://linkedin.com/company/trekwanders">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fab fa-youtube"></i> YouTube</label>
+                            <input type="url" id="adminYoutubeLink" placeholder="https://youtube.com/trekwanders">
+                        </div>
+                        <button class="btn btn-primary" onclick="updateSocialLinks()">
+                            <i class="fas fa-save"></i> Update Social Links
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2237,7 +2532,7 @@
                     'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&h=600&fit=crop',
                     'https://images.unsplash.com/photo-1571863533956-01c88e79957e?w=800&h=600&fit=crop'
                 ],
-                price: '$2,499',
+                                    price: '₹1,99,999',
                 priceNumber: 2499,
                 difficulty: 'challenging',
                 rating: 4.9,
@@ -2256,7 +2551,7 @@
                     'https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800&h=600&fit=crop',
                     'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800&h=600&fit=crop'
                 ],
-                price: '$899',
+                                    price: '₹71,999',
                 priceNumber: 899,
                 difficulty: 'easy',
                 rating: 4.7,
@@ -2273,7 +2568,7 @@
                 images: [
                     'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'
                 ],
-                price: '$3,299',
+                                    price: '₹2,63,999',
                 priceNumber: 3299,
                 difficulty: 'easy',
                 rating: 4.8,
@@ -2290,7 +2585,7 @@
                 images: [
                     'https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=800&h=600&fit=crop'
                 ],
-                price: '$1,899',
+                                    price: '₹1,51,999',
                 priceNumber: 1899,
                 difficulty: 'moderate',
                 rating: 4.6,
@@ -2307,7 +2602,7 @@
                 images: [
                     'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800&h=600&fit=crop'
                 ],
-                price: '$3,499',
+                                    price: '₹2,79,999',
                 priceNumber: 3499,
                 difficulty: 'moderate',
                 rating: 4.8,
@@ -2322,9 +2617,11 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadSampleTrips();
             loadSampleFeedPosts();
+            loadFeedPosts(true);
             setupEventListeners();
             initializeFreeFeatures();
             initializeHeroImages();
+            loadFooterSettings();
             
             // Check authentication state
             auth.onAuthStateChanged(user => {
@@ -2616,6 +2913,11 @@
             // Update admin tab content
             document.querySelectorAll('.admin-content').forEach(content => content.classList.remove('active'));
             document.getElementById(tabName + 'Admin').classList.add('active');
+            
+            // Load specific data for tabs
+            if (tabName === 'footer') {
+                loadFooterSettings();
+            }
         }
 
         function createTripCard(trip) {
@@ -3263,20 +3565,48 @@
             }
         }
 
-        async function loadFeedPosts() {
+        // Enhanced Feed Loading with Pagination (Material 3 Design)
+        let feedPostsSnapshot = null;
+        let feedPagination = { limit: 6, lastDoc: null, hasMore: true };
+
+        async function loadFeedPosts(reset = false) {
             try {
-                const snapshot = await db.collection('feed').orderBy('createdAt', 'desc').get();
+                if (reset) {
+                    feedPagination = { limit: 6, lastDoc: null, hasMore: true };
+                }
+
+                let query = db.collection('feed').orderBy('createdAt', 'desc').limit(feedPagination.limit);
+                
+                if (feedPagination.lastDoc) {
+                    query = query.startAfter(feedPagination.lastDoc);
+                }
+
+                const snapshot = await query.get();
                 const posts = [];
                 
                 snapshot.forEach(doc => {
                     posts.push({ id: doc.id, ...doc.data() });
                 });
 
-                renderFeedPosts(posts);
+                if (snapshot.docs.length > 0) {
+                    feedPagination.lastDoc = snapshot.docs[snapshot.docs.length - 1];
+                    feedPagination.hasMore = snapshot.docs.length === feedPagination.limit;
+                } else {
+                    feedPagination.hasMore = false;
+                }
+
+                renderFeedPosts(posts, reset);
+                
+                // Show/hide "Load More" button
+                const loadMoreBtn = document.getElementById('loadMoreFeed');
+                if (loadMoreBtn) {
+                    loadMoreBtn.style.display = feedPagination.hasMore ? 'block' : 'none';
+                }
+
             } catch (error) {
                 console.error('Error loading feed posts:', error);
                 // Load sample posts if Firebase fails
-                loadSampleFeedPosts();
+                if (reset) loadSampleFeedPosts();
             }
         }
 
@@ -3626,6 +3956,11 @@
 
         function loadHeroImages() {
             const heroBackground = document.getElementById('heroBackground');
+            if (!heroBackground) {
+                console.error('Hero background element not found');
+                return;
+            }
+            
             heroBackground.innerHTML = '';
             
             heroImages.forEach((imageUrl, index) => {
@@ -3633,8 +3968,13 @@
                 img.src = imageUrl;
                 img.className = index === 0 ? 'active' : '';
                 img.alt = `Hero Background ${index + 1}`;
+                img.onerror = function() {
+                    console.warn(`Failed to load hero image: ${imageUrl}`);
+                };
                 heroBackground.appendChild(img);
             });
+            
+            console.log(`Loaded ${heroImages.length} hero images`);
         }
 
         function startHeroImageRotation() {
@@ -3972,6 +4312,215 @@
             }
         }
 
+        // === FOOTER & SOCIAL MEDIA MANAGEMENT ===
+        async function updateContactInfo() {
+            if (!isAdmin) {
+                sendFreeNotification('Error', 'Admin access required', 'error');
+                return;
+            }
+
+            const contactData = {
+                email: document.getElementById('adminContactEmail').value || 'info@trekwanders.com',
+                phone: document.getElementById('adminContactPhone').value || '+91 98765 43210',
+                address: document.getElementById('adminContactAddress').value || 'Mumbai, Maharashtra, India',
+                updatedAt: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            try {
+                await database.ref('siteSettings/contact').set(contactData);
+                updateFooterDisplay();
+                sendFreeNotification('Success', 'Contact information updated successfully!', 'success');
+            } catch (error) {
+                console.error('Error updating contact info:', error);
+                sendFreeNotification('Error', 'Failed to update contact info: ' + error.message, 'error');
+            }
+        }
+
+        async function updateSocialLinks() {
+            if (!isAdmin) {
+                sendFreeNotification('Error', 'Admin access required', 'error');
+                return;
+            }
+
+            const socialData = {
+                facebook: document.getElementById('adminFacebookLink').value || 'https://facebook.com/trekwanders',
+                twitter: document.getElementById('adminTwitterLink').value || 'https://twitter.com/trekwanders',
+                instagram: document.getElementById('adminInstagramLink').value || 'https://instagram.com/trekwanders',
+                linkedin: document.getElementById('adminLinkedinLink').value || 'https://linkedin.com/company/trekwanders',
+                youtube: document.getElementById('adminYoutubeLink').value || 'https://youtube.com/trekwanders',
+                updatedAt: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            try {
+                await database.ref('siteSettings/social').set(socialData);
+                updateFooterDisplay();
+                sendFreeNotification('Success', 'Social media links updated successfully!', 'success');
+            } catch (error) {
+                console.error('Error updating social links:', error);
+                sendFreeNotification('Error', 'Failed to update social links: ' + error.message, 'error');
+            }
+        }
+
+        async function loadFooterSettings() {
+            try {
+                // Load contact info
+                const contactSnapshot = await database.ref('siteSettings/contact').once('value');
+                const contactData = contactSnapshot.val();
+                
+                if (contactData) {
+                    document.getElementById('adminContactEmail').value = contactData.email || '';
+                    document.getElementById('adminContactPhone').value = contactData.phone || '';
+                    document.getElementById('adminContactAddress').value = contactData.address || '';
+                }
+
+                // Load social links
+                const socialSnapshot = await database.ref('siteSettings/social').once('value');
+                const socialData = socialSnapshot.val();
+                
+                if (socialData) {
+                    document.getElementById('adminFacebookLink').value = socialData.facebook || '';
+                    document.getElementById('adminTwitterLink').value = socialData.twitter || '';
+                    document.getElementById('adminInstagramLink').value = socialData.instagram || '';
+                    document.getElementById('adminLinkedinLink').value = socialData.linkedin || '';
+                    document.getElementById('adminYoutubeLink').value = socialData.youtube || '';
+                }
+
+                updateFooterDisplay();
+            } catch (error) {
+                console.error('Error loading footer settings:', error);
+            }
+        }
+
+        function updateFooterDisplay() {
+            // Update contact info in footer
+            const email = document.getElementById('adminContactEmail').value || 'info@trekwanders.com';
+            const phone = document.getElementById('adminContactPhone').value || '+91 98765 43210';
+            const address = document.getElementById('adminContactAddress').value || 'Mumbai, Maharashtra, India';
+
+            document.getElementById('contactEmail').textContent = email;
+            document.getElementById('contactPhone').textContent = phone;
+            document.getElementById('contactAddress').textContent = address;
+
+            // Update social links in footer
+            const facebook = document.getElementById('adminFacebookLink').value || '#';
+            const twitter = document.getElementById('adminTwitterLink').value || '#';
+            const instagram = document.getElementById('adminInstagramLink').value || '#';
+            const linkedin = document.getElementById('adminLinkedinLink').value || '#';
+            const youtube = document.getElementById('adminYoutubeLink').value || '#';
+
+            document.getElementById('facebookLink').href = facebook;
+            document.getElementById('twitterLink').href = twitter;
+            document.getElementById('instagramLink').href = instagram;
+            document.getElementById('linkedinLink').href = linkedin;
+            document.getElementById('youtubeLink').href = youtube;
+        }
+
+        // === ADMIN FEED POST MANAGEMENT ===
+        async function editFeedPost(postId) {
+            if (!isAdmin) {
+                sendFreeNotification('Error', 'Admin access required', 'error');
+                return;
+            }
+
+            try {
+                const doc = await db.collection('feed').doc(postId).get();
+                if (!doc.exists) {
+                    sendFreeNotification('Error', 'Post not found', 'error');
+                    return;
+                }
+
+                const post = doc.data();
+                
+                const { value: formValues } = await Swal.fire({
+                    title: '<i class="fas fa-edit"></i> Edit Feed Post',
+                    html: `
+                        <div class="swal-form">
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input id="editPostTitle" class="swal2-input" value="${post.title}" placeholder="Post title">
+                            </div>
+                            <div class="form-group">
+                                <label>Content</label>
+                                <textarea id="editPostContent" class="swal2-textarea" placeholder="Post content">${post.content}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Image URL (optional)</label>
+                                <input id="editPostImage" class="swal2-input" value="${post.imageUrl || ''}" placeholder="Image URL">
+                            </div>
+                            <div class="form-group">
+                                <label>Video URL (optional)</label>
+                                <input id="editPostVideo" class="swal2-input" value="${post.videoUrl || ''}" placeholder="YouTube video URL">
+                            </div>
+                        </div>
+                    `,
+                    focusConfirm: false,
+                    showCancelButton: true,
+                    confirmButtonText: '<i class="fas fa-save"></i> Update Post',
+                    cancelButtonText: '<i class="fas fa-times"></i> Cancel',
+                    confirmButtonColor: '#2563eb',
+                    preConfirm: () => {
+                        return {
+                            title: document.getElementById('editPostTitle').value,
+                            content: document.getElementById('editPostContent').value,
+                            imageUrl: document.getElementById('editPostImage').value,
+                            videoUrl: document.getElementById('editPostVideo').value
+                        }
+                    }
+                });
+
+                if (formValues) {
+                    const updatedPost = {
+                        ...post,
+                        title: formValues.title || post.title,
+                        content: formValues.content || post.content,
+                        imageUrl: formValues.imageUrl || post.imageUrl || '',
+                        videoUrl: formValues.videoUrl || post.videoUrl || '',
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    await db.collection('feed').doc(postId).update(updatedPost);
+                    await database.ref('feed/' + postId).update(updatedPost);
+                    
+                    loadFeedPosts(true);
+                    sendFreeNotification('Success', 'Post updated successfully!', 'success');
+                }
+            } catch (error) {
+                console.error('Error editing post:', error);
+                sendFreeNotification('Error', 'Failed to edit post: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteFeedPost(postId) {
+            if (!isAdmin) {
+                sendFreeNotification('Error', 'Admin access required', 'error');
+                return;
+            }
+
+            const result = await Swal.fire({
+                title: '<i class="fas fa-trash"></i> Delete Post?',
+                text: 'This action cannot be undone!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-trash"></i> Yes, Delete',
+                cancelButtonText: '<i class="fas fa-times"></i> Cancel'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    await db.collection('feed').doc(postId).delete();
+                    await database.ref('feed/' + postId).remove();
+                    
+                    loadFeedPosts(true);
+                    sendFreeNotification('Success', 'Post deleted successfully!', 'success');
+                } catch (error) {
+                    console.error('Error deleting post:', error);
+                    sendFreeNotification('Error', 'Failed to delete post: ' + error.message, 'error');
+                }
+            }
+        }
+
         // Enhanced Booking Form Submit (Fixed)
         async function handleBookingSubmit(e) {
             e.preventDefault();
@@ -4182,15 +4731,32 @@
             }
         }
 
-        // Enhanced Feed Posts Rendering (3 per row)
-        function renderFeedPosts(posts) {
+        // Enhanced Feed Posts Rendering (3 per row, Material 3 Design)
+        function renderFeedPosts(posts, reset = false) {
             const feedContainer = document.getElementById('feedPosts');
-            feedContainer.innerHTML = '';
+            
+            if (reset) {
+                feedContainer.innerHTML = '';
+            }
 
             posts.forEach(post => {
                 const postElement = createFeedPostElement(post);
                 feedContainer.appendChild(postElement);
             });
+
+            // Add load more button if not exists
+            let loadMoreBtn = document.getElementById('loadMoreFeed');
+            if (!loadMoreBtn) {
+                loadMoreBtn = document.createElement('button');
+                loadMoreBtn.id = 'loadMoreFeed';
+                loadMoreBtn.className = 'btn btn-outline load-more-btn';
+                loadMoreBtn.innerHTML = '<i class="fas fa-plus"></i> Load More Posts';
+                loadMoreBtn.onclick = () => loadFeedPosts(false);
+                loadMoreBtn.style.display = 'none';
+                
+                const feedSection = document.getElementById('feed');
+                feedSection.appendChild(loadMoreBtn);
+            }
         }
 
         // Share booking function
@@ -5045,6 +5611,16 @@
                       <h4>${post.authorName}</h4>
                       <div class="post-date">${timeAgo}</div>
                   </div>
+                  ${isAdmin ? `
+                  <div class="admin-actions">
+                      <button class="admin-btn" onclick="editFeedPost('${post.id}')" title="Edit Post">
+                          <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="admin-btn" onclick="deleteFeedPost('${post.id}')" title="Delete Post">
+                          <i class="fas fa-trash"></i>
+                      </button>
+                  </div>
+                  ` : ''}
               </div>
               <div class="post-content">
                   <h3>${post.title}</h3>
@@ -5098,5 +5674,60 @@
           });
       });
     </script>
+
+    <!-- Footer Section -->
+    <footer id="footer" class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <h3><i class="fas fa-mountain"></i> TrekWanders</h3>
+                        <p>Experience the magic of travel with our curated adventures around the world.</p>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4><i class="fas fa-map-marker-alt"></i> Contact Info</h4>
+                    <div class="contact-info" id="contactInfo">
+                        <p><i class="fas fa-envelope"></i> <span id="contactEmail">info@trekwanders.com</span></p>
+                        <p><i class="fas fa-phone"></i> <span id="contactPhone">+91 98765 43210</span></p>
+                        <p><i class="fas fa-map-pin"></i> <span id="contactAddress">Mumbai, Maharashtra, India</span></p>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4><i class="fas fa-link"></i> Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#trending"><i class="fas fa-fire"></i> Trending</a></li>
+                        <li><a href="#ongoing"><i class="fas fa-compass"></i> Ongoing</a></li>
+                        <li><a href="#upcoming"><i class="fas fa-calendar"></i> Upcoming</a></li>
+                        <li><a href="#feed"><i class="fas fa-rss"></i> Feed</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4><i class="fas fa-share-alt"></i> Follow Us</h4>
+                    <div class="social-links" id="socialLinks">
+                        <a href="#" id="facebookLink" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" id="twitterLink" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="#" id="instagramLink" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="#" id="linkedinLink" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" id="youtubeLink" target="_blank"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p>&copy; 2024 TrekWanders. All rights reserved.</p>
+                    <div class="footer-bottom-links">
+                        <a href="#"><i class="fas fa-shield-alt"></i> Privacy Policy</a>
+                        <a href="#"><i class="fas fa-file-contract"></i> Terms of Service</a>
+                        <a href="#"><i class="fas fa-cookie-bite"></i> Cookie Policy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
