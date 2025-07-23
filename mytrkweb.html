@@ -1079,7 +1079,7 @@
             transform: translateY(-5px);
         }
 
-        .booking-grid {
+        .bookings-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 2rem;
@@ -1092,9 +1092,10 @@
             padding: 1.5rem;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             transition: all 0.3s;
+            position: relative;
         }
 
-        .booking-card-item:nth-child(n+3) {
+        .booking-card-item:nth-child(n+5) {
             filter: blur(2px);
             opacity: 0.6;
             pointer-events: none;
@@ -1104,6 +1105,107 @@
             grid-column: 1 / -1;
             text-align: center;
             margin-top: 1rem;
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .booking-id {
+            font-weight: 600;
+            color: #2563eb;
+            font-size: 0.9rem;
+        }
+
+        .booking-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-confirmed {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status-completed {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .booking-details {
+            margin-bottom: 1rem;
+        }
+
+        .booking-detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .booking-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .status-selector {
+            padding: 0.4rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            background: white;
+        }
+
+        .user-bookings-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .smart-suggestions {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
         }
 
         .image-upload-section {
@@ -1323,6 +1425,7 @@
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#destinations">Destinations</a></li>
+                <li><a href="#userBookings" id="bookingsNavLink" style="display: none;">My Bookings</a></li>
                 <li><a href="#feed">Feed</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
@@ -1404,7 +1507,11 @@
             <div class="search-container">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Search destinations, activities, or locations...">
+                    <input type="text" id="searchInput" placeholder="Search destinations, activities, or locations..." oninput="showSmartSuggestions(this.value)">
+                    <div id="smartSuggestions" class="smart-suggestions" style="display: none;">
+                        <h4><i class="fas fa-lightbulb"></i> Smart Suggestions</h4>
+                        <div id="suggestionsList"></div>
+                    </div>
                 </div>
                 
                 <div class="advanced-filters">
@@ -1459,15 +1566,14 @@
                 </div>
             </div>
             
+            <!-- Simplified Categories -->
             <div class="category-filter" style="margin-top: 1rem; justify-content: center;">
-                <button class="category-btn active" data-category="all">All</button>
-                <button class="category-btn" data-category="adventure">Adventure</button>
-                <button class="category-btn" data-category="hiking">Hiking</button>
-                <button class="category-btn" data-category="temple">Temple</button>
-                <button class="category-btn" data-category="beach">Beach</button>
-                <button class="category-btn" data-category="mountain">Mountain</button>
-                <button class="category-btn" data-category="cultural">Cultural</button>
-                <button class="category-btn" data-category="wildlife">Wildlife</button>
+                <button class="category-btn active" data-category="all">🌍 All</button>
+                <button class="category-btn" data-category="adventure">🏔️ Adventure</button>
+                <button class="category-btn" data-category="beach">🏖️ Beach</button>
+                <button class="category-btn" data-category="mountain">⛰️ Mountain</button>
+                <button class="category-btn" data-category="cultural">🏛️ Cultural</button>
+                <button class="category-btn" data-category="wildlife">🦁 Wildlife</button>
             </div>
         </div>
     </section>
@@ -1605,13 +1711,13 @@
                                     <div class="form-group">
                     <label for="tripCategory">Trip Category</label>
                     <select id="tripCategory" required>
-                        <option value="adventure">Adventure</option>
-                        <option value="hiking">Hiking</option>
-                        <option value="temple">Temple</option>
-                        <option value="beach">Beach</option>
-                        <option value="mountain">Mountain</option>
-                        <option value="cultural">Cultural</option>
-                        <option value="wildlife">Wildlife</option>
+                        <option value="adventure">🏔️ Adventure</option>
+                        <option value="beach">🏖️ Beach</option>
+                        <option value="mountain">⛰️ Mountain</option>
+                        <option value="cultural">🏛️ Cultural</option>
+                        <option value="wildlife">🦁 Wildlife</option>
+                        <option value="hiking">🥾 Hiking</option>
+                        <option value="temple">🏯 Temple</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1679,36 +1785,21 @@
                  <!-- Booking Management -->
          <div class="admin-content" id="bookingsAdmin">
              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                 <h3>Booking Management</h3>
+                 <h3><i class="fas fa-calendar-check"></i> Booking Management</h3>
                  <div>
-                     <button class="btn btn-primary" onclick="exportBookings()"><i class="fas fa-download"></i> Export</button>
+                     <button class="btn btn-primary" onclick="loadAllBookings()"><i class="fas fa-sync"></i> Refresh</button>
                      <select id="bookingStatusFilter" onchange="filterBookings()" style="margin-left: 1rem; padding: 0.5rem; border-radius: 5px;">
                          <option value="all">All Bookings</option>
                          <option value="pending">Pending</option>
                          <option value="confirmed">Confirmed</option>
                          <option value="cancelled">Cancelled</option>
+                         <option value="completed">Completed</option>
                      </select>
                  </div>
              </div>
              
-             <div class="bookings-table" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                 <table style="width: 100%; border-collapse: collapse;">
-                     <thead style="background: #f8f9fa;">
-                         <tr>
-                             <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Booking ID</th>
-                             <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Customer</th>
-                             <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Trip</th>
-                             <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Date</th>
-                             <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Status</th>
-                             <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e5e7eb;">Actions</th>
-                         </tr>
-                     </thead>
-                     <tbody id="bookingsTableBody">
-                         <tr>
-                             <td colspan="6" style="padding: 2rem; text-align: center; color: #666;">Loading bookings...</td>
-                         </tr>
-                     </tbody>
-                 </table>
+             <div class="bookings-grid" id="bookingsGrid">
+                 <!-- Bookings will be loaded here -->
              </div>
          </div>
 
@@ -1781,6 +1872,20 @@
         </div>
     </section>
 
+    <!-- User Bookings Section -->
+    <section class="user-bookings-section" id="userBookings" style="display: none;">
+        <div class="container">
+            <div class="section-title">
+                <h2><i class="fas fa-calendar-check"></i> My Bookings</h2>
+                <p>Track and manage your travel bookings</p>
+            </div>
+            
+            <div class="bookings-grid" id="userBookingsGrid">
+                <!-- User bookings will be loaded here -->
+            </div>
+        </div>
+    </section>
+
     <!-- Feed Section -->
     <section class="feed-section section" id="feed">
         <div class="container">
@@ -1802,8 +1907,23 @@
                         <textarea id="postContent" rows="4" required></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="postImage">Image URL (optional)</label>
-                        <input type="url" id="postImage">
+                        <label for="postImage">Image (optional)</label>
+                        <div class="image-upload-section">
+                            <div class="upload-area">
+                                <input type="file" id="postImageFile" accept="image/*" style="display: none;">
+                                <button type="button" class="upload-btn" onclick="document.getElementById('postImageFile').click()">
+                                    <i class="fas fa-upload"></i> Upload Image
+                                </button>
+                                <div style="margin: 0.5rem 0;">OR</div>
+                                <input type="url" id="postImage" placeholder="Enter image URL" style="width: 100%; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 5px;">
+                            </div>
+                            <div id="postImagePreview" class="image-preview"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="postVideo">YouTube Video (optional)</label>
+                        <input type="url" id="postVideo" placeholder="https://www.youtube.com/watch?v=...">
                     </div>
                     <div style="display: flex; gap: 1rem;">
                         <button type="submit" class="btn btn-primary">Post</button>
@@ -2128,7 +2248,7 @@
                 rating: 4.7,
                 description: 'Discover the spiritual heart of India with visits to ancient temples, evening aarti ceremonies, and peaceful meditation sessions along the sacred Ganges.',
                 requirements: ['Respectful Attire', 'Open Mind', 'Comfortable Walking Shoes'],
-                category: 'temple',
+                category: 'cultural',
                 section: 'upcoming'
             },
             {
@@ -2164,6 +2284,23 @@
                 requirements: ['Good Physical Condition', 'Altitude Preparation', 'Valid Passport'],
                 category: 'cultural',
                 section: 'past'
+            },
+            {
+                id: 'sample5',
+                title: 'African Safari Adventure',
+                location: 'Serengeti, Tanzania',
+                duration: '10 Days 9 Nights',
+                images: [
+                    'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800&h=600&fit=crop'
+                ],
+                price: '$3,499',
+                priceNumber: 3499,
+                difficulty: 'moderate',
+                rating: 4.8,
+                description: 'Experience the incredible wildlife of Africa with game drives, luxury lodges, and unforgettable animal encounters.',
+                requirements: ['Valid Passport', 'Yellow Fever Vaccination', 'Safari Clothing'],
+                category: 'wildlife',
+                section: 'trending'
             }
         ];
 
@@ -2336,6 +2473,11 @@
             document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
             document.getElementById('userAvatar').textContent = (user.displayName || user.email)[0].toUpperCase();
             
+            // Show My Bookings link for logged in users
+            document.getElementById('bookingsNavLink').style.display = 'block';
+            document.getElementById('userBookings').style.display = 'block';
+            loadUserBookings();
+            
             const roleElement = document.getElementById('userRole');
             if (isAdmin) {
                 roleElement.textContent = 'Admin';
@@ -2343,6 +2485,7 @@
                 document.getElementById('adminPanel').style.display = 'block';
                 document.getElementById('addPostBtn').style.display = 'inline-block';
                 document.querySelectorAll('.admin-actions').forEach(el => el.style.display = 'flex');
+                loadAllBookings(); // Load admin bookings
             } else {
                 roleElement.textContent = 'User';
                 roleElement.classList.remove('admin');
@@ -2355,6 +2498,8 @@
             document.getElementById('userInfo').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('addPostBtn').style.display = 'none';
+            document.getElementById('bookingsNavLink').style.display = 'none';
+            document.getElementById('userBookings').style.display = 'none';
             document.querySelectorAll('.admin-actions').forEach(el => el.style.display = 'none');
         }
 
@@ -4391,6 +4536,444 @@
               console.error('Error loading recent bookings:', error);
           }
       }
+
+      // Booking Management Functions
+      async function loadAllBookings() {
+          if (!isAdmin) return;
+          
+          try {
+              const bookingsSnapshot = await database.ref('bookings').once('value');
+              const bookingsGrid = document.getElementById('bookingsGrid');
+              bookingsGrid.innerHTML = '';
+              
+              if (bookingsSnapshot.exists()) {
+                  const bookings = [];
+                  bookingsSnapshot.forEach(child => {
+                      bookings.push({ id: child.key, ...child.val() });
+                  });
+                  
+                  // Sort by date (newest first)
+                  bookings.sort((a, b) => (b.realtimeBookingDate || 0) - (a.realtimeBookingDate || 0));
+                  
+                  bookings.forEach((booking, index) => {
+                      const bookingCard = createBookingCard(booking, true, index >= 4);
+                      bookingsGrid.appendChild(bookingCard);
+                  });
+                  
+                  // Add view more button if more than 4 bookings
+                  if (bookings.length > 4) {
+                      const viewMoreBtn = document.createElement('div');
+                      viewMoreBtn.className = 'view-more-bookings';
+                      viewMoreBtn.innerHTML = `
+                          <button class="btn btn-primary" onclick="showAllBookings()">
+                              <i class="fas fa-eye"></i> View All ${bookings.length} Bookings
+                          </button>
+                      `;
+                      bookingsGrid.appendChild(viewMoreBtn);
+                  }
+              } else {
+                  bookingsGrid.innerHTML = `
+                      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #666;">
+                          <i class="fas fa-calendar-alt" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                          <h3>No bookings yet</h3>
+                          <p>Bookings will appear here when users make reservations</p>
+                      </div>
+                  `;
+              }
+          } catch (error) {
+              console.error('Error loading admin bookings:', error);
+          }
+      }
+
+      async function loadUserBookings() {
+          if (!currentUser) return;
+          
+          try {
+              const bookingsSnapshot = await database.ref('bookings')
+                  .orderByChild('userId')
+                  .equalTo(currentUser.uid)
+                  .once('value');
+              
+              const userBookingsGrid = document.getElementById('userBookingsGrid');
+              userBookingsGrid.innerHTML = '';
+              
+              if (bookingsSnapshot.exists()) {
+                  const bookings = [];
+                  bookingsSnapshot.forEach(child => {
+                      bookings.push({ id: child.key, ...child.val() });
+                  });
+                  
+                  // Sort by date (newest first)
+                  bookings.sort((a, b) => (b.realtimeBookingDate || 0) - (a.realtimeBookingDate || 0));
+                  
+                  bookings.forEach(booking => {
+                      const bookingCard = createBookingCard(booking, false);
+                      userBookingsGrid.appendChild(bookingCard);
+                  });
+              } else {
+                  userBookingsGrid.innerHTML = `
+                      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #666;">
+                          <i class="fas fa-suitcase-rolling" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                          <h3>No bookings yet</h3>
+                          <p>Your travel bookings will appear here. <a href="#destinations" style="color: #2563eb;">Browse destinations</a> to start your journey!</p>
+                      </div>
+                  `;
+              }
+          } catch (error) {
+              console.error('Error loading user bookings:', error);
+          }
+      }
+
+      function createBookingCard(booking, isAdmin = false, isBlurred = false) {
+          const card = document.createElement('div');
+          card.className = `booking-card-item ${isBlurred ? 'blurred' : ''}`;
+          
+          const date = booking.realtimeBookingDate ? 
+              new Date(booking.realtimeBookingDate).toLocaleDateString() : 
+              'Recent';
+          
+          const statusClass = `status-${booking.status || 'pending'}`;
+          
+          card.innerHTML = `
+              <div class="booking-header">
+                  <div class="booking-id">${booking.bookingId || 'N/A'}</div>
+                  <div class="booking-status ${statusClass}">${booking.status || 'pending'}</div>
+              </div>
+              
+              <div class="booking-details">
+                  <div class="booking-detail-row">
+                      <strong>Customer:</strong>
+                      <span>${booking.name}</span>
+                  </div>
+                  <div class="booking-detail-row">
+                      <strong>Trip:</strong>
+                      <span>${booking.tripTitle || 'N/A'}</span>
+                  </div>
+                  <div class="booking-detail-row">
+                      <strong>Location:</strong>
+                      <span>${booking.tripLocation || 'N/A'}</span>
+                  </div>
+                  <div class="booking-detail-row">
+                      <strong>Date:</strong>
+                      <span>${booking.preferredDate || date}</span>
+                  </div>
+                  <div class="booking-detail-row">
+                      <strong>Travelers:</strong>
+                      <span>${(booking.adults || 1)} Adults, ${(booking.children || 0)} Children</span>
+                  </div>
+                  <div class="booking-detail-row">
+                      <strong>Contact:</strong>
+                      <span>${booking.email}</span>
+                  </div>
+              </div>
+              
+              ${isAdmin ? `
+              <div class="booking-actions">
+                  <select class="status-selector" onchange="updateBookingStatus('${booking.id}', this.value)" value="${booking.status || 'pending'}">
+                      <option value="pending" ${(booking.status || 'pending') === 'pending' ? 'selected' : ''}>Pending</option>
+                      <option value="confirmed" ${booking.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                      <option value="cancelled" ${booking.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                      <option value="completed" ${booking.status === 'completed' ? 'selected' : ''}>Completed</option>
+                  </select>
+                  <button class="btn btn-outline" onclick="viewBookingDetails('${booking.id}')" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">
+                      <i class="fas fa-eye"></i> View
+                  </button>
+              </div>
+              ` : ''}
+          `;
+          
+          return card;
+      }
+
+      async function updateBookingStatus(bookingId, newStatus) {
+          if (!isAdmin) return;
+          
+          try {
+              await database.ref(`bookings/${bookingId}/status`).set(newStatus);
+              await database.ref(`bookings/${bookingId}/updatedAt`).set(firebase.database.ServerValue.TIMESTAMP);
+              
+              sendFreeNotification('Status Updated', `Booking status changed to ${newStatus}`, 'success');
+              
+              // Reload bookings
+              loadAllBookings();
+              
+          } catch (error) {
+              console.error('Error updating booking status:', error);
+              sendFreeNotification('Error', 'Failed to update booking status', 'error');
+          }
+      }
+
+      function showAllBookings() {
+          document.querySelectorAll('.booking-card-item').forEach(card => {
+              card.classList.remove('blurred');
+              card.style.filter = 'none';
+              card.style.opacity = '1';
+              card.style.pointerEvents = 'auto';
+          });
+          
+          document.querySelector('.view-more-bookings').style.display = 'none';
+      }
+
+      // Smart Search Suggestions
+      function showSmartSuggestions(searchTerm) {
+          const suggestionsDiv = document.getElementById('smartSuggestions');
+          const suggestionsList = document.getElementById('suggestionsList');
+          
+          if (!searchTerm || searchTerm.length < 2) {
+              suggestionsDiv.style.display = 'none';
+              return;
+          }
+          
+          // Generate smart suggestions based on available trips
+          const suggestions = [];
+          
+          // Location-based suggestions
+          const locations = [...new Set(allTrips.map(trip => trip.location))];
+          locations.forEach(location => {
+              if (location.toLowerCase().includes(searchTerm.toLowerCase())) {
+                  suggestions.push({
+                      type: 'location',
+                      text: location,
+                      icon: '📍',
+                      action: () => applyLocationFilter(location)
+                  });
+              }
+          });
+          
+          // Category suggestions
+          const categories = ['adventure', 'beach', 'mountain', 'cultural', 'wildlife'];
+          categories.forEach(category => {
+              if (category.toLowerCase().includes(searchTerm.toLowerCase())) {
+                  const icons = { adventure: '🏔️', beach: '🏖️', mountain: '⛰️', cultural: '🏛️', wildlife: '🦁' };
+                  suggestions.push({
+                      type: 'category',
+                      text: category.charAt(0).toUpperCase() + category.slice(1),
+                      icon: icons[category],
+                      action: () => applyCategoryFilter(category)
+                  });
+              }
+          });
+          
+          // Trip name suggestions
+          allTrips.forEach(trip => {
+              if (trip.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+                  suggestions.push({
+                      type: 'trip',
+                      text: trip.title,
+                      icon: '✈️',
+                      action: () => openTripModal(trip)
+                  });
+              }
+          });
+          
+          // Difficulty suggestions
+          const difficulties = ['easy', 'moderate', 'challenging', 'extreme'];
+          difficulties.forEach(difficulty => {
+              if (difficulty.toLowerCase().includes(searchTerm.toLowerCase())) {
+                  suggestions.push({
+                      type: 'difficulty',
+                      text: `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Level`,
+                      icon: '⚡',
+                      action: () => applyDifficultyFilter(difficulty)
+                  });
+              }
+          });
+          
+          // Show suggestions
+          if (suggestions.length > 0) {
+              suggestionsList.innerHTML = suggestions.slice(0, 5).map(suggestion => `
+                  <div class="suggestion-item" onclick="selectSuggestion('${suggestion.type}', '${suggestion.text}', '${suggestion.action}')">
+                      <span>${suggestion.icon}</span>
+                      <span>${suggestion.text}</span>
+                      <small style="opacity: 0.7;">${suggestion.type}</small>
+                  </div>
+              `).join('');
+              suggestionsDiv.style.display = 'block';
+          } else {
+              suggestionsDiv.style.display = 'none';
+          }
+      }
+
+      function selectSuggestion(type, text, actionStr) {
+          document.getElementById('searchInput').value = text;
+          document.getElementById('smartSuggestions').style.display = 'none';
+          
+          // Apply the filter based on type
+          if (type === 'location') applyLocationFilter(text);
+          else if (type === 'category') applyCategoryFilter(text.toLowerCase());
+          else if (type === 'difficulty') applyDifficultyFilter(text.split(' ')[0].toLowerCase());
+          else if (type === 'trip') {
+              const trip = allTrips.find(t => t.title === text);
+              if (trip) openTripModal(trip);
+          }
+      }
+
+      function applyLocationFilter(location) {
+          filteredTrips = allTrips.filter(trip => trip.location.includes(location));
+          renderTrips();
+          sendFreeNotification('Filter Applied', `Showing trips in ${location}`, 'info');
+      }
+
+      function applyCategoryFilter(category) {
+          // Update category buttons
+          document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+          document.querySelector(`[data-category="${category}"]`).classList.add('active');
+          
+          filteredTrips = category === 'all' ? [...allTrips] : allTrips.filter(trip => trip.category === category);
+          renderTrips();
+      }
+
+      function applyDifficultyFilter(difficulty) {
+          document.getElementById('difficultyFilter').value = difficulty;
+          applyAdvancedFilters();
+      }
+
+      // Enhanced Feed Post Creation
+      async function handleFeedPostSubmit(e) {
+          e.preventDefault();
+          
+          if (!isAdmin) {
+              alert('Only admins can create posts.');
+              return;
+          }
+
+          let imageUrl = document.getElementById('postImage').value;
+          const videoUrl = document.getElementById('postVideo').value;
+          
+          // Handle image upload
+          const imageFile = document.getElementById('postImageFile').files[0];
+          if (imageFile) {
+              try {
+                  imageUrl = await uploadToFreeService(imageFile);
+              } catch (error) {
+                  console.error('Error uploading image:', error);
+              }
+          }
+          
+          // Convert YouTube URL to embed format
+          let embedVideoUrl = '';
+          if (videoUrl) {
+              const videoId = extractYouTubeVideoId(videoUrl);
+              if (videoId) {
+                  embedVideoUrl = `https://www.youtube.com/embed/${videoId}`;
+              }
+          }
+
+          const postData = {
+              title: document.getElementById('postTitle').value,
+              content: document.getElementById('postContent').value,
+              imageUrl: imageUrl,
+              videoUrl: embedVideoUrl,
+              authorName: currentUser.displayName || currentUser.email.split('@')[0],
+              authorEmail: currentUser.email,
+              authorId: currentUser.uid,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              realtimeCreatedAt: firebase.database.ServerValue.TIMESTAMP,
+              likes: 0,
+              averageRating: 0,
+              totalRatings: 0
+          };
+
+          try {
+              // Save to both databases for real-time updates
+              const docRef = await db.collection('feed').add(postData);
+              await database.ref('feed/' + docRef.id).set({
+                  ...postData,
+                  id: docRef.id,
+                  createdAt: firebase.database.ServerValue.TIMESTAMP
+              });
+              
+              document.getElementById('feedPostForm').reset();
+              document.getElementById('postImagePreview').innerHTML = '';
+              hideAddPostForm();
+              
+              // Real-time reload
+              loadFeedPosts();
+              
+              sendFreeNotification('Success', 'Post created successfully!', 'success');
+              
+          } catch (error) {
+              console.error('Error creating post:', error);
+              sendFreeNotification('Error', 'Failed to create post: ' + error.message, 'error');
+          }
+      }
+
+      function extractYouTubeVideoId(url) {
+          const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+          const match = url.match(regex);
+          return match ? match[1] : null;
+      }
+
+      // Enhanced Feed Post Display
+      function createFeedPostElement(post) {
+          const postDiv = document.createElement('div');
+          postDiv.className = 'feed-post';
+          
+          const createdDate = post.createdAt instanceof Date ? post.createdAt : (post.createdAt ? post.createdAt.toDate() : new Date());
+          const timeAgo = getTimeAgo(createdDate);
+          const currentRating = post.userRating || 0;
+          const averageRating = post.averageRating || 0;
+          const totalRatings = post.totalRatings || 0;
+
+          postDiv.innerHTML = `
+              <div class="post-header">
+                  <div class="post-avatar">${post.authorName[0].toUpperCase()}</div>
+                  <div class="post-info">
+                      <h4>${post.authorName}</h4>
+                      <div class="post-date">${timeAgo}</div>
+                  </div>
+              </div>
+              <div class="post-content">
+                  <h3>${post.title}</h3>
+                  <p>${post.content}</p>
+                  ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Post image" class="post-image">` : ''}
+                  ${post.videoUrl ? `
+                      <div class="video-container" style="margin: 1rem 0;">
+                          <iframe src="${post.videoUrl}" frameborder="0" allowfullscreen style="width: 100%; height: 300px; border-radius: 10px;"></iframe>
+                      </div>
+                  ` : ''}
+              </div>
+              <div class="post-rating">
+                  <div class="rating-section">
+                      <span style="margin-right: 1rem;">Rate this post:</span>
+                      <div class="star-rating" data-post-id="${post.id}">
+                          ${[1,2,3,4,5].map(star => `
+                              <span class="star ${star <= currentRating ? 'active' : ''}" 
+                                    onclick="ratePost('${post.id}', ${star})">★</span>
+                          `).join('')}
+                      </div>
+                  </div>
+                  <div class="rating-display">
+                      <span class="rating-stats">
+                          ${averageRating > 0 ? `${averageRating.toFixed(1)} ★ (${totalRatings} ratings)` : 'No ratings yet'}
+                      </span>
+                  </div>
+              </div>
+          `;
+
+          return postDiv;
+      }
+
+      // Image upload for posts
+      document.addEventListener('DOMContentLoaded', function() {
+          document.getElementById('postImageFile').addEventListener('change', async function(e) {
+              const file = e.target.files[0];
+              if (!file) return;
+              
+              try {
+                  const preview = document.getElementById('postImagePreview');
+                  preview.innerHTML = '<div class="loading"></div> Uploading...';
+                  
+                  const url = await uploadToFreeService(file);
+                  document.getElementById('postImage').value = url;
+                  
+                  preview.innerHTML = `<img src="${url}" style="max-width: 200px; border-radius: 10px;">`;
+              } catch (error) {
+                  console.error('Error uploading post image:', error);
+                  document.getElementById('postImagePreview').innerHTML = '';
+              }
+          });
+      });
     </script>
 </body>
 </html>
