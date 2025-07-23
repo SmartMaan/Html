@@ -1,0 +1,48 @@
+{
+  "name": "wanderlust-travel-agency",
+  "version": "1.0.0",
+  "description": "A beautiful and modern travel agency website with responsive design and interactive features",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server . -p 3000 -c-1",
+    "dev": "npx http-server . -p 3000 -c-1 -o",
+    "build": "echo 'Build process for production deployment'",
+    "deploy": "echo 'Deploy to hosting service'"
+  },
+  "keywords": [
+    "travel",
+    "agency",
+    "tourism",
+    "vacation",
+    "booking",
+    "destinations",
+    "flights",
+    "hotels",
+    "responsive",
+    "modern",
+    "javascript",
+    "html5",
+    "css3"
+  ],
+  "author": "Wanderlust Travel Agency",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/wanderlust-travel-agency.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/wanderlust-travel-agency/issues"
+  },
+  "homepage": "https://github.com/yourusername/wanderlust-travel-agency#readme",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
