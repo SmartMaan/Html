@@ -82,6 +82,7 @@
             transition: all 0.3s;
             text-decoration: none;
             display: inline-block;
+            font-size: 0.9rem;
         }
 
         .btn-primary {
@@ -102,6 +103,16 @@
 
         .btn-outline:hover {
             background: #2563eb;
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white;
         }
 
@@ -161,6 +172,70 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
+        /* Search Section */
+        .search-section {
+            background: white;
+            padding: 2rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .category-filter {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .category-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
         /* Sections */
         .section {
             padding: 5rem 0;
@@ -200,6 +275,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
+            position: relative;
         }
 
         .trip-card:hover {
@@ -207,10 +283,33 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
         }
 
+        .trip-card-image {
+            position: relative;
+            height: 250px;
+            overflow: hidden;
+        }
+
         .trip-card img {
             width: 100%;
-            height: 250px;
+            height: 100%;
             object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .trip-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .trip-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(37, 99, 235, 0.9);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
         }
 
         .trip-card-content {
@@ -248,6 +347,17 @@
             font-size: 1.2rem;
             font-weight: 600;
             color: #2563eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .trip-duration {
+            font-size: 0.8rem;
+            color: #666;
+            background: #f3f4f6;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
         }
 
         /* Modal Styles */
@@ -268,8 +378,8 @@
             margin: 2% auto;
             padding: 0;
             border-radius: 20px;
-            width: 90%;
-            max-width: 800px;
+            width: 95%;
+            max-width: 1000px;
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
@@ -277,15 +387,69 @@
 
         .modal-header {
             position: relative;
-            height: 300px;
+            height: 400px;
             overflow: hidden;
             border-radius: 20px 20px 0 0;
         }
 
-        .modal-header img {
+        .modal-image-gallery {
+            display: flex;
+            height: 100%;
+            position: relative;
+        }
+
+        .modal-image-gallery img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: none;
+        }
+
+        .modal-image-gallery img.active {
+            display: block;
+        }
+
+        .image-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 1rem;
+            cursor: pointer;
+            font-size: 1.2rem;
+            border-radius: 50%;
+        }
+
+        .image-nav.prev {
+            left: 20px;
+        }
+
+        .image-nav.next {
+            right: 20px;
+        }
+
+        .image-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .indicator.active {
+            background: white;
         }
 
         .close {
@@ -303,22 +467,72 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 10;
         }
 
         .modal-body {
             padding: 2rem;
         }
 
-        .modal-body h2 {
+        .modal-info {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .trip-details h2 {
             font-size: 2rem;
             color: #333;
             margin-bottom: 1rem;
         }
 
-        .modal-body p {
+        .trip-meta {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+        }
+
+        .trip-description {
             color: #666;
             line-height: 1.8;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .requirements {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .requirements h4 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .requirements ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .requirements li {
+            padding: 0.3rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .requirements li i {
+            color: #10b981;
         }
 
         .video-container {
@@ -336,18 +550,33 @@
             border: none;
         }
 
-        /* Admin Panel */
-        .admin-panel {
-            background: white;
-            border-radius: 20px;
+        .booking-card {
+            background: #f8f9fa;
             padding: 2rem;
-            margin: 2rem 0;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            display: none;
+            border-radius: 20px;
+            position: sticky;
+            top: 2rem;
         }
 
-        .admin-form {
-            display: grid;
+        .price-display {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .price-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .price-per {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .booking-form {
+            display: flex;
+            flex-direction: column;
             gap: 1rem;
         }
 
@@ -379,9 +608,134 @@
             border-color: #2563eb;
         }
 
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .reviews-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .reviews-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .review-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .reviewer-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .reviewer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .review-date {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .admin-tab {
+            padding: 1rem 2rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .admin-tab.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+
+        .admin-content {
+            display: none;
+        }
+
+        .admin-content.active {
+            display: block;
+        }
+
+        .admin-form {
+            display: grid;
+            gap: 1rem;
+        }
+
         .form-group textarea {
             resize: vertical;
             min-height: 100px;
+        }
+
+        .image-upload-section {
+            border: 2px dashed #e5e7eb;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .image-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 10px;
         }
 
         /* Auth Forms */
@@ -431,46 +785,26 @@
             font-weight: 600;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero-content {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .hero-text h1 {
-                font-size: 2.5rem;
-            }
-
-            .nav-links {
-                display: none;
-            }
-
-            .trips-grid {
-                grid-template-columns: 1fr;
-            }
+        .role-badge {
+            background: #10b981;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
         }
 
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #2563eb;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .role-badge.admin {
+            background: #ef4444;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
+        /* Tab System */
         .tab-buttons {
             display: flex;
             gap: 1rem;
             margin-bottom: 2rem;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .tab-button {
@@ -513,10 +847,89 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 0.8rem;
+            transition: background 0.3s;
         }
 
         .admin-btn:hover {
             background: rgba(0, 0, 0, 0.9);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .trips-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-info {
+                grid-template-columns: 1fr;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-buttons {
+                flex-wrap: wrap;
+            }
+
+            .category-filter {
+                justify-content: center;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .success-message {
+            background: #10b981;
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .error-message {
+            background: #ef4444;
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
         }
     </style>
 </head>
@@ -536,7 +949,10 @@
             <div class="auth-buttons">
                 <div class="user-info" id="userInfo">
                     <div class="user-avatar" id="userAvatar"></div>
-                    <span id="userName"></span>
+                    <div>
+                        <div id="userName"></div>
+                        <div class="role-badge" id="userRole">User</div>
+                    </div>
                     <button class="btn btn-outline" onclick="logout()">Logout</button>
                 </div>
                 <div id="authButtons">
@@ -565,51 +981,154 @@
         </div>
     </section>
 
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="container">
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search destinations, activities, or locations...">
+                </div>
+                <div class="category-filter">
+                    <button class="category-btn active" data-category="all">All</button>
+                    <button class="category-btn" data-category="adventure">Adventure</button>
+                    <button class="category-btn" data-category="hiking">Hiking</button>
+                    <button class="category-btn" data-category="temple">Temple</button>
+                    <button class="category-btn" data-category="beach">Beach</button>
+                    <button class="category-btn" data-category="mountain">Mountain</button>
+                    <button class="category-btn" data-category="cultural">Cultural</button>
+                    <button class="category-btn" data-category="wildlife">Wildlife</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Admin Panel -->
     <div class="admin-panel container" id="adminPanel">
         <h2><i class="fas fa-cog"></i> Admin Panel</h2>
-        <form class="admin-form" id="adminForm">
-            <div class="form-group">
-                <label for="tripTitle">Trip Title</label>
-                <input type="text" id="tripTitle" required>
+        
+        <div class="admin-tabs">
+            <button class="admin-tab active" onclick="showAdminTab('trips')">Manage Trips</button>
+            <button class="admin-tab" onclick="showAdminTab('bookings')">Booking Form</button>
+            <button class="admin-tab" onclick="showAdminTab('users')">User Roles</button>
+        </div>
+
+        <!-- Trip Management -->
+        <div class="admin-content active" id="tripsAdmin">
+            <form class="admin-form" id="adminForm">
+                <div class="form-group">
+                    <label for="tripTitle">Trip Title</label>
+                    <input type="text" id="tripTitle" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tripLocation">Location</label>
+                        <input type="text" id="tripLocation" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tripDuration">Duration</label>
+                        <input type="text" id="tripDuration" placeholder="e.g., 5 Days 4 Nights" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tripImages">Image URLs (one per line)</label>
+                    <textarea id="tripImages" rows="4" placeholder="Enter multiple image URLs, one per line" required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tripPrice">Price</label>
+                        <input type="text" id="tripPrice" placeholder="e.g., $2,999" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tripRating">Rating (1-5)</label>
+                        <input type="number" id="tripRating" min="1" max="5" step="0.1" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tripDescription">Description</label>
+                    <textarea id="tripDescription" rows="4" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="tripRequirements">Requirements (one per line)</label>
+                    <textarea id="tripRequirements" rows="4" placeholder="e.g., Valid Passport&#10;Good Physical Fitness&#10;Travel Insurance"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="tripVideo">Video URL (YouTube)</label>
+                    <input type="url" id="tripVideo" placeholder="https://www.youtube.com/embed/...">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tripCategory">Trip Category</label>
+                        <select id="tripCategory" required>
+                            <option value="adventure">Adventure</option>
+                            <option value="hiking">Hiking</option>
+                            <option value="temple">Temple</option>
+                            <option value="beach">Beach</option>
+                            <option value="mountain">Mountain</option>
+                            <option value="cultural">Cultural</option>
+                            <option value="wildlife">Wildlife</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tripSection">Section</label>
+                        <select id="tripSection" required>
+                            <option value="trending">Trending</option>
+                            <option value="upcoming">Upcoming</option>
+                            <option value="ongoing">Ongoing</option>
+                            <option value="past">Past</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <span id="adminSubmitText">Add Trip</span>
+                    <div class="loading" id="adminLoading" style="display: none;"></div>
+                </button>
+            </form>
+        </div>
+
+        <!-- Booking Form Management -->
+        <div class="admin-content" id="bookingsAdmin">
+            <h3>Customize Booking Form Fields</h3>
+            <form class="admin-form" id="bookingFormConfig">
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="requireName" checked> Require Full Name
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="requirePhone" checked> Require Phone Number
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="requireAddress"> Require Address
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="requireEmergencyContact"> Require Emergency Contact
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-success">Save Form Configuration</button>
+            </form>
+        </div>
+
+        <!-- User Role Management -->
+        <div class="admin-content" id="usersAdmin">
+            <h3>User Role Management</h3>
+            <div id="usersList">
+                <!-- Users will be loaded here -->
             </div>
-            <div class="form-group">
-                <label for="tripLocation">Location</label>
-                <input type="text" id="tripLocation" required>
-            </div>
-            <div class="form-group">
-                <label for="tripImage">Image URL</label>
-                <input type="url" id="tripImage" required>
-            </div>
-            <div class="form-group">
-                <label for="tripPrice">Price</label>
-                <input type="text" id="tripPrice" required>
-            </div>
-            <div class="form-group">
-                <label for="tripRating">Rating (1-5)</label>
-                <input type="number" id="tripRating" min="1" max="5" step="0.1" required>
-            </div>
-            <div class="form-group">
-                <label for="tripDescription">Description</label>
-                <textarea id="tripDescription" required></textarea>
-            </div>
-            <div class="form-group">
-                <label for="tripVideo">Video URL (YouTube)</label>
-                <input type="url" id="tripVideo">
-            </div>
-            <div class="form-group">
-                <label for="tripCategory">Category</label>
-                <select id="tripCategory" required>
-                    <option value="trending">Trending</option>
-                    <option value="upcoming">Upcoming</option>
-                    <option value="past">Past</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">
-                <span id="adminSubmitText">Add Trip</span>
-                <div class="loading" id="adminLoading" style="display: none;"></div>
-            </button>
-        </form>
+        </div>
     </div>
 
     <!-- Destinations Section -->
@@ -622,6 +1141,7 @@
 
             <div class="tab-buttons">
                 <button class="tab-button active" onclick="showTab('trending')">Trending</button>
+                <button class="tab-button" onclick="showTab('ongoing')">Ongoing</button>
                 <button class="tab-button" onclick="showTab('upcoming')">Upcoming</button>
                 <button class="tab-button" onclick="showTab('past')">Past Adventures</button>
             </div>
@@ -629,6 +1149,12 @@
             <div class="tab-content active" id="trending">
                 <div class="trips-grid" id="trendingTrips">
                     <!-- Trending trips will be loaded here -->
+                </div>
+            </div>
+
+            <div class="tab-content" id="ongoing">
+                <div class="trips-grid" id="ongoingTrips">
+                    <!-- Ongoing trips will be loaded here -->
                 </div>
             </div>
 
@@ -650,7 +1176,14 @@
     <div id="tripModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <img id="modalImage" src="" alt="">
+                <div class="modal-image-gallery" id="modalImageGallery">
+                    <!-- Images will be loaded here -->
+                </div>
+                <button class="image-nav prev" onclick="previousImage()">❮</button>
+                <button class="image-nav next" onclick="nextImage()">❯</button>
+                <div class="image-indicators" id="imageIndicators">
+                    <!-- Indicators will be loaded here -->
+                </div>
                 <span class="close">&times;</span>
                 <div class="admin-actions" id="modalAdminActions" style="display: none;">
                     <button class="admin-btn" onclick="editTrip()"><i class="fas fa-edit"></i></button>
@@ -658,23 +1191,160 @@
                 </div>
             </div>
             <div class="modal-body">
-                <h2 id="modalTitle"></h2>
-                <div class="trip-location">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span id="modalLocation"></span>
+                <div class="modal-info">
+                    <div class="trip-details">
+                        <h2 id="modalTitle"></h2>
+                        <div class="trip-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span id="modalLocation"></span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-clock"></i>
+                                <span id="modalDuration"></span>
+                            </div>
+                            <div class="meta-item">
+                                <div class="stars" id="modalStars"></div>
+                                <span id="modalRating"></span>
+                            </div>
+                        </div>
+                        <div class="trip-description" id="modalDescription"></div>
+                        
+                        <div class="requirements" id="modalRequirements">
+                            <h4><i class="fas fa-list-check"></i> Requirements</h4>
+                            <ul id="requirementsList">
+                                <!-- Requirements will be loaded here -->
+                            </ul>
+                        </div>
+
+                        <div class="video-container" id="modalVideoContainer" style="display: none;">
+                            <iframe id="modalVideo" src="" allowfullscreen></iframe>
+                        </div>
+                    </div>
+
+                    <div class="booking-card">
+                        <div class="price-display">
+                            <div class="price-amount" id="modalPrice"></div>
+                            <div class="price-per">per person</div>
+                        </div>
+                        
+                        <form class="booking-form" id="bookingForm">
+                            <div class="form-group">
+                                <label for="bookingName">Full Name *</label>
+                                <input type="text" id="bookingName" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="bookingEmail">Email *</label>
+                                <input type="email" id="bookingEmail" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="bookingPhone">Phone Number *</label>
+                                <input type="tel" id="bookingPhone" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="adultCount">Adults</label>
+                                    <select id="adultCount">
+                                        <option value="1">1 Adult</option>
+                                        <option value="2">2 Adults</option>
+                                        <option value="3">3 Adults</option>
+                                        <option value="4">4 Adults</option>
+                                        <option value="5">5+ Adults</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="childCount">Children</label>
+                                    <select id="childCount">
+                                        <option value="0">0 Children</option>
+                                        <option value="1">1 Child</option>
+                                        <option value="2">2 Children</option>
+                                        <option value="3">3 Children</option>
+                                        <option value="4">4+ Children</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="seniorCount">Seniors (60+)</label>
+                                    <select id="seniorCount">
+                                        <option value="0">0 Seniors</option>
+                                        <option value="1">1 Senior</option>
+                                        <option value="2">2 Seniors</option>
+                                        <option value="3">3+ Seniors</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="genderMix">Group Composition</label>
+                                    <select id="genderMix">
+                                        <option value="mixed">Mixed Group</option>
+                                        <option value="male">All Male</option>
+                                        <option value="female">All Female</option>
+                                        <option value="family">Family</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="bookingDate">Preferred Date</label>
+                                <input type="date" id="bookingDate" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="specialRequests">Special Requests</label>
+                                <textarea id="specialRequests" rows="3" placeholder="Any dietary restrictions, medical conditions, or special requirements..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-ticket-alt"></i> Book Now
+                            </button>
+                        </form>
+                    </div>
                 </div>
-                <div class="trip-rating">
-                    <div class="stars" id="modalStars"></div>
-                    <span id="modalRating"></span>
+
+                <!-- Reviews Section -->
+                <div class="reviews-section">
+                    <div class="reviews-header">
+                        <h3><i class="fas fa-star"></i> Reviews & Ratings</h3>
+                        <button class="btn btn-outline" onclick="showAddReviewForm()" id="addReviewBtn">Add Review</button>
+                    </div>
+                    
+                    <div id="addReviewForm" class="review-card" style="display: none;">
+                        <form id="reviewForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="reviewRating">Rating</label>
+                                    <select id="reviewRating" required>
+                                        <option value="5">5 Stars - Excellent</option>
+                                        <option value="4">4 Stars - Very Good</option>
+                                        <option value="3">3 Stars - Good</option>
+                                        <option value="2">2 Stars - Fair</option>
+                                        <option value="1">1 Star - Poor</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="reviewTitle">Review Title</label>
+                                    <input type="text" id="reviewTitle" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="reviewText">Your Review</label>
+                                <textarea id="reviewText" rows="4" required></textarea>
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <button type="submit" class="btn btn-primary">Submit Review</button>
+                                <button type="button" class="btn btn-outline" onclick="hideAddReviewForm()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="reviewsList">
+                        <!-- Reviews will be loaded here -->
+                    </div>
                 </div>
-                <div class="trip-price" id="modalPrice"></div>
-                <p id="modalDescription"></p>
-                <div class="video-container" id="modalVideoContainer" style="display: none;">
-                    <iframe id="modalVideo" src="" allowfullscreen></iframe>
-                </div>
-                <button class="btn btn-primary" style="width: 100%; margin-top: 2rem;">
-                    <i class="fas fa-ticket-alt"></i> Book Now
-                </button>
             </div>
         </div>
     </div>
@@ -731,62 +1401,74 @@
         let isAdmin = false;
         let currentTripId = null;
         let authMode = 'login';
+        let currentImageIndex = 0;
+        let currentTripImages = [];
+        let allTrips = [];
+        let filteredTrips = [];
 
-        // Admin emails - you can modify this list
-        const adminEmails = ['admin@trekwanders.com', 'owner@trekwanders.com'];
-
-        // Sample trips data for initial load
+        // Sample trips data with enhanced features
         const sampleTrips = [
             {
                 id: 'sample1',
-                title: 'Tropical Paradise Getaway',
-                location: 'Maldives',
-                image: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><rect fill="%2300bcd4" width="800" height="600"/><circle fill="%23ffffff" cx="400" cy="150" r="60"/><ellipse fill="%23ffeb3b" cx="400" cy="500" rx="300" ry="100"/><path fill="%2366bb6a" d="M200 450 Q250 400 300 450 T400 450"/><path fill="%2366bb6a" d="M400 450 Q450 400 500 450 T600 450"/><rect fill="%238d6e63" x="250" y="350" width="20" height="100"/><rect fill="%238d6e63" x="530" y="380" width="15" height="70"/></svg>',
-                price: '$2,999',
-                rating: 4.8,
-                description: 'Experience the ultimate tropical paradise with crystal clear waters, white sandy beaches, and luxurious overwater bungalows. Perfect for honeymoons and romantic getaways.',
+                title: 'Himalayan Adventure Trek',
+                location: 'Nepal Himalayas',
+                duration: '12 Days 11 Nights',
+                images: [
+                    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+                    'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&h=600&fit=crop',
+                    'https://images.unsplash.com/photo-1571863533956-01c88e79957e?w=800&h=600&fit=crop'
+                ],
+                price: '$2,499',
+                rating: 4.9,
+                description: 'Embark on an unforgettable journey through the majestic Himalayas. Experience breathtaking mountain views, ancient monasteries, and the warm hospitality of Sherpa communities.',
+                requirements: ['Valid Passport', 'Good Physical Fitness', 'Travel Insurance', 'Warm Clothing', 'Trekking Experience'],
                 videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-                category: 'trending'
+                category: 'adventure',
+                section: 'trending'
             },
             {
                 id: 'sample2',
-                title: 'Mountain Adventure Trek',
-                location: 'Nepal Himalayas',
-                image: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><rect fill="%2387ceeb" width="800" height="600"/><polygon fill="%23ffffff" points="200,300 400,100 600,300 400,200"/><polygon fill="%23d3d3d3" points="400,100 600,300 400,200"/><polygon fill="%234682b4" points="100,400 300,200 500,400 300,300"/><polygon fill="%23696969" points="300,200 500,400 300,300"/><polygon fill="%2332cd32" points="0,500 800,500 800,600 0,600"/><circle fill="%23ffff00" cx="150" cy="150" r="40"/></svg>',
-                price: '$1,799',
-                rating: 4.9,
-                description: 'Embark on an unforgettable journey through the majestic Himalayas. Experience breathtaking mountain views, local culture, and the thrill of high-altitude trekking.',
-                videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-                category: 'trending'
+                title: 'Sacred Temple Journey',
+                location: 'Varanasi, India',
+                duration: '7 Days 6 Nights',
+                images: [
+                    'https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800&h=600&fit=crop',
+                    'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800&h=600&fit=crop'
+                ],
+                price: '$899',
+                rating: 4.7,
+                description: 'Discover the spiritual heart of India with visits to ancient temples, evening aarti ceremonies, and peaceful meditation sessions along the sacred Ganges.',
+                requirements: ['Respectful Attire', 'Open Mind', 'Comfortable Walking Shoes'],
+                category: 'temple',
+                section: 'upcoming'
             },
             {
                 id: 'sample3',
-                title: 'Safari Wildlife Experience',
-                location: 'Kenya, Africa',
-                image: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><rect fill="%23daa520" width="800" height="600"/><circle fill="%23ff4500" cx="700" cy="100" r="50"/><rect fill="%23228b22" x="0" y="400" width="800" height="200"/><ellipse fill="%23654321" cx="200" cy="350" rx="80" ry="30"/><ellipse fill="%23654321" cx="600" cy="380" rx="100" ry="40"/><circle fill="%23000000" cx="180" cy="320" r="15"/><circle fill="%23000000" cx="220" cy="320" r="15"/><path fill="%23000000" d="M200 300 L200 280 M190 290 L210 290"/></svg>',
+                title: 'Tropical Paradise Escape',
+                location: 'Maldives',
+                duration: '5 Days 4 Nights',
+                images: [
+                    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'
+                ],
                 price: '$3,299',
-                rating: 4.7,
-                description: 'Witness the incredible wildlife of Africa on this amazing safari adventure. See lions, elephants, giraffes, and more in their natural habitat.',
-                videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-                category: 'upcoming'
+                rating: 4.8,
+                description: 'Experience ultimate luxury in overwater bungalows with crystal clear waters, pristine beaches, and world-class diving.',
+                requirements: ['Swimming Ability', 'Sun Protection', 'Snorkeling Gear Provided'],
+                category: 'beach',
+                section: 'ongoing'
             }
         ];
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
-            // Load sample trips initially
             loadSampleTrips();
-            
-            // Set up event listeners
             setupEventListeners();
             
             // Check authentication state
             auth.onAuthStateChanged(user => {
                 if (user) {
                     currentUser = user;
-                    isAdmin = adminEmails.includes(user.email);
-                    updateUIForUser(user);
-                    loadTripsFromFirestore();
+                    checkUserRole(user);
                 } else {
                     currentUser = null;
                     isAdmin = false;
@@ -795,16 +1477,57 @@
             });
         });
 
+        async function checkUserRole(user) {
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    isAdmin = userData.role === 'admin';
+                } else {
+                    // Create user document with default role
+                    await db.collection('users').doc(user.uid).set({
+                        email: user.email,
+                        role: 'user',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    isAdmin = false;
+                }
+                updateUIForUser(user);
+                if (isAdmin) {
+                    loadTripsFromFirestore();
+                    loadUsersList();
+                }
+            } catch (error) {
+                console.error('Error checking user role:', error);
+                isAdmin = false;
+                updateUIForUser(user);
+            }
+        }
+
         function loadSampleTrips() {
-            const trendingContainer = document.getElementById('trendingTrips');
-            const upcomingContainer = document.getElementById('upcomingTrips');
-            
-            sampleTrips.forEach(trip => {
+            allTrips = [...sampleTrips];
+            filteredTrips = [...allTrips];
+            renderTrips();
+        }
+
+        function renderTrips() {
+            const containers = {
+                trending: document.getElementById('trendingTrips'),
+                ongoing: document.getElementById('ongoingTrips'),
+                upcoming: document.getElementById('upcomingTrips'),
+                past: document.getElementById('pastTrips')
+            };
+
+            // Clear containers
+            Object.values(containers).forEach(container => {
+                container.innerHTML = '';
+            });
+
+            // Render filtered trips
+            filteredTrips.forEach(trip => {
                 const tripCard = createTripCard(trip);
-                if (trip.category === 'trending') {
-                    trendingContainer.appendChild(tripCard);
-                } else if (trip.category === 'upcoming') {
-                    upcomingContainer.appendChild(tripCard);
+                if (containers[trip.section]) {
+                    containers[trip.section].appendChild(tripCard);
                 }
             });
         }
@@ -815,6 +1538,20 @@
             
             // Admin form submission
             document.getElementById('adminForm').addEventListener('submit', handleAdminSubmit);
+            
+            // Booking form submission
+            document.getElementById('bookingForm').addEventListener('submit', handleBookingSubmit);
+            
+            // Review form submission
+            document.getElementById('reviewForm').addEventListener('submit', handleReviewSubmit);
+            
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            
+            // Category filter
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', handleCategoryFilter);
+            });
             
             // Modal close events
             document.querySelectorAll('.close').forEach(closeBtn => {
@@ -831,15 +1568,46 @@
             });
         }
 
+        function handleSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            filteredTrips = allTrips.filter(trip => 
+                trip.title.toLowerCase().includes(searchTerm) ||
+                trip.location.toLowerCase().includes(searchTerm) ||
+                trip.category.toLowerCase().includes(searchTerm) ||
+                trip.description.toLowerCase().includes(searchTerm)
+            );
+            renderTrips();
+        }
+
+        function handleCategoryFilter(event) {
+            // Update active button
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const category = event.target.dataset.category;
+            if (category === 'all') {
+                filteredTrips = [...allTrips];
+            } else {
+                filteredTrips = allTrips.filter(trip => trip.category === category);
+            }
+            renderTrips();
+        }
+
         function updateUIForUser(user) {
             document.getElementById('authButtons').style.display = 'none';
             document.getElementById('userInfo').style.display = 'flex';
             document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
             document.getElementById('userAvatar').textContent = (user.displayName || user.email)[0].toUpperCase();
             
+            const roleElement = document.getElementById('userRole');
             if (isAdmin) {
+                roleElement.textContent = 'Admin';
+                roleElement.classList.add('admin');
                 document.getElementById('adminPanel').style.display = 'block';
                 document.querySelectorAll('.admin-actions').forEach(el => el.style.display = 'flex');
+            } else {
+                roleElement.textContent = 'User';
+                roleElement.classList.remove('admin');
             }
         }
 
@@ -890,7 +1658,13 @@
                 if (authMode === 'login') {
                     await auth.signInWithEmailAndPassword(email, password);
                 } else {
-                    await auth.createUserWithEmailAndPassword(email, password);
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    // Set default role as user
+                    await db.collection('users').doc(userCredential.user.uid).set({
+                        email: email,
+                        role: 'user',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
                 }
                 closeAuthModal();
             } catch (error) {
@@ -915,12 +1689,23 @@
             document.getElementById(tabName).classList.add('active');
         }
 
+        function showAdminTab(tabName) {
+            // Update admin tab buttons
+            document.querySelectorAll('.admin-tab').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update admin tab content
+            document.querySelectorAll('.admin-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Admin').classList.add('active');
+        }
+
         function createTripCard(trip) {
             const card = document.createElement('div');
             card.className = 'trip-card';
             card.onclick = () => openTripModal(trip);
             
             const stars = '★'.repeat(Math.floor(trip.rating)) + '☆'.repeat(5 - Math.floor(trip.rating));
+            const mainImage = Array.isArray(trip.images) ? trip.images[0] : trip.images;
             
             card.innerHTML = `
                 ${isAdmin ? `
@@ -929,7 +1714,10 @@
                     <button class="admin-btn" onclick="event.stopPropagation(); deleteTrip('${trip.id}')"><i class="fas fa-trash"></i></button>
                 </div>
                 ` : ''}
-                <img src="${trip.image}" alt="${trip.title}">
+                <div class="trip-card-image">
+                    <img src="${mainImage}" alt="${trip.title}">
+                    <div class="trip-badge">${trip.category}</div>
+                </div>
                 <div class="trip-card-content">
                     <h3>${trip.title}</h3>
                     <div class="trip-location">
@@ -940,7 +1728,10 @@
                         <div class="stars">${stars}</div>
                         <span>${trip.rating}</span>
                     </div>
-                    <div class="trip-price">${trip.price}</div>
+                    <div class="trip-price">
+                        <span>${trip.price}</span>
+                        <span class="trip-duration">${trip.duration || ''}</span>
+                    </div>
                 </div>
             `;
             
@@ -949,10 +1740,16 @@
 
         function openTripModal(trip) {
             currentTripId = trip.id;
+            currentTripImages = Array.isArray(trip.images) ? trip.images : [trip.images];
+            currentImageIndex = 0;
             
-            document.getElementById('modalImage').src = trip.image;
+            // Setup image gallery
+            setupImageGallery();
+            
+            // Fill trip details
             document.getElementById('modalTitle').textContent = trip.title;
             document.getElementById('modalLocation').textContent = trip.location;
+            document.getElementById('modalDuration').textContent = trip.duration || '';
             document.getElementById('modalRating').textContent = trip.rating;
             document.getElementById('modalPrice').textContent = trip.price;
             document.getElementById('modalDescription').textContent = trip.description;
@@ -960,6 +1757,21 @@
             const stars = '★'.repeat(Math.floor(trip.rating)) + '☆'.repeat(5 - Math.floor(trip.rating));
             document.getElementById('modalStars').textContent = stars;
             
+            // Setup requirements
+            if (trip.requirements && trip.requirements.length > 0) {
+                const requirementsList = document.getElementById('requirementsList');
+                requirementsList.innerHTML = '';
+                trip.requirements.forEach(req => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<i class="fas fa-check"></i> ${req}`;
+                    requirementsList.appendChild(li);
+                });
+                document.getElementById('modalRequirements').style.display = 'block';
+            } else {
+                document.getElementById('modalRequirements').style.display = 'none';
+            }
+            
+            // Setup video
             if (trip.videoUrl) {
                 document.getElementById('modalVideoContainer').style.display = 'block';
                 document.getElementById('modalVideo').src = trip.videoUrl;
@@ -967,11 +1779,61 @@
                 document.getElementById('modalVideoContainer').style.display = 'none';
             }
             
+            // Show admin actions if admin
             if (isAdmin) {
                 document.getElementById('modalAdminActions').style.display = 'flex';
             }
             
+            // Load reviews
+            loadTripReviews(trip.id);
+            
             document.getElementById('tripModal').style.display = 'flex';
+        }
+
+        function setupImageGallery() {
+            const gallery = document.getElementById('modalImageGallery');
+            const indicators = document.getElementById('imageIndicators');
+            
+            gallery.innerHTML = '';
+            indicators.innerHTML = '';
+            
+            currentTripImages.forEach((image, index) => {
+                // Create image element
+                const img = document.createElement('img');
+                img.src = image;
+                img.className = index === 0 ? 'active' : '';
+                gallery.appendChild(img);
+                
+                // Create indicator
+                const indicator = document.createElement('div');
+                indicator.className = `indicator ${index === 0 ? 'active' : ''}`;
+                indicator.onclick = () => showImage(index);
+                indicators.appendChild(indicator);
+            });
+        }
+
+        function showImage(index) {
+            currentImageIndex = index;
+            
+            // Update images
+            document.querySelectorAll('#modalImageGallery img').forEach((img, i) => {
+                img.classList.toggle('active', i === index);
+            });
+            
+            // Update indicators
+            document.querySelectorAll('.indicator').forEach((indicator, i) => {
+                indicator.classList.toggle('active', i === index);
+            });
+        }
+
+        function previousImage() {
+            const newIndex = currentImageIndex > 0 ? currentImageIndex - 1 : currentTripImages.length - 1;
+            showImage(newIndex);
+        }
+
+        function nextImage() {
+            const newIndex = currentImageIndex < currentTripImages.length - 1 ? currentImageIndex + 1 : 0;
+            showImage(newIndex);
         }
 
         async function handleAdminSubmit(e) {
@@ -982,15 +1844,21 @@
                 return;
             }
             
+            const images = document.getElementById('tripImages').value.split('\n').filter(url => url.trim());
+            const requirements = document.getElementById('tripRequirements').value.split('\n').filter(req => req.trim());
+            
             const tripData = {
                 title: document.getElementById('tripTitle').value,
                 location: document.getElementById('tripLocation').value,
-                image: document.getElementById('tripImage').value,
+                duration: document.getElementById('tripDuration').value,
+                images: images,
                 price: document.getElementById('tripPrice').value,
                 rating: parseFloat(document.getElementById('tripRating').value),
                 description: document.getElementById('tripDescription').value,
+                requirements: requirements,
                 videoUrl: document.getElementById('tripVideo').value,
                 category: document.getElementById('tripCategory').value,
+                section: document.getElementById('tripSection').value,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 createdBy: currentUser.email
             };
@@ -1011,34 +1879,202 @@
             }
         }
 
+        async function handleBookingSubmit(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                alert('Please login to book a trip.');
+                return;
+            }
+            
+            const bookingData = {
+                tripId: currentTripId,
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                name: document.getElementById('bookingName').value,
+                email: document.getElementById('bookingEmail').value,
+                phone: document.getElementById('bookingPhone').value,
+                adults: parseInt(document.getElementById('adultCount').value),
+                children: parseInt(document.getElementById('childCount').value),
+                seniors: parseInt(document.getElementById('seniorCount').value),
+                genderMix: document.getElementById('genderMix').value,
+                preferredDate: document.getElementById('bookingDate').value,
+                specialRequests: document.getElementById('specialRequests').value,
+                bookingDate: firebase.firestore.FieldValue.serverTimestamp(),
+                status: 'pending'
+            };
+            
+            try {
+                await db.collection('bookings').add(bookingData);
+                alert('Booking request submitted successfully! We will contact you soon.');
+                document.getElementById('bookingForm').reset();
+            } catch (error) {
+                alert('Error submitting booking: ' + error.message);
+            }
+        }
+
+        async function handleReviewSubmit(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                alert('Please login to add a review.');
+                return;
+            }
+            
+            const reviewData = {
+                tripId: currentTripId,
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                userName: currentUser.displayName || currentUser.email.split('@')[0],
+                rating: parseInt(document.getElementById('reviewRating').value),
+                title: document.getElementById('reviewTitle').value,
+                text: document.getElementById('reviewText').value,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            try {
+                await db.collection('reviews').add(reviewData);
+                document.getElementById('reviewForm').reset();
+                hideAddReviewForm();
+                loadTripReviews(currentTripId);
+                alert('Review added successfully!');
+            } catch (error) {
+                alert('Error adding review: ' + error.message);
+            }
+        }
+
+        function showAddReviewForm() {
+            if (!currentUser) {
+                alert('Please login to add a review.');
+                return;
+            }
+            document.getElementById('addReviewForm').style.display = 'block';
+            document.getElementById('addReviewBtn').style.display = 'none';
+        }
+
+        function hideAddReviewForm() {
+            document.getElementById('addReviewForm').style.display = 'none';
+            document.getElementById('addReviewBtn').style.display = 'block';
+        }
+
+        async function loadTripReviews(tripId) {
+            try {
+                const reviews = await db.collection('reviews')
+                    .where('tripId', '==', tripId)
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                
+                const reviewsList = document.getElementById('reviewsList');
+                reviewsList.innerHTML = '';
+                
+                reviews.forEach(doc => {
+                    const review = doc.data();
+                    const reviewCard = createReviewCard(review);
+                    reviewsList.appendChild(reviewCard);
+                });
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+            }
+        }
+
+        function createReviewCard(review) {
+            const card = document.createElement('div');
+            card.className = 'review-card';
+            
+            const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+            const date = review.createdAt ? review.createdAt.toDate().toLocaleDateString() : 'Recently';
+            
+            card.innerHTML = `
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-avatar">${review.userName[0].toUpperCase()}</div>
+                        <div>
+                            <div><strong>${review.userName}</strong></div>
+                            <div class="stars">${stars}</div>
+                        </div>
+                    </div>
+                    <div class="review-date">${date}</div>
+                </div>
+                <h4>${review.title}</h4>
+                <p>${review.text}</p>
+            `;
+            
+            return card;
+        }
+
         async function loadTripsFromFirestore() {
             try {
                 const snapshot = await db.collection('trips').orderBy('createdAt', 'desc').get();
                 
-                // Clear existing trips (except samples for demo)
-                const containers = {
-                    trending: document.getElementById('trendingTrips'),
-                    upcoming: document.getElementById('upcomingTrips'),
-                    past: document.getElementById('pastTrips')
-                };
+                // Remove Firebase trips from allTrips array
+                allTrips = allTrips.filter(trip => trip.id.startsWith('sample'));
                 
-                // Only clear Firebase trips, keep sample trips
-                snapshot.forEach(doc => {
-                    const existingCard = document.querySelector(`[data-trip-id="${doc.id}"]`);
-                    if (existingCard) existingCard.remove();
-                });
-                
+                // Add Firebase trips
                 snapshot.forEach(doc => {
                     const trip = { id: doc.id, ...doc.data() };
-                    const tripCard = createTripCard(trip);
-                    tripCard.setAttribute('data-trip-id', doc.id);
-                    
-                    if (containers[trip.category]) {
-                        containers[trip.category].appendChild(tripCard);
-                    }
+                    allTrips.push(trip);
                 });
+                
+                filteredTrips = [...allTrips];
+                renderTrips();
             } catch (error) {
                 console.error('Error loading trips:', error);
+            }
+        }
+
+        async function loadUsersList() {
+            if (!isAdmin) return;
+            
+            try {
+                const users = await db.collection('users').get();
+                const usersList = document.getElementById('usersList');
+                usersList.innerHTML = '';
+                
+                users.forEach(doc => {
+                    const user = doc.data();
+                    const userCard = createUserCard(doc.id, user);
+                    usersList.appendChild(userCard);
+                });
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        function createUserCard(userId, user) {
+            const card = document.createElement('div');
+            card.className = 'review-card';
+            
+            card.innerHTML = `
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-avatar">${user.email[0].toUpperCase()}</div>
+                        <div>
+                            <div><strong>${user.email}</strong></div>
+                            <div class="role-badge ${user.role === 'admin' ? 'admin' : ''}">${user.role}</div>
+                        </div>
+                    </div>
+                    <div>
+                        <select onchange="changeUserRole('${userId}', this.value)">
+                            <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+                            <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        async function changeUserRole(userId, newRole) {
+            if (!isAdmin) return;
+            
+            try {
+                await db.collection('users').doc(userId).update({
+                    role: newRole
+                });
+                alert('User role updated successfully!');
+            } catch (error) {
+                alert('Error updating user role: ' + error.message);
             }
         }
 
@@ -1047,7 +2083,10 @@
             
             try {
                 await db.collection('trips').doc(tripId).delete();
-                document.querySelector(`[data-trip-id="${tripId}"]`).remove();
+                // Remove from local array
+                allTrips = allTrips.filter(trip => trip.id !== tripId);
+                filteredTrips = filteredTrips.filter(trip => trip.id !== tripId);
+                renderTrips();
                 document.getElementById('tripModal').style.display = 'none';
                 alert('Trip deleted successfully!');
             } catch (error) {
@@ -1057,8 +2096,6 @@
 
         function editTrip(tripId) {
             if (!isAdmin) return;
-            
-            // This would open an edit form - for now, just show an alert
             alert('Edit functionality would be implemented here. For now, please delete and recreate the trip.');
         }
 
