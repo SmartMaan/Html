@@ -116,9 +116,9 @@
             color: white;
         }
 
-        /* Hero Section - Auto-changing Background */
+        /* Hero Section - Travel Agency Theme */
         .hero {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.9) 0%, rgba(59, 130, 246, 0.9) 100%);
             padding: 8rem 0 4rem;
             text-align: center;
             color: white;
@@ -154,7 +154,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.9) 0%, rgba(59, 130, 246, 0.9) 100%);
             z-index: 1;
         }
 
@@ -195,6 +195,92 @@
             position: relative;
             display: flex;
             align-items: center;
+        }
+
+        .filter-btn {
+            margin-left: 0.5rem;
+        }
+
+        /* Advanced Filters */
+        .advanced-filters {
+            background: white;
+            margin-top: 1rem;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .filter-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-section h4 {
+            color: #374151;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .category-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .category-filter {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 25px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .category-filter.active {
+            border-color: #2563eb;
+            background: #2563eb;
+            color: white;
+        }
+
+        .price-filter {
+            position: relative;
+        }
+
+        .price-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        .duration-filters, .difficulty-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .duration-filters label, .difficulty-filters label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
         }
 
         .search-input i {
@@ -1322,6 +1408,105 @@
             transform: scale(1.2);
         }
 
+        /* User Profile Section */
+        .profile-section {
+            background: #f8fafc;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .profile-header {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .profile-avatar-section {
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .avatar-text {
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .verification-badge {
+            color: #22c55e;
+            font-size: 1.2rem;
+        }
+
+        .profile-form, .profile-stats {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
         /* Responsive Design for Mobile */
         @media (max-width: 768px) {
             .feed-posts-grid {
@@ -1664,6 +1849,7 @@
                 <li><a href="#home">Home</a></li>
                 <li><a href="#destinations">Destinations</a></li>
                 <li><a href="#userBookings" id="bookingsNavLink" style="display: none;">My Bookings</a></li>
+                <li><a href="#profile" id="profileNavLink" style="display: none;">My Profile</a></li>
                 <li><a href="#feed">Feed</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
@@ -1706,9 +1892,62 @@
                                 <i class="fas fa-calendar-alt"></i>
                                 <input type="date" id="heroDateInput">
                             </div>
-                            <button class="btn btn-primary" onclick="searchTrips()">
+                            <button class="btn btn-primary" onclick="performSearch()">
                                 <i class="fas fa-search"></i> Search
                             </button>
+                            <button class="btn btn-outline filter-btn" onclick="toggleAdvancedFilters()">
+                                <i class="fas fa-sliders-h"></i> Filters
+                            </button>
+                        </div>
+                        
+                        <!-- Advanced Filters Panel -->
+                        <div class="advanced-filters" id="advancedFilters" style="display: none;">
+                            <div class="filter-section">
+                                <h4><i class="fas fa-layer-group"></i> Categories</h4>
+                                <div class="category-filters" id="categoryFilters">
+                                    <!-- Categories will be loaded here -->
+                                </div>
+                            </div>
+                            
+                            <div class="filter-section">
+                                <h4><i class="fas fa-rupee-sign"></i> Price Range</h4>
+                                <div class="price-filter">
+                                    <input type="range" id="priceMin" min="0" max="500000" value="0">
+                                    <input type="range" id="priceMax" min="0" max="500000" value="500000">
+                                    <div class="price-labels">
+                                        <span>₹<span id="priceMinLabel">0</span></span>
+                                        <span>₹<span id="priceMaxLabel">5,00,000</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-section">
+                                <h4><i class="fas fa-clock"></i> Duration</h4>
+                                <div class="duration-filters">
+                                    <label><input type="checkbox" value="1-3"> 1-3 days</label>
+                                    <label><input type="checkbox" value="4-7"> 4-7 days</label>
+                                    <label><input type="checkbox" value="8-14"> 8-14 days</label>
+                                    <label><input type="checkbox" value="15+"> 15+ days</label>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-section">
+                                <h4><i class="fas fa-mountain"></i> Difficulty</h4>
+                                <div class="difficulty-filters">
+                                    <label><input type="checkbox" value="easy"> Easy</label>
+                                    <label><input type="checkbox" value="moderate"> Moderate</label>
+                                    <label><input type="checkbox" value="challenging"> Challenging</label>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-actions">
+                                <button class="btn btn-primary" onclick="applyFilters()">
+                                    <i class="fas fa-check"></i> Apply Filters
+                                </button>
+                                <button class="btn btn-outline" onclick="clearFilters()">
+                                    <i class="fas fa-times"></i> Clear All
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="hero-stats">
@@ -2239,6 +2478,90 @@
         </div>
     </section>
 
+    <!-- User Profile Section -->
+    <section class="profile-section section" id="profile" style="display: none;">
+        <div class="container">
+            <div class="section-title">
+                <h2><i class="fas fa-user-circle"></i> My Profile</h2>
+                <p>Manage your account settings and travel preferences</p>
+            </div>
+
+            <div class="profile-content">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar-section">
+                            <div class="profile-avatar" id="profileAvatar">
+                                <img id="profileAvatarImg" src="" alt="Profile Picture" style="display: none;">
+                                <div id="profileAvatarText" class="avatar-text">U</div>
+                            </div>
+                            <div class="avatar-upload">
+                                <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+                                <button class="btn btn-outline" onclick="document.getElementById('avatarUpload').click()">
+                                    <i class="fas fa-camera"></i> Change Photo
+                                </button>
+                            </div>
+                        </div>
+                        <div class="profile-info">
+                            <div class="profile-name">
+                                <h3 id="profileDisplayName">User Name</h3>
+                                <div class="verification-badge" id="verificationBadge" style="display: none;">
+                                    <i class="fas fa-check-circle"></i> Verified
+                                </div>
+                            </div>
+                            <p id="profileEmail">user@email.com</p>
+                            <p id="profilePhone">+91 98765 43210</p>
+                        </div>
+                    </div>
+
+                    <div class="profile-form">
+                        <h4><i class="fas fa-edit"></i> Edit Profile</h4>
+                        <form id="profileUpdateForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="updateDisplayName">Display Name</label>
+                                    <input type="text" id="updateDisplayName" placeholder="Enter your name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="updatePhone">Phone Number</label>
+                                    <input type="tel" id="updatePhone" placeholder="+91 98765 43210">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="updateBio">Bio</label>
+                                <textarea id="updateBio" rows="3" placeholder="Tell us about yourself..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Update Profile
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="profile-stats">
+                        <h4><i class="fas fa-chart-bar"></i> Your Travel Stats</h4>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number" id="userTotalBookings">0</div>
+                                <div class="stat-label">Total Bookings</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="userCompletedTrips">0</div>
+                                <div class="stat-label">Completed Trips</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="userReviewsGiven">0</div>
+                                <div class="stat-label">Reviews Given</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="userMemberSince">2024</div>
+                                <div class="stat-label">Member Since</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Trip Details Modal -->
     <div id="tripModal" class="modal">
         <div class="modal-content">
@@ -2520,6 +2843,19 @@
         // Firebase Storage is automatically used if available (Recommended)
         // Currently configured in your Firebase project
 
+        // Enhanced Categories with Icons System
+        const travelCategories = {
+            main: [
+                { id: 'adventure', name: 'Adventure', icon: 'fas fa-mountain', subcategories: ['trekking', 'climbing', 'rafting', 'camping'] },
+                { id: 'beach', name: 'Beach', icon: 'fas fa-umbrella-beach', subcategories: ['tropical', 'surfing', 'diving', 'relaxation'] },
+                { id: 'cultural', name: 'Cultural', icon: 'fas fa-landmark', subcategories: ['heritage', 'museums', 'festivals', 'local-tours'] },
+                { id: 'wildlife', name: 'Wildlife', icon: 'fas fa-paw', subcategories: ['safari', 'bird-watching', 'marine-life', 'photography'] },
+                { id: 'spiritual', name: 'Spiritual', icon: 'fas fa-om', subcategories: ['temples', 'meditation', 'pilgrimage', 'yoga-retreats'] },
+                { id: 'luxury', name: 'Luxury', icon: 'fas fa-crown', subcategories: ['resorts', 'cruise', 'private-tours', 'premium-stays'] }
+            ],
+            status: ['trending', 'ongoing', 'upcoming', 'past']
+        };
+
         // Sample trips data with enhanced features
         const sampleTrips = [
             {
@@ -2730,6 +3066,10 @@
             document.getElementById('tripImageFiles').addEventListener('change', handleTripImageUpload);
             document.getElementById('heroImageFile').addEventListener('change', handleHeroImageUpload);
             
+            // Profile management
+            document.getElementById('profileUpdateForm').addEventListener('submit', handleProfileUpdate);
+            document.getElementById('avatarUpload').addEventListener('change', handleAvatarUpload);
+            
             // Search functionality
             document.getElementById('searchInput').addEventListener('input', handleSearch);
             
@@ -2784,10 +3124,12 @@
             document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
             document.getElementById('userAvatar').textContent = (user.displayName || user.email)[0].toUpperCase();
             
-            // Show My Bookings link for logged in users
+            // Show My Bookings and Profile links for logged in users
             document.getElementById('bookingsNavLink').style.display = 'block';
+            document.getElementById('profileNavLink').style.display = 'block';
             document.getElementById('userBookings').style.display = 'block';
             loadUserBookings();
+            loadUserProfile();
             
             const roleElement = document.getElementById('userRole');
             if (isAdmin) {
@@ -3997,31 +4339,67 @@
             });
         }
 
-        // Image Upload Functions using Firebase Storage (Recommended)
+        // Cloudinary Configuration
+        const CLOUDINARY_CLOUD_NAME = 'dqy2ts3to';
+        const CLOUDINARY_API_KEY = '839356686134731';
+        const CLOUDINARY_UPLOAD_PRESET = 'trekwanders_uploads'; // You'll need to create this in Cloudinary
+
+        // Enhanced Image Upload with Cloudinary Primary
         async function uploadToFreeService(file) {
             try {
-                // Method 1: Firebase Storage (Most Reliable)
-                if (typeof firebase !== 'undefined' && firebase.storage) {
-                    return await uploadToFirebaseStorage(file);
-                }
-                
-                // Method 2: ImgBB (Free with API key)
-                if (window.IMGBB_API_KEY) {
-                    return await uploadToImgBB(file);
-                }
-                
-                // Method 3: Cloudinary (Professional)
-                if (window.CLOUDINARY_CONFIG) {
-                    return await uploadToCloudinary(file);
-                }
-                
-                // Method 4: PostImages.org (Free, no API key)
-                return await uploadToPostImages(file);
+                // Method 1: Cloudinary (Primary - Your API)
+                return await uploadToCloudinary(file);
                 
             } catch (error) {
-                console.error('Upload failed:', error);
-                // Fallback to base64 for immediate preview
-                return await convertToBase64(file);
+                console.error('Cloudinary upload failed, trying fallback:', error);
+                try {
+                    // Method 2: Firebase Storage (Fallback)
+                    if (typeof firebase !== 'undefined' && firebase.storage) {
+                        return await uploadToFirebaseStorage(file);
+                    }
+                    
+                    // Method 3: PostImages.org (Final fallback)
+                    return await uploadToPostImages(file);
+                    
+                } catch (fallbackError) {
+                    console.error('All upload methods failed:', fallbackError);
+                    // Emergency fallback to base64
+                    return await convertToBase64(file);
+                }
+            }
+        }
+
+        // Enhanced Cloudinary Upload Function
+        async function uploadToCloudinary(file) {
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('cloud_name', CLOUDINARY_CLOUD_NAME);
+                formData.append('api_key', CLOUDINARY_API_KEY);
+                formData.append('upload_preset', 'ml_default'); // Using default preset
+                formData.append('folder', 'trekwanders');
+                
+                console.log('📤 Uploading to Cloudinary...');
+                
+                const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Cloudinary upload failed: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('✅ Cloudinary upload successful:', data.secure_url);
+                
+                // Return optimized URL with transformations
+                const optimizedUrl = data.secure_url.replace('/upload/', '/upload/c_auto,f_auto,q_auto,w_800/');
+                return optimizedUrl;
+                
+            } catch (error) {
+                console.error('❌ Cloudinary upload failed:', error);
+                throw error;
             }
         }
 
@@ -4415,6 +4793,142 @@
             document.getElementById('youtubeLink').href = youtube;
         }
 
+        // === USER PROFILE MANAGEMENT ===
+        async function loadUserProfile() {
+            if (!currentUser) return;
+
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                const userData = userDoc.exists ? userDoc.data() : {};
+
+                // Update profile display
+                document.getElementById('profileDisplayName').textContent = userData.displayName || currentUser.displayName || 'User';
+                document.getElementById('profileEmail').textContent = currentUser.email;
+                document.getElementById('profilePhone').textContent = userData.phone || 'Not provided';
+                
+                // Update form fields
+                document.getElementById('updateDisplayName').value = userData.displayName || '';
+                document.getElementById('updatePhone').value = userData.phone || '';
+                document.getElementById('updateBio').value = userData.bio || '';
+
+                // Update avatar
+                if (userData.photoURL) {
+                    document.getElementById('profileAvatarImg').src = userData.photoURL;
+                    document.getElementById('profileAvatarImg').style.display = 'block';
+                    document.getElementById('profileAvatarText').style.display = 'none';
+                } else {
+                    document.getElementById('profileAvatarText').textContent = (userData.displayName || currentUser.email)[0].toUpperCase();
+                    document.getElementById('profileAvatarImg').style.display = 'none';
+                    document.getElementById('profileAvatarText').style.display = 'block';
+                }
+
+                // Show verification badge if verified
+                if (userData.verified) {
+                    document.getElementById('verificationBadge').style.display = 'inline-flex';
+                }
+
+                // Load user stats
+                await loadUserStats();
+
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+            }
+        }
+
+        async function handleProfileUpdate(e) {
+            e.preventDefault();
+            
+            if (!currentUser) return;
+
+            try {
+                const updatedData = {
+                    displayName: document.getElementById('updateDisplayName').value,
+                    phone: document.getElementById('updatePhone').value,
+                    bio: document.getElementById('updateBio').value,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                await db.collection('users').doc(currentUser.uid).set(updatedData, { merge: true });
+                await database.ref('users/' + currentUser.uid).update(updatedData);
+
+                // Update Firebase Auth profile
+                if (updatedData.displayName) {
+                    await currentUser.updateProfile({
+                        displayName: updatedData.displayName
+                    });
+                }
+
+                loadUserProfile();
+                sendFreeNotification('Success', 'Profile updated successfully!', 'success');
+
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                sendFreeNotification('Error', 'Failed to update profile: ' + error.message, 'error');
+            }
+        }
+
+        async function handleAvatarUpload(e) {
+            const file = e.target.files[0];
+            if (!file || !currentUser) return;
+
+            try {
+                // Show loading
+                const avatar = document.getElementById('profileAvatar');
+                const originalContent = avatar.innerHTML;
+                avatar.innerHTML = '<div style="color: white;"><i class="fas fa-spinner fa-spin"></i></div>';
+
+                // Upload to Cloudinary
+                const photoURL = await uploadToFreeService(file);
+
+                // Update user profile
+                await currentUser.updateProfile({ photoURL });
+                await db.collection('users').doc(currentUser.uid).set({ photoURL }, { merge: true });
+                await database.ref('users/' + currentUser.uid).update({ photoURL });
+
+                // Update display
+                document.getElementById('profileAvatarImg').src = photoURL;
+                document.getElementById('profileAvatarImg').style.display = 'block';
+                document.getElementById('profileAvatarText').style.display = 'none';
+
+                sendFreeNotification('Success', 'Profile picture updated!', 'success');
+
+            } catch (error) {
+                console.error('Error uploading avatar:', error);
+                sendFreeNotification('Error', 'Failed to upload image: ' + error.message, 'error');
+                loadUserProfile(); // Restore original avatar
+            }
+        }
+
+        async function loadUserStats() {
+            try {
+                if (!currentUser) return;
+
+                // Get user bookings
+                const bookingsSnapshot = await db.collection('bookings').where('userId', '==', currentUser.uid).get();
+                const totalBookings = bookingsSnapshot.size;
+                const completedTrips = bookingsSnapshot.docs.filter(doc => doc.data().status === 'completed').length;
+
+                // Get user reviews
+                const reviewsSnapshot = await db.collection('reviews').where('userId', '==', currentUser.uid).get();
+                const reviewsGiven = reviewsSnapshot.size;
+
+                // Get member since date
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                const memberSince = userDoc.exists && userDoc.data().createdAt ? 
+                    new Date(userDoc.data().createdAt.toDate()).getFullYear() : 
+                    new Date().getFullYear();
+
+                // Update stats display
+                document.getElementById('userTotalBookings').textContent = totalBookings;
+                document.getElementById('userCompletedTrips').textContent = completedTrips;
+                document.getElementById('userReviewsGiven').textContent = reviewsGiven;
+                document.getElementById('userMemberSince').textContent = memberSince;
+
+            } catch (error) {
+                console.error('Error loading user stats:', error);
+            }
+        }
+
         // === ADMIN FEED POST MANAGEMENT ===
         async function editFeedPost(postId) {
             if (!isAdmin) {
@@ -4576,8 +5090,30 @@
                 // Reset form
                 document.getElementById('bookingForm').reset();
                 
-                // Send notification
-                sendFreeNotification('Booking Confirmed!', `Your booking ${bookingData.bookingId} has been submitted successfully.`);
+                // Enhanced success notification with redirect
+                Swal.fire({
+                    icon: 'success',
+                    title: '<i class="fas fa-check-circle"></i> Booking Confirmed!',
+                    html: `
+                        <div class="booking-success">
+                            <p><strong>Booking ID:</strong> ${bookingData.bookingId}</p>
+                            <p>Your booking has been submitted successfully!</p>
+                            <div class="qr-section" style="margin: 1rem 0;">
+                                <img src="${generateBookingQR(bookingData.bookingId)}" alt="Booking QR Code" style="max-width: 120px; border-radius: 10px;">
+                                <p style="font-size: 0.9rem; color: #666;">Show this QR code during your trip</p>
+                            </div>
+                        </div>
+                    `,
+                    confirmButtonText: '<i class="fas fa-calendar-check"></i> View My Bookings',
+                    confirmButtonColor: '#2563eb',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Redirect to My Bookings section
+                        showTab('bookings');
+                        document.getElementById('bookings').scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
                 
             } catch (error) {
                 console.error('Booking error:', error);
@@ -5698,10 +6234,11 @@
                 <div class="footer-section">
                     <h4><i class="fas fa-link"></i> Quick Links</h4>
                     <ul class="footer-links">
-                        <li><a href="#trending"><i class="fas fa-fire"></i> Trending</a></li>
-                        <li><a href="#ongoing"><i class="fas fa-compass"></i> Ongoing</a></li>
-                        <li><a href="#upcoming"><i class="fas fa-calendar"></i> Upcoming</a></li>
-                        <li><a href="#feed"><i class="fas fa-rss"></i> Feed</a></li>
+                                            <li><a href="#trending"><i class="fas fa-fire"></i> Trending</a></li>
+                    <li><a href="#ongoing"><i class="fas fa-compass"></i> Ongoing</a></li>
+                    <li><a href="#upcoming"><i class="fas fa-calendar"></i> Upcoming</a></li>
+                    <li><a href="#feed"><i class="fas fa-rss"></i> Feed</a></li>
+                    <li><a href="#profile" id="profileLink" style="display: none;"><i class="fas fa-user"></i> My Profile</a></li>
                     </ul>
                 </div>
                 
