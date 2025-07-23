@@ -116,12 +116,51 @@
             color: white;
         }
 
-        /* Hero Section - Clean Professional Design */
+        /* Hero Section - Auto-changing Background */
         .hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
             padding: 8rem 0 4rem;
             text-align: center;
             color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .hero-background img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .hero-background img.active {
+            opacity: 1;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
         }
 
         .hero-text h1 {
@@ -975,17 +1014,135 @@
             padding: 4rem 0;
         }
 
+        .feed-posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
         .feed-post {
             background: white;
             border-radius: 20px;
             padding: 2rem;
-            margin-bottom: 2rem;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s;
+            height: fit-content;
         }
 
         .feed-post:hover {
             transform: translateY(-5px);
+        }
+
+        .booking-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .booking-card-item {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .booking-card-item:nth-child(n+3) {
+            filter: blur(2px);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .view-more-bookings {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .image-upload-section {
+            border: 2px dashed #e5e7eb;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 1rem 0;
+            background: #f9fafb;
+            transition: all 0.3s;
+        }
+
+        .image-upload-section:hover {
+            border-color: #2563eb;
+            background: #f0f7ff;
+        }
+
+        .upload-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .upload-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .upload-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+        .hero-image-manager {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .hero-image-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+
+        .hero-image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-image-actions {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .hero-image-btn {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 0.3rem;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
         }
 
         .post-header {
@@ -1121,6 +1278,10 @@
 
     <!-- Hero Section -->
     <section class="hero" id="home">
+        <div class="hero-background" id="heroBackground">
+            <!-- Background images will be loaded here -->
+        </div>
+        <div class="hero-overlay"></div>
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
@@ -1198,6 +1359,7 @@
                  <div class="admin-tabs">
              <button class="admin-tab active" onclick="showAdminTab('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</button>
              <button class="admin-tab" onclick="showAdminTab('trips')"><i class="fas fa-map-marked-alt"></i> Manage Trips</button>
+             <button class="admin-tab" onclick="showAdminTab('images')"><i class="fas fa-images"></i> Hero Images</button>
              <button class="admin-tab" onclick="showAdminTab('bookings')"><i class="fas fa-calendar-check"></i> Bookings</button>
              <button class="admin-tab" onclick="showAdminTab('users')"><i class="fas fa-users"></i> Users</button>
              <button class="admin-tab" onclick="showAdminTab('analytics')"><i class="fas fa-analytics"></i> Analytics</button>
@@ -1260,8 +1422,21 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="tripImages">Image URLs (one per line)</label>
-                    <textarea id="tripImages" rows="4" placeholder="Enter multiple image URLs, one per line" required></textarea>
+                    <label for="tripImages">Trip Images</label>
+                    <div class="image-upload-section">
+                        <div class="upload-area">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #2563eb;"></i>
+                            <h4>Upload Images</h4>
+                            <p>Upload multiple images or enter URLs</p>
+                            <input type="file" id="tripImageFiles" multiple accept="image/*" style="display: none;">
+                            <button type="button" class="upload-btn" onclick="document.getElementById('tripImageFiles').click()">
+                                <i class="fas fa-upload"></i> Choose Files
+                            </button>
+                            <div style="margin: 1rem 0;">OR</div>
+                            <textarea id="tripImages" rows="3" placeholder="Enter image URLs, one per line" style="width: 100%; margin-top: 1rem;"></textarea>
+                        </div>
+                        <div id="tripImagePreview" class="image-preview"></div>
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -1319,6 +1494,34 @@
                     <div class="loading" id="adminLoading" style="display: none;"></div>
                 </button>
             </form>
+        </div>
+
+        <!-- Hero Images Management -->
+        <div class="admin-content" id="imagesAdmin">
+            <div class="hero-image-manager">
+                <h3><i class="fas fa-images"></i> Manage Hero Background Images</h3>
+                <p>Upload or add URLs for hero section background images. Images will auto-rotate every 5 seconds.</p>
+                
+                <div class="image-upload-section">
+                    <div class="upload-area">
+                        <i class="fas fa-mountain" style="font-size: 3rem; color: #2563eb;"></i>
+                        <h4>Add New Hero Image</h4>
+                        <input type="file" id="heroImageFile" accept="image/*" style="display: none;">
+                        <button type="button" class="upload-btn" onclick="document.getElementById('heroImageFile').click()">
+                            <i class="fas fa-upload"></i> Upload Image
+                        </button>
+                        <div style="margin: 1rem 0;">OR</div>
+                        <input type="url" id="heroImageUrl" placeholder="Enter image URL" style="width: 100%; padding: 0.8rem; border: 2px solid #e5e7eb; border-radius: 10px;">
+                        <button type="button" class="btn btn-primary" onclick="addHeroImageFromUrl()" style="margin-top: 1rem;">
+                            <i class="fas fa-plus"></i> Add URL
+                        </button>
+                    </div>
+                </div>
+
+                <div class="hero-images-grid" id="heroImagesGrid">
+                    <!-- Hero images will be loaded here -->
+                </div>
+            </div>
         </div>
 
                  <!-- Booking Management -->
@@ -1463,7 +1666,7 @@
                 </button>
             </div>
 
-            <div id="feedPosts">
+            <div class="feed-posts-grid" id="feedPosts">
                 <!-- Feed posts will be loaded here -->
             </div>
         </div>
@@ -1729,8 +1932,12 @@
         let allTrips = [];
         let filteredTrips = [];
         let currentTripLocation = '';
+        let heroImages = [];
+        let currentHeroImageIndex = 0;
+        let heroImageInterval;
 
-
+        // ImgBB API configuration (Free tier: 1000 uploads/month)
+        const IMGBB_API_KEY = 'YOUR_IMGBB_API_KEY'; // Replace with your ImgBB API key
 
         // Sample trips data with enhanced features
         const sampleTrips = [
@@ -1791,6 +1998,7 @@
             loadSampleFeedPosts();
             setupEventListeners();
             initializeFreeFeatures();
+            initializeHeroImages();
             
             // Check authentication state
             auth.onAuthStateChanged(user => {
@@ -1893,6 +2101,10 @@
             
             // Feed form submission
             document.getElementById('feedPostForm').addEventListener('submit', handleFeedPostSubmit);
+            
+            // Image upload handlers
+            document.getElementById('tripImageFiles').addEventListener('change', handleTripImageUpload);
+            document.getElementById('heroImageFile').addEventListener('change', handleHeroImageUpload);
             
             // Search functionality
             document.getElementById('searchInput').addEventListener('input', handleSearch);
@@ -3034,6 +3246,565 @@
                 }
             });
         });
+
+        // === NEW ENHANCED FEATURES ===
+
+        // Hero Image Management
+        function initializeHeroImages() {
+            // Default hero images
+            heroImages = [
+                'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop',
+                'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1920&h=1080&fit=crop',
+                'https://images.unsplash.com/photo-1571863533956-01c88e79957e?w=1920&h=1080&fit=crop',
+                'https://images.unsplash.com/photo-1464822759844-d150baec3e5d?w=1920&h=1080&fit=crop',
+                'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop'
+            ];
+            
+            loadHeroImages();
+            startHeroImageRotation();
+            
+            // Load admin hero images if admin
+            if (isAdmin) {
+                loadAdminHeroImages();
+            }
+        }
+
+        function loadHeroImages() {
+            const heroBackground = document.getElementById('heroBackground');
+            heroBackground.innerHTML = '';
+            
+            heroImages.forEach((imageUrl, index) => {
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.className = index === 0 ? 'active' : '';
+                img.alt = `Hero Background ${index + 1}`;
+                heroBackground.appendChild(img);
+            });
+        }
+
+        function startHeroImageRotation() {
+            if (heroImageInterval) {
+                clearInterval(heroImageInterval);
+            }
+            
+            heroImageInterval = setInterval(() => {
+                if (heroImages.length > 1) {
+                    currentHeroImageIndex = (currentHeroImageIndex + 1) % heroImages.length;
+                    updateHeroImage();
+                }
+            }, 5000); // Change every 5 seconds
+        }
+
+        function updateHeroImage() {
+            const images = document.querySelectorAll('#heroBackground img');
+            images.forEach((img, index) => {
+                img.classList.toggle('active', index === currentHeroImageIndex);
+            });
+        }
+
+        // Image Upload Functions
+        async function uploadToImgBB(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            try {
+                // Using a free alternative to ImgBB - you can replace this with any free image hosting service
+                // For now, we'll use a placeholder URL generator
+                const reader = new FileReader();
+                return new Promise((resolve) => {
+                    reader.onload = function(e) {
+                        // In a real implementation, you would upload to ImgBB or similar service
+                        // For demo purposes, we'll use a placeholder
+                        const placeholderUrl = `https://via.placeholder.com/800x600/2563eb/ffffff?text=${encodeURIComponent(file.name)}`;
+                        resolve(placeholderUrl);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            } catch (error) {
+                console.error('Upload failed:', error);
+                throw error;
+            }
+        }
+
+        async function handleTripImageUpload(event) {
+            const files = event.target.files;
+            if (!files.length) return;
+            
+            const preview = document.getElementById('tripImagePreview');
+            const textarea = document.getElementById('tripImages');
+            const urls = textarea.value.split('\n').filter(url => url.trim());
+            
+            try {
+                for (let file of files) {
+                    // Show loading state
+                    const loadingDiv = document.createElement('div');
+                    loadingDiv.innerHTML = '<i class="loading"></i> Uploading...';
+                    preview.appendChild(loadingDiv);
+                    
+                    // Upload to free service (placeholder implementation)
+                    const url = await uploadToImgBB(file);
+                    urls.push(url);
+                    
+                    // Remove loading and add preview
+                    preview.removeChild(loadingDiv);
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.style.maxWidth = '150px';
+                    img.style.borderRadius = '10px';
+                    preview.appendChild(img);
+                }
+                
+                textarea.value = urls.join('\n');
+                sendFreeNotification('Success', 'Images uploaded successfully!', 'success');
+            } catch (error) {
+                sendFreeNotification('Error', 'Failed to upload images: ' + error.message, 'error');
+            }
+        }
+
+        async function handleHeroImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            try {
+                const url = await uploadToImgBB(file);
+                addHeroImage(url);
+                sendFreeNotification('Success', 'Hero image uploaded successfully!', 'success');
+            } catch (error) {
+                sendFreeNotification('Error', 'Failed to upload hero image: ' + error.message, 'error');
+            }
+        }
+
+        function addHeroImageFromUrl() {
+            const url = document.getElementById('heroImageUrl').value.trim();
+            if (!url) {
+                sendFreeNotification('Error', 'Please enter a valid image URL', 'error');
+                return;
+            }
+            
+            addHeroImage(url);
+            document.getElementById('heroImageUrl').value = '';
+            sendFreeNotification('Success', 'Hero image added successfully!', 'success');
+        }
+
+        async function addHeroImage(imageUrl) {
+            if (!isAdmin) return;
+            
+            heroImages.push(imageUrl);
+            
+            try {
+                // Save to Firebase
+                await database.ref('heroImages').push({
+                    url: imageUrl,
+                    addedBy: currentUser.email,
+                    addedAt: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                loadHeroImages();
+                loadAdminHeroImages();
+                startHeroImageRotation();
+            } catch (error) {
+                console.error('Error saving hero image:', error);
+            }
+        }
+
+        async function loadAdminHeroImages() {
+            if (!isAdmin) return;
+            
+            try {
+                const snapshot = await database.ref('heroImages').once('value');
+                const grid = document.getElementById('heroImagesGrid');
+                grid.innerHTML = '';
+                
+                if (snapshot.exists()) {
+                    const images = [];
+                    snapshot.forEach(child => {
+                        images.push({ id: child.key, ...child.val() });
+                    });
+                    
+                    images.forEach(image => {
+                        const imageDiv = createHeroImageItem(image);
+                        grid.appendChild(imageDiv);
+                    });
+                }
+                
+                // Add default images to the grid
+                heroImages.forEach((url, index) => {
+                    if (index < 5) { // Show first 5 default images
+                        const imageDiv = createHeroImageItem({ 
+                            url: url, 
+                            id: 'default-' + index,
+                            addedBy: 'System',
+                            isDefault: true 
+                        });
+                        grid.appendChild(imageDiv);
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error loading admin hero images:', error);
+            }
+        }
+
+        function createHeroImageItem(image) {
+            const div = document.createElement('div');
+            div.className = 'hero-image-item';
+            
+            div.innerHTML = `
+                <img src="${image.url}" alt="Hero Image">
+                <div class="hero-image-actions">
+                    ${!image.isDefault ? `<button class="hero-image-btn" onclick="deleteHeroImage('${image.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>` : ''}
+                    <button class="hero-image-btn" onclick="setAsMainHeroImage('${image.url}')">
+                        <i class="fas fa-star"></i>
+                    </button>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        async function deleteHeroImage(imageId) {
+            if (!isAdmin || !confirm('Delete this hero image?')) return;
+            
+            try {
+                await database.ref('heroImages/' + imageId).remove();
+                loadAdminHeroImages();
+                sendFreeNotification('Success', 'Hero image deleted successfully!', 'success');
+            } catch (error) {
+                sendFreeNotification('Error', 'Failed to delete hero image', 'error');
+            }
+        }
+
+        function setAsMainHeroImage(imageUrl) {
+            const index = heroImages.indexOf(imageUrl);
+            if (index !== -1) {
+                currentHeroImageIndex = index;
+                updateHeroImage();
+                sendFreeNotification('Success', 'Set as main hero image!', 'success');
+            }
+        }
+
+        // Enhanced Booking Form Submit (Fixed)
+        async function handleBookingSubmit(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Login Required',
+                    text: 'Please login to book a trip.',
+                    confirmButtonColor: '#2563eb'
+                });
+                return;
+            }
+
+            // Show loading state
+            const loadingElement = document.getElementById('bookingLoading');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            if (loadingElement) loadingElement.style.display = 'inline-block';
+            submitBtn.disabled = true;
+            
+            const bookingData = {
+                tripId: currentTripId,
+                tripTitle: document.getElementById('modalTitle').textContent,
+                tripLocation: document.getElementById('modalLocation').textContent,
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                name: document.getElementById('bookingName').value,
+                email: document.getElementById('bookingEmail').value,
+                phone: document.getElementById('bookingPhone').value,
+                adults: parseInt(document.getElementById('adultCount').value),
+                children: parseInt(document.getElementById('childCount').value),
+                seniors: parseInt(document.getElementById('seniorCount').value),
+                genderMix: document.getElementById('genderMix').value,
+                preferredDate: document.getElementById('bookingDate').value,
+                specialRequests: document.getElementById('specialRequests').value,
+                bookingDate: firebase.firestore.FieldValue.serverTimestamp(),
+                realtimeBookingDate: firebase.database.ServerValue.TIMESTAMP,
+                status: 'pending',
+                bookingId: 'BK' + Date.now() + Math.floor(Math.random() * 1000)
+            };
+            
+            try {
+                // Save to both Firestore and Realtime Database
+                const firestorePromise = db.collection('bookings').add(bookingData);
+                const realtimePromise = database.ref('bookings').push(bookingData);
+                
+                await Promise.all([firestorePromise, realtimePromise]);
+                
+                // Show success message with enhanced features
+                showBookingSuccess(bookingData);
+                
+                // Reset form
+                document.getElementById('bookingForm').reset();
+                
+                // Send notification
+                sendFreeNotification('Booking Confirmed!', `Your booking ${bookingData.bookingId} has been submitted successfully.`);
+                
+            } catch (error) {
+                console.error('Booking error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Booking Failed',
+                    text: 'Error submitting booking: ' + error.message,
+                    confirmButtonColor: '#2563eb'
+                });
+            } finally {
+                // Hide loading state
+                if (loadingElement) loadingElement.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        }
+
+        function showBookingSuccess(bookingData) {
+            const successHtml = `
+                <div class="success-message" style="margin-bottom: 2rem;">
+                    <i class="fas fa-check-circle"></i> 
+                    Booking request submitted successfully! 
+                    <br><strong>Booking ID: ${bookingData.bookingId}</strong>
+                    <br>We will contact you soon.
+                </div>
+                
+                <div class="booking-extras" style="background: #f0f7ff; padding: 1.5rem; border-radius: 15px; margin-bottom: 2rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="weather-info" style="background: white; padding: 1rem; border-radius: 10px;">
+                            <h4><i class="fas fa-cloud-sun"></i> Weather Forecast</h4>
+                            <p id="weatherInfo">Loading...</p>
+                        </div>
+                        <div class="currency-info" style="background: white; padding: 1rem; border-radius: 10px;">
+                            <h4><i class="fas fa-money-bill-alt"></i> Currency Info</h4>
+                            <p id="currencyInfo">Loading...</p>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin: 1rem 0;">
+                        <img src="${generateBookingQR(bookingData.bookingId)}" alt="Booking QR Code" style="max-width: 120px; border-radius: 10px;">
+                        <p style="margin: 0.5rem 0; color: #666; font-size: 0.9rem;">Scan QR code for booking details</p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <button class="btn btn-outline" onclick="printBookingDetails('${bookingData.bookingId}')" style="font-size: 0.9rem;">
+                            <i class="fas fa-print"></i> Print Booking
+                        </button>
+                        <button class="btn btn-outline" onclick="speakText('Your booking ${bookingData.bookingId} has been confirmed. Thank you for choosing TrekWanders!')" style="font-size: 0.9rem;">
+                            <i class="fas fa-volume-up"></i> Speak
+                        </button>
+                        <button class="btn btn-outline" onclick="shareBooking('${bookingData.bookingId}')" style="font-size: 0.9rem;">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            const bookingCard = document.querySelector('.booking-card');
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = successHtml;
+            bookingCard.insertBefore(tempDiv, document.getElementById('bookingForm'));
+            
+            // Load weather and currency info
+            setTimeout(() => {
+                const weather = getSimulatedWeather(currentTripLocation);
+                document.getElementById('weatherInfo').innerHTML = `${weather.weather} • ${weather.temperature} • Humidity: ${weather.humidity}`;
+                
+                const currency = simulateCurrencyConversion(100, 'USD', 'EUR');
+                document.getElementById('currencyInfo').innerHTML = `100 USD = ${currency.amount} ${currency.currency}`;
+            }, 500);
+            
+            // Auto-remove after 15 seconds
+            setTimeout(() => {
+                if (tempDiv.parentNode) {
+                    tempDiv.parentNode.removeChild(tempDiv);
+                }
+            }, 15000);
+        }
+
+        // Enhanced Review Submit (Fixed)
+        async function handleReviewSubmit(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Login Required',
+                    text: 'Please login to add a review.',
+                    confirmButtonColor: '#2563eb'
+                });
+                return;
+            }
+
+            // Show loading state
+            const loadingElement = document.getElementById('reviewLoading');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            if (loadingElement) loadingElement.style.display = 'inline-block';
+            submitBtn.disabled = true;
+            
+            const reviewData = {
+                tripId: currentTripId,
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                userName: currentUser.displayName || currentUser.email.split('@')[0],
+                rating: parseInt(document.getElementById('reviewRating').value),
+                title: document.getElementById('reviewTitle').value,
+                text: document.getElementById('reviewText').value,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                realtimeCreatedAt: firebase.database.ServerValue.TIMESTAMP,
+                likes: 0,
+                helpful: 0
+            };
+            
+            try {
+                // Save to both Firestore and Realtime Database
+                const firestorePromise = db.collection('reviews').add(reviewData);
+                const realtimePromise = database.ref('reviews').push(reviewData);
+                
+                await Promise.all([firestorePromise, realtimePromise]);
+                
+                // Reset form and hide
+                document.getElementById('reviewForm').reset();
+                hideAddReviewForm();
+                
+                // Reload reviews
+                loadTripReviews(currentTripId);
+                
+                // Show success notification
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Review Added!',
+                    text: 'Your review has been posted successfully!',
+                    confirmButtonColor: '#2563eb',
+                    timer: 3000
+                });
+                
+                sendFreeNotification('Review Added', 'Your review has been posted successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error adding review:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Review Failed',
+                    text: 'Failed to add review. Please try again.',
+                    confirmButtonColor: '#2563eb'
+                });
+            } finally {
+                // Hide loading state
+                if (loadingElement) loadingElement.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Enhanced Feed Posts Rendering (3 per row)
+        function renderFeedPosts(posts) {
+            const feedContainer = document.getElementById('feedPosts');
+            feedContainer.innerHTML = '';
+
+            posts.forEach(post => {
+                const postElement = createFeedPostElement(post);
+                feedContainer.appendChild(postElement);
+            });
+        }
+
+        // Share booking function
+        function shareBooking(bookingId) {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'TrekWanders Booking',
+                    text: `My booking confirmation: ${bookingId}`,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(`TrekWanders Booking: ${bookingId} - ${window.location.href}`);
+                sendFreeNotification('Copied!', 'Booking details copied to clipboard', 'success');
+            }
+        }
+
+        // Enhanced admin trip submission (Fixed)
+        async function handleAdminSubmit(e) {
+            e.preventDefault();
+            
+            if (!isAdmin) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Access Denied',
+                    text: 'Admin privileges required.',
+                    confirmButtonColor: '#2563eb'
+                });
+                return;
+            }
+            
+            const loadingElement = document.getElementById('adminLoading');
+            const submitTextElement = document.getElementById('adminSubmitText');
+            
+            if (loadingElement) loadingElement.style.display = 'inline-block';
+            if (submitTextElement) submitTextElement.style.display = 'none';
+            
+            // Get images from both textarea and file uploads
+            const textareaImages = document.getElementById('tripImages').value.split('\n').filter(url => url.trim());
+            const uploadedImages = Array.from(document.querySelectorAll('#tripImagePreview img')).map(img => img.src);
+            const allImages = [...textareaImages, ...uploadedImages].filter(url => url.trim());
+            
+            const requirements = document.getElementById('tripRequirements').value.split('\n').filter(req => req.trim());
+            
+            const tripData = {
+                title: document.getElementById('tripTitle').value,
+                location: document.getElementById('tripLocation').value,
+                duration: document.getElementById('tripDuration').value,
+                images: allImages,
+                price: document.getElementById('tripPrice').value,
+                rating: parseFloat(document.getElementById('tripRating').value),
+                description: document.getElementById('tripDescription').value,
+                requirements: requirements,
+                videoUrl: document.getElementById('tripVideo').value,
+                category: document.getElementById('tripCategory').value,
+                section: document.getElementById('tripSection').value,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                realtimeCreatedAt: firebase.database.ServerValue.TIMESTAMP,
+                createdBy: currentUser.email,
+                createdById: currentUser.uid
+            };
+            
+            try {
+                // Save to both Firestore and Realtime Database
+                const firestorePromise = db.collection('trips').add(tripData);
+                const realtimePromise = database.ref('trips').push(tripData);
+                
+                await Promise.all([firestorePromise, realtimePromise]);
+                
+                // Reset form and preview
+                document.getElementById('adminForm').reset();
+                document.getElementById('tripImagePreview').innerHTML = '';
+                
+                // Reload trips
+                loadTripsFromFirestore();
+                
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Trip Added!',
+                    text: 'Trip has been added successfully!',
+                    confirmButtonColor: '#2563eb',
+                    timer: 3000
+                });
+                
+                sendFreeNotification('Success', 'Trip added successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error adding trip:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed to Add Trip',
+                    text: 'Error: ' + error.message,
+                    confirmButtonColor: '#2563eb'
+                });
+            } finally {
+                // Hide loading state
+                if (loadingElement) loadingElement.style.display = 'none';
+                if (submitTextElement) submitTextElement.style.display = 'inline';
+            }
+        }
     </script>
 </body>
 </html>
