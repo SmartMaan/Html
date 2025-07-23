@@ -118,7 +118,8 @@
 
         /* Hero Section */
         .hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.9), rgba(59, 130, 246, 0.8)), 
+                        url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1920&h=1080&fit=crop&crop=center') center/cover;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -133,8 +134,52 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="300" r="150" fill="url(%23a)"/><circle cx="400" cy="700" r="120" fill="url(%23a)"/></svg>') no-repeat center center;
-            background-size: cover;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        .hero-floating-cards {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .floating-card {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 1.5rem;
+            color: white;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-card:nth-child(1) {
+            top: 20%;
+            right: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-card:nth-child(2) {
+            top: 60%;
+            left: 5%;
+            animation-delay: 2s;
+        }
+
+        .floating-card:nth-child(3) {
+            top: 40%;
+            right: 5%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
         }
 
         .hero-content {
@@ -143,7 +188,29 @@
             gap: 3rem;
             align-items: center;
             position: relative;
-            z-index: 2;
+            z-index: 3;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
         }
 
         .hero-text h1 {
@@ -170,6 +237,47 @@
             object-fit: cover;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+            position: relative;
+            z-index: 3;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            color: white;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #60a5fa;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            opacity: 0.9;
+            line-height: 1.6;
         }
 
         /* Search Section */
@@ -931,6 +1039,96 @@
             margin: 1rem 0;
             text-align: center;
         }
+
+        /* Feed Section */
+        .feed-section {
+            background: #f8f9fa;
+            padding: 4rem 0;
+        }
+
+        .feed-post {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .feed-post:hover {
+            transform: translateY(-5px);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .post-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .post-info h4 {
+            margin: 0;
+            color: #333;
+        }
+
+        .post-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .post-content {
+            margin-bottom: 1.5rem;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin: 1rem 0;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .post-action:hover {
+            color: #2563eb;
+        }
+
+        .add-post-form {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -943,6 +1141,7 @@
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#destinations">Destinations</a></li>
+                <li><a href="#feed">Feed</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
@@ -965,17 +1164,70 @@
 
     <!-- Hero Section -->
     <section class="hero" id="home">
+        <div class="hero-floating-cards">
+            <div class="floating-card">
+                <div class="feature-icon">✈️</div>
+                <h4>1000+ Destinations</h4>
+                <p>Explore amazing places</p>
+            </div>
+            <div class="floating-card">
+                <div class="feature-icon">⭐</div>
+                <h4>50K+ Reviews</h4>
+                <p>Trusted by travelers</p>
+            </div>
+            <div class="floating-card">
+                <div class="feature-icon">🎯</div>
+                <h4>Best Prices</h4>
+                <p>Guaranteed lowest rates</p>
+            </div>
+        </div>
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
                     <h1>Experience The Magic Of Travel!</h1>
                     <p>Discover breathtaking destinations and create unforgettable memories with TrekWanders. Your adventure begins here.</p>
-                    <button class="btn btn-primary" onclick="document.getElementById('destinations').scrollIntoView()">
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">1000+</span>
+                            <span class="stat-label">Destinations</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">50K+</span>
+                            <span class="stat-label">Happy Travelers</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">15+</span>
+                            <span class="stat-label">Years Experience</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="document.getElementById('destinations').scrollIntoView()" style="margin-top: 2rem;">
                         <i class="fas fa-plane"></i> Book A Trip Now
                     </button>
                 </div>
                 <div class="hero-image">
-                    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'><rect fill='%23e0f2fe' width='800' height='600'/><circle fill='%23ffffff' cx='400' cy='150' r='80'/><path fill='%234fc3f7' d='M0 400 Q200 350 400 400 T800 400 L800 600 L0 600 Z'/><rect fill='%23ffffff' x='300' y='200' width='200' height='150' rx='10'/><path fill='%23757575' d='M350 250 L450 250 L400 200 Z'/><circle fill='%23ff5722' cx='320' cy='270' r='8'/><circle fill='%23ff5722' cx='380' cy='270' r='8'/><circle fill='%23ff5722' cx='440' cy='270' r='8'/></svg>" alt="Travel Airplane">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&h=400&fit=crop" alt="Beautiful Travel Destination">
+                </div>
+            </div>
+            <div class="hero-features">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-globe-americas"></i></div>
+                    <h3>Global Adventures</h3>
+                    <p>Explore destinations across all continents with our expertly crafted travel packages.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Safe & Secure</h3>
+                    <p>Travel with confidence knowing your safety is our top priority with 24/7 support.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-heart"></i></div>
+                    <h3>Memorable Experiences</h3>
+                    <p>Create lifelong memories with our carefully curated experiences and local guides.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-dollar-sign"></i></div>
+                    <h3>Best Value</h3>
+                    <p>Get the most value for your money with our competitive prices and exclusive deals.</p>
                 </div>
             </div>
         </div>
@@ -1172,6 +1424,49 @@
         </div>
     </section>
 
+    <!-- Feed Section -->
+    <section class="feed-section section" id="feed">
+        <div class="container">
+            <div class="section-title">
+                <h2>Travel Feed</h2>
+                <p>Latest updates, stories, and announcements from TrekWanders</p>
+            </div>
+
+            <!-- Add Post Form (Admin Only) -->
+            <div class="add-post-form" id="addPostForm">
+                <h3>Create New Post</h3>
+                <form id="feedPostForm">
+                    <div class="form-group">
+                        <label for="postTitle">Post Title</label>
+                        <input type="text" id="postTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postContent">Content</label>
+                        <textarea id="postContent" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="postImage">Image URL (optional)</label>
+                        <input type="url" id="postImage">
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="submit" class="btn btn-primary">Post</button>
+                        <button type="button" class="btn btn-outline" onclick="hideAddPostForm()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <button class="btn btn-primary" onclick="showAddPostForm()" id="addPostBtn" style="display: none;">
+                    <i class="fas fa-plus"></i> Add New Post
+                </button>
+            </div>
+
+            <div id="feedPosts">
+                <!-- Feed posts will be loaded here -->
+            </div>
+        </div>
+    </section>
+
     <!-- Trip Details Modal -->
     <div id="tripModal" class="modal">
         <div class="modal-content">
@@ -1300,6 +1595,7 @@
 
                             <button type="submit" class="btn btn-primary" style="width: 100%;">
                                 <i class="fas fa-ticket-alt"></i> Book Now
+                                <div class="loading" id="bookingLoading" style="display: none;"></div>
                             </button>
                         </form>
                     </div>
@@ -1335,7 +1631,10 @@
                                 <textarea id="reviewText" rows="4" required></textarea>
                             </div>
                             <div style="display: flex; gap: 1rem;">
-                                <button type="submit" class="btn btn-primary">Submit Review</button>
+                                <button type="submit" class="btn btn-primary">
+                                    Submit Review
+                                    <div class="loading" id="reviewLoading" style="display: none;"></div>
+                                </button>
                                 <button type="button" class="btn btn-outline" onclick="hideAddReviewForm()">Cancel</button>
                             </div>
                         </form>
@@ -1462,6 +1761,7 @@
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
             loadSampleTrips();
+            loadSampleFeedPosts();
             setupEventListeners();
             
             // Check authentication state
@@ -1484,11 +1784,15 @@
                     const userData = userDoc.data();
                     isAdmin = userData.role === 'admin';
                 } else {
-                    // Create user document with default role
+                    // Create user document with default role and complete data
                     await db.collection('users').doc(user.uid).set({
                         email: user.email,
+                        uid: user.uid,
                         role: 'user',
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        joinDate: firebase.firestore.FieldValue.serverTimestamp(),
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        displayName: user.displayName || user.email.split('@')[0],
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
                     });
                     isAdmin = false;
                 }
@@ -1496,6 +1800,7 @@
                 if (isAdmin) {
                     loadTripsFromFirestore();
                     loadUsersList();
+                    loadFeedPosts();
                 }
             } catch (error) {
                 console.error('Error checking user role:', error);
@@ -1544,6 +1849,9 @@
             
             // Review form submission
             document.getElementById('reviewForm').addEventListener('submit', handleReviewSubmit);
+            
+            // Feed form submission
+            document.getElementById('feedPostForm').addEventListener('submit', handleFeedPostSubmit);
             
             // Search functionality
             document.getElementById('searchInput').addEventListener('input', handleSearch);
@@ -1604,10 +1912,12 @@
                 roleElement.textContent = 'Admin';
                 roleElement.classList.add('admin');
                 document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('addPostBtn').style.display = 'inline-block';
                 document.querySelectorAll('.admin-actions').forEach(el => el.style.display = 'flex');
             } else {
                 roleElement.textContent = 'User';
                 roleElement.classList.remove('admin');
+                document.getElementById('addPostBtn').style.display = 'none';
             }
         }
 
@@ -1615,6 +1925,7 @@
             document.getElementById('authButtons').style.display = 'flex';
             document.getElementById('userInfo').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('addPostBtn').style.display = 'none';
             document.querySelectorAll('.admin-actions').forEach(el => el.style.display = 'none');
         }
 
@@ -1659,11 +1970,15 @@
                     await auth.signInWithEmailAndPassword(email, password);
                 } else {
                     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                    // Set default role as user
+                    // Set default role as user with complete data
                     await db.collection('users').doc(userCredential.user.uid).set({
                         email: email,
+                        uid: userCredential.user.uid,
                         role: 'user',
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        joinDate: firebase.firestore.FieldValue.serverTimestamp(),
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        displayName: email.split('@')[0],
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 }
                 closeAuthModal();
@@ -1886,6 +2201,11 @@
                 alert('Please login to book a trip.');
                 return;
             }
+
+            // Show loading state
+            document.getElementById('bookingLoading').style.display = 'inline-block';
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
             
             const bookingData = {
                 tripId: currentTripId,
@@ -1906,10 +2226,28 @@
             
             try {
                 await db.collection('bookings').add(bookingData);
-                alert('Booking request submitted successfully! We will contact you soon.');
+                
+                // Show success message
+                const successDiv = document.createElement('div');
+                successDiv.className = 'success-message';
+                successDiv.innerHTML = '<i class="fas fa-check-circle"></i> Booking request submitted successfully! We will contact you soon.';
+                document.querySelector('.booking-card').insertBefore(successDiv, document.getElementById('bookingForm'));
+                
                 document.getElementById('bookingForm').reset();
+                
+                // Remove success message after 5 seconds
+                setTimeout(() => {
+                    if (successDiv.parentNode) {
+                        successDiv.parentNode.removeChild(successDiv);
+                    }
+                }, 5000);
+                
             } catch (error) {
                 alert('Error submitting booking: ' + error.message);
+            } finally {
+                // Hide loading state
+                document.getElementById('bookingLoading').style.display = 'none';
+                submitBtn.disabled = false;
             }
         }
 
@@ -1920,6 +2258,11 @@
                 alert('Please login to add a review.');
                 return;
             }
+
+            // Show loading state
+            document.getElementById('reviewLoading').style.display = 'inline-block';
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
             
             const reviewData = {
                 tripId: currentTripId,
@@ -1937,9 +2280,26 @@
                 document.getElementById('reviewForm').reset();
                 hideAddReviewForm();
                 loadTripReviews(currentTripId);
-                alert('Review added successfully!');
+                
+                // Show success message
+                const successDiv = document.createElement('div');
+                successDiv.className = 'success-message';
+                successDiv.innerHTML = '<i class="fas fa-check-circle"></i> Review added successfully!';
+                document.querySelector('.reviews-section').insertBefore(successDiv, document.getElementById('reviewsList'));
+                
+                // Remove success message after 3 seconds
+                setTimeout(() => {
+                    if (successDiv.parentNode) {
+                        successDiv.parentNode.removeChild(successDiv);
+                    }
+                }, 3000);
+                
             } catch (error) {
                 alert('Error adding review: ' + error.message);
+            } finally {
+                // Hide loading state
+                document.getElementById('reviewLoading').style.display = 'none';
+                submitBtn.disabled = false;
             }
         }
 
@@ -2097,6 +2457,179 @@
         function editTrip(tripId) {
             if (!isAdmin) return;
             alert('Edit functionality would be implemented here. For now, please delete and recreate the trip.');
+        }
+
+        // Feed Functions
+        function loadSampleFeedPosts() {
+            const samplePosts = [
+                {
+                    id: 'sample-post-1',
+                    title: 'Welcome to TrekWanders!',
+                    content: 'We are excited to launch our new travel platform. Explore amazing destinations and create unforgettable memories with us. Our team is dedicated to providing you with the best travel experiences around the world.',
+                    imageUrl: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&h=300&fit=crop',
+                    authorName: 'TrekWanders Team',
+                    authorEmail: 'admin@trekwanders.com',
+                    createdAt: new Date(),
+                    likes: 24
+                },
+                {
+                    id: 'sample-post-2',
+                    title: 'New Himalayan Trek Routes Available',
+                    content: 'We have added exciting new trekking routes in the Himalayas. These carefully curated paths offer breathtaking views and authentic cultural experiences. Book your adventure today!',
+                    imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=300&fit=crop',
+                    authorName: 'Adventure Team',
+                    authorEmail: 'admin@trekwanders.com',
+                    createdAt: new Date(Date.now() - 86400000), // 1 day ago
+                    likes: 18
+                }
+            ];
+
+            renderFeedPosts(samplePosts);
+        }
+
+        function renderFeedPosts(posts) {
+            const feedContainer = document.getElementById('feedPosts');
+            feedContainer.innerHTML = '';
+
+            posts.forEach(post => {
+                const postElement = createFeedPostElement(post);
+                feedContainer.appendChild(postElement);
+            });
+        }
+
+        function createFeedPostElement(post) {
+            const postDiv = document.createElement('div');
+            postDiv.className = 'feed-post';
+            
+            const createdDate = post.createdAt instanceof Date ? post.createdAt : post.createdAt.toDate();
+            const timeAgo = getTimeAgo(createdDate);
+
+            postDiv.innerHTML = `
+                <div class="post-header">
+                    <div class="post-avatar">${post.authorName[0].toUpperCase()}</div>
+                    <div class="post-info">
+                        <h4>${post.authorName}</h4>
+                        <div class="post-date">${timeAgo}</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <h3>${post.title}</h3>
+                    <p>${post.content}</p>
+                    ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Post image" class="post-image">` : ''}
+                </div>
+                <div class="post-actions">
+                    <div class="post-action" onclick="likePost('${post.id}')">
+                        <i class="fas fa-heart"></i>
+                        <span>${post.likes || 0} Likes</span>
+                    </div>
+                    <div class="post-action">
+                        <i class="fas fa-comment"></i>
+                        <span>Comment</span>
+                    </div>
+                    <div class="post-action">
+                        <i class="fas fa-share"></i>
+                        <span>Share</span>
+                    </div>
+                </div>
+            `;
+
+            return postDiv;
+        }
+
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffInSeconds = Math.floor((now - date) / 1000);
+            
+            if (diffInSeconds < 60) return 'Just now';
+            if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+            if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+            if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+            
+            return date.toLocaleDateString();
+        }
+
+        function showAddPostForm() {
+            if (!isAdmin) {
+                alert('Only admins can create posts.');
+                return;
+            }
+            document.getElementById('addPostForm').style.display = 'block';
+            document.getElementById('addPostBtn').style.display = 'none';
+        }
+
+        function hideAddPostForm() {
+            document.getElementById('addPostForm').style.display = 'none';
+            document.getElementById('addPostBtn').style.display = 'inline-block';
+        }
+
+        async function handleFeedPostSubmit(e) {
+            e.preventDefault();
+            
+            if (!isAdmin) {
+                alert('Only admins can create posts.');
+                return;
+            }
+
+            const postData = {
+                title: document.getElementById('postTitle').value,
+                content: document.getElementById('postContent').value,
+                imageUrl: document.getElementById('postImage').value,
+                authorName: currentUser.displayName || currentUser.email.split('@')[0],
+                authorEmail: currentUser.email,
+                authorId: currentUser.uid,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                likes: 0
+            };
+
+            try {
+                await db.collection('feed').add(postData);
+                document.getElementById('feedPostForm').reset();
+                hideAddPostForm();
+                loadFeedPosts();
+                
+                // Show success message
+                const successDiv = document.createElement('div');
+                successDiv.className = 'success-message';
+                successDiv.innerHTML = '<i class="fas fa-check-circle"></i> Post created successfully!';
+                document.querySelector('.feed-section .container').insertBefore(successDiv, document.getElementById('feedPosts'));
+                
+                setTimeout(() => {
+                    if (successDiv.parentNode) {
+                        successDiv.parentNode.removeChild(successDiv);
+                    }
+                }, 3000);
+                
+            } catch (error) {
+                alert('Error creating post: ' + error.message);
+            }
+        }
+
+        async function loadFeedPosts() {
+            try {
+                const snapshot = await db.collection('feed').orderBy('createdAt', 'desc').get();
+                const posts = [];
+                
+                snapshot.forEach(doc => {
+                    posts.push({ id: doc.id, ...doc.data() });
+                });
+
+                renderFeedPosts(posts);
+            } catch (error) {
+                console.error('Error loading feed posts:', error);
+                // Load sample posts if Firebase fails
+                loadSampleFeedPosts();
+            }
+        }
+
+        function likePost(postId) {
+            if (!currentUser) {
+                alert('Please login to like posts.');
+                return;
+            }
+            
+            // This would implement the like functionality
+            // For now, just show a message
+            alert('Like functionality would be implemented here with Firebase updates.');
         }
 
         // Smooth scrolling for navigation
