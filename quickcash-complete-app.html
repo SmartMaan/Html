@@ -1114,10 +1114,16 @@
         // Test Realtime Database connection
         rtdb.ref('.info/connected').on('value', function(snapshot) {
             if (snapshot.val() === true) {
-                console.log('Connected to Firebase Realtime Database');
+                console.log('✅ Connected to Firebase Realtime Database');
+                console.log('🔍 Database URL:', firebaseConfig.databaseURL);
             } else {
-                console.log('Disconnected from Firebase Realtime Database');
+                console.log('❌ Disconnected from Firebase Realtime Database');
             }
+        });
+        
+        // Check database permissions
+        rtdb.ref('.info/serverTimeOffset').on('value', function(snapshot) {
+            console.log('✅ Firebase Realtime Database permissions OK - Server time offset:', snapshot.val());
         });
         
         let currentUser = null;
@@ -1304,20 +1310,62 @@
         // Test function to verify Realtime Database is working
         async function testRealtimeDatabase() {
             try {
-                console.log('Testing Realtime Database connection...');
-                await rtdb.ref('test').set({
+                console.log('🔍 Testing Realtime Database connection...');
+                const testData = {
                     message: 'Hello from QuickCash',
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
-                console.log('Test data written to Realtime Database successfully');
+                    timestamp: Date.now(),
+                    role: 'test-user'
+                };
+                
+                await rtdb.ref('test').set(testData);
+                console.log('✅ Test data written to Realtime Database successfully');
                 
                 // Read the test data back
                 const snapshot = await rtdb.ref('test').once('value');
-                console.log('Test data read from Realtime Database:', snapshot.val());
+                const readData = snapshot.val();
+                console.log('✅ Test data read from Realtime Database:', readData);
+                
+                if (readData && readData.role === 'test-user') {
+                    console.log('✅ Role test successful - RTDB can save and read roles properly');
+                } else {
+                    console.error('❌ Role test failed - RTDB role not saved/read properly');
+                }
+                
             } catch (error) {
-                console.error('Realtime Database test failed:', error);
+                console.error('❌ Realtime Database test failed:', error);
+                console.error('Error details:', error.message);
             }
         }
+        
+        // Manual test function you can call from browser console
+        window.testRTDB = testRealtimeDatabase;
+        
+        // Function to manually create a test user in RTDB
+        window.createTestUser = async function() {
+            try {
+                console.log('Creating test user in RTDB...');
+                const testUser = {
+                    uid: 'test-user-123',
+                    name: 'Test User',
+                    mobile: '9999999999',
+                    email: 'test@quickcash.com',
+                    role: 'user',
+                    createdAt: Date.now(),
+                    kycStatus: 'pending',
+                    kycVerified: false
+                };
+                
+                await rtdb.ref('loanusers/test-user-123').set(testUser);
+                console.log('✅ Test user created successfully');
+                
+                // Verify
+                const snapshot = await rtdb.ref('loanusers/test-user-123').once('value');
+                console.log('✅ Test user data:', snapshot.val());
+                
+            } catch (error) {
+                console.error('❌ Test user creation failed:', error);
+            }
+        };
         
         // Initialize App
         document.addEventListener('DOMContentLoaded', function() {
@@ -1478,17 +1526,24 @@
             if (!validateRegisterForm(name, mobile, password, confirmPassword)) return;
             
             try {
+                console.log('Starting registration process...');
+                
+                // Check if mobile already exists
                 const existingUser = await db.collection('loanuser').where('mobile', '==', mobile).get();
                 if (!existingUser.empty) {
                     throw new Error('Mobile number already registered');
                 }
                 
+                // Create Firebase Auth user
                 const authEmail = `${mobile}@quickcash.com`;
+                console.log('Creating Firebase Auth user with email:', authEmail);
                 const userCredential = await auth.createUserWithEmailAndPassword(authEmail, password);
                 const user = userCredential.user;
+                console.log('Firebase Auth user created successfully, UID:', user.uid);
                 
                 await user.updateProfile({ displayName: name });
                 
+                // Prepare user data for Firestore
                 const newUserData = {
                     uid: user.uid,
                     name: name,
@@ -1516,20 +1571,20 @@
                 // Save to Firestore
                 console.log('Saving user data to Firestore...');
                 await db.collection('loanuser').doc(user.uid).set(newUserData);
-                console.log('User data saved to Firestore successfully');
+                console.log('✅ User data saved to Firestore successfully');
                 
-                // Save to Firebase Realtime Database under 'loanusers'
-                console.log('Saving user data to Realtime Database...');
+                // Prepare user data for Realtime Database (with current timestamp)
+                const currentTime = Date.now();
                 const rtdbUserData = {
                     uid: user.uid,
                     name: name,
                     mobile: mobile,
                     email: email || authEmail,
                     password: password,
-                    role: 'user',
+                    role: 'user', // Explicitly set role as 'user'
                     authEmail: authEmail,
-                    createdAt: firebase.database.ServerValue.TIMESTAMP,
-                    lastLogin: firebase.database.ServerValue.TIMESTAMP,
+                    createdAt: currentTime,
+                    lastLogin: currentTime,
                     loginCount: 1,
                     totalLoans: 0,
                     totalBorrowed: 0,
@@ -1554,19 +1609,33 @@
                     aadharNumber: ''
                 };
                 
-                try {
-                    await rtdb.ref('loanusers/' + user.uid).set(rtdbUserData);
-                    console.log('User data saved to Realtime Database successfully');
-                } catch (rtdbError) {
-                    console.error('Error saving to Realtime Database:', rtdbError);
-                    // Continue with registration even if RTDB fails
+                // Save to Firebase Realtime Database
+                console.log('Attempting to save user data to Realtime Database...');
+                console.log('RTDB User Data:', rtdbUserData);
+                
+                const rtdbRef = rtdb.ref('loanusers/' + user.uid);
+                await rtdbRef.set(rtdbUserData);
+                console.log('✅ User data saved to Realtime Database successfully!');
+                
+                // Verify the data was saved by reading it back
+                console.log('Verifying data was saved to RTDB...');
+                const snapshot = await rtdbRef.once('value');
+                const savedData = snapshot.val();
+                console.log('✅ Data verification - RTDB contains:', savedData);
+                
+                if (savedData && savedData.role === 'user') {
+                    console.log('✅ Role verification successful - Role is set to:', savedData.role);
+                } else {
+                    console.error('❌ Role verification failed - Role not found or incorrect');
                 }
                 
                 userData = newUserData;
-                showMessage(`Welcome ${name}! Registration successful.`, 'success');
+                showMessage(`Welcome ${name}! Registration successful. User data saved to both databases.`, 'success');
                 
             } catch (error) {
-                console.error('Registration error:', error);
+                console.error('❌ Registration error:', error);
+                console.error('Error details:', error.message);
+                console.error('Error code:', error.code);
                 handleAuthError(error);
             }
         }
