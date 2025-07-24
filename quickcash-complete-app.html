@@ -1554,10 +1554,60 @@
                 errorDiv.style.display = 'none';
             }, 5000);
         }
-        
-
-        
-                 // Admin Panel Functions
+         // Manual Firebase check function
+         window.checkFirebaseUsers = async function() {
+             try {
+                 console.log('🔍 Checking Firebase Realtime Database for users...');
+                 
+                 // Check loanusers path
+                 const usersSnapshot = await rtdb.ref('loanusers').once('value');
+                 const users = usersSnapshot.val();
+                 
+                 if (users) {
+                     console.log('✅ Users found in Firebase Realtime Database:');
+                     console.log('📊 Total users:', Object.keys(users).length);
+                     
+                     Object.entries(users).forEach(([uid, userData]) => {
+                         console.log(`👤 User ${uid}:`, {
+                             name: userData.name,
+                             mobile: userData.mobile,
+                             email: userData.email,
+                             status: userData.status,
+                             role: userData.role
+                         });
+                     });
+                 } else {
+                     console.log('❌ No users found in Firebase Realtime Database');
+                 }
+                 
+                 // Also check Firestore
+                 console.log('🔍 Checking Firestore for users...');
+                 const firestoreUsers = await db.collection('loanuser').get();
+                 
+                 if (!firestoreUsers.empty) {
+                     console.log('✅ Users found in Firestore:');
+                     console.log('📊 Total users:', firestoreUsers.size);
+                     
+                     firestoreUsers.forEach(doc => {
+                         const data = doc.data();
+                         console.log(`👤 User ${doc.id}:`, {
+                             name: data.name,
+                             mobile: data.mobile,
+                             email: data.email,
+                             status: data.status,
+                             role: data.role
+                         });
+                     });
+                 } else {
+                     console.log('❌ No users found in Firestore');
+                 }
+                 
+             } catch (error) {
+                 console.error('❌ Error checking Firebase:', error);
+             }
+         };
+         
+                  // Admin Panel Functions
          function switchAdminTab(tabName) {
              // Hide all tabs
              document.querySelectorAll('.admin-tab-content').forEach(tab => {
@@ -1986,6 +2036,33 @@
                 const rtdbRef = rtdb.ref('loanusers/' + user.uid);
                 await rtdbRef.set(rtdbUserData);
                 console.log('✅ User data saved to loanusers database successfully!');
+                
+                // Verify data was saved by reading it back
+                console.log('🔍 Verifying data was saved to Firebase...');
+                const verifySnapshot = await rtdbRef.once('value');
+                const savedData = verifySnapshot.val();
+                
+                if (savedData) {
+                    console.log('✅ VERIFICATION SUCCESS - Data found in Firebase:');
+                    console.log('- Name in Firebase:', savedData.name);
+                    console.log('- Mobile in Firebase:', savedData.mobile);
+                    console.log('- Email in Firebase:', savedData.email);
+                    console.log('- Status in Firebase:', savedData.status);
+                    console.log('- Role in Firebase:', savedData.role);
+                } else {
+                    console.error('❌ VERIFICATION FAILED - No data found in Firebase!');
+                }
+                
+                // Also verify Firestore data
+                const firestoreDoc = await db.collection('loanuser').doc(user.uid).get();
+                if (firestoreDoc.exists) {
+                    console.log('✅ Firestore data also verified successfully');
+                    const fsData = firestoreDoc.data();
+                    console.log('- Firestore name:', fsData.name);
+                    console.log('- Firestore mobile:', fsData.mobile);
+                } else {
+                    console.error('❌ Firestore data verification failed');
+                }
                 
                 userData = newUserData;
                 
