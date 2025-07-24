@@ -1361,19 +1361,13 @@
         const db = firebase.firestore();
         const rtdb = firebase.database();
         
-        // Test Realtime Database connection
+        // Monitor Realtime Database connection
         rtdb.ref('.info/connected').on('value', function(snapshot) {
             if (snapshot.val() === true) {
                 console.log('✅ Connected to Firebase Realtime Database');
-                console.log('🔍 Database URL:', firebaseConfig.databaseURL);
             } else {
                 console.log('❌ Disconnected from Firebase Realtime Database');
             }
-        });
-        
-        // Check database permissions
-        rtdb.ref('.info/serverTimeOffset').on('value', function(snapshot) {
-            console.log('✅ Firebase Realtime Database permissions OK - Server time offset:', snapshot.val());
         });
         
         let currentUser = null;
@@ -1557,110 +1551,7 @@
             }, 5000);
         }
         
-        // Test function to verify Realtime Database is working
-        async function testRealtimeDatabase() {
-            try {
-                console.log('🔍 Testing Realtime Database connection...');
-                const testData = {
-                    message: 'Hello from QuickCash',
-                    timestamp: Date.now(),
-                    role: 'test-user'
-                };
-                
-                await rtdb.ref('test').set(testData);
-                console.log('✅ Test data written to Realtime Database successfully');
-                
-                // Read the test data back
-                const snapshot = await rtdb.ref('test').once('value');
-                const readData = snapshot.val();
-                console.log('✅ Test data read from Realtime Database:', readData);
-                
-                if (readData && readData.role === 'test-user') {
-                    console.log('✅ Role test successful - RTDB can save and read roles properly');
-                } else {
-                    console.error('❌ Role test failed - RTDB role not saved/read properly');
-                }
-                
-            } catch (error) {
-                console.error('❌ Realtime Database test failed:', error);
-                console.error('Error details:', error.message);
-            }
-        }
-        
-        // Manual test function you can call from browser console
-        window.testRTDB = testRealtimeDatabase;
-        
-        // Function to manually create a test user in RTDB
-        window.createTestUser = async function() {
-            try {
-                console.log('🔥 Creating test user in RTDB...');
-                const testUser = {
-                    uid: 'test-user-123',
-                    name: 'Test User',
-                    mobile: '9999999999',
-                    email: 'test@quickcash.com',
-                    role: 'user',
-                    createdAt: Date.now(),
-                    kycStatus: 'pending',
-                    kycVerified: false
-                };
-                
-                console.log('🔥 Test user data:', testUser);
-                console.log('🔥 Saving to path: loanusers/test-user-123');
-                
-                await rtdb.ref('loanusers/test-user-123').set(testUser);
-                console.log('✅ Test user created successfully');
-                
-                // Verify
-                const snapshot = await rtdb.ref('loanusers/test-user-123').once('value');
-                console.log('✅ Test user data read back:', snapshot.val());
-                
-                // Also check if it appears in all users
-                const allSnapshot = await rtdb.ref('loanusers').once('value');
-                console.log('✅ All users after test:', allSnapshot.val());
-                
-            } catch (error) {
-                console.error('❌ Test user creation failed:', error);
-                console.error('❌ Error details:', error.message);
-                console.error('❌ Error code:', error.code);
-            }
-        };
-        
-        // Function to manually check RTDB permissions
-        window.checkRTDBPermissions = async function() {
-            try {
-                console.log('🔥 Checking RTDB permissions...');
-                
-                // Check if we can read
-                const readTest = await rtdb.ref('test-read').once('value');
-                console.log('✅ Read permission test passed');
-                
-                // Check if we can write
-                await rtdb.ref('test-write').set({
-                    message: 'Write test',
-                    timestamp: Date.now()
-                });
-                console.log('✅ Write permission test passed');
-                
-                // Check if we can write to loanusers path
-                await rtdb.ref('loanusers/permission-test').set({
-                    message: 'Permission test for loanusers',
-                    timestamp: Date.now()
-                });
-                console.log('✅ loanusers path write permission test passed');
-                
-                // Clean up test data
-                await rtdb.ref('test-read').remove();
-                await rtdb.ref('test-write').remove();
-                await rtdb.ref('loanusers/permission-test').remove();
-                console.log('✅ Test cleanup completed');
-                
-            } catch (error) {
-                console.error('❌ Permission test failed:', error);
-                console.error('❌ Error details:', error.message);
-                console.error('❌ Error code:', error.code);
-            }
-        };
+
         
                  // Admin Panel Functions
          function switchAdminTab(tabName) {
@@ -1836,8 +1727,6 @@
          // Initialize App
          document.addEventListener('DOMContentLoaded', function() {
              initializeKYCForm();
-             testRealtimeDatabase(); // Test RTDB connection
-             checkRTDBPermissions(); // Check permissions
              showLoading();
             
             auth.onAuthStateChanged(user => {
@@ -2089,67 +1978,10 @@
                 console.log('🔥 RTDB Path: loanusers/' + user.uid);
                 console.log('🔥 RTDB User Data:', rtdbUserData);
                 
-                try {
-                    // Test basic write first
-                    console.log('🔥 Testing basic write to RTDB...');
-                    await rtdb.ref('test-connection').set({
-                        message: 'Connection test',
-                        timestamp: Date.now(),
-                        uid: user.uid
-                    });
-                    console.log('✅ Basic RTDB write test successful');
-                    
-                    // Now try to save user data
-                    console.log('🔥 Saving actual user data...');
-                    const rtdbRef = rtdb.ref('loanusers/' + user.uid);
-                    
-                    // Use set with callback for better error handling
-                    await new Promise((resolve, reject) => {
-                        rtdbRef.set(rtdbUserData, (error) => {
-                            if (error) {
-                                console.error('❌ RTDB Set Error:', error);
-                                console.error('❌ Error Code:', error.code);
-                                console.error('❌ Error Message:', error.message);
-                                reject(error);
-                            } else {
-                                console.log('✅ User data saved to Realtime Database successfully!');
-                                resolve();
-                            }
-                        });
-                    });
-                    
-                    // Verify the data was saved by reading it back
-                    console.log('🔥 Verifying data was saved to RTDB...');
-                    const snapshot = await rtdbRef.once('value');
-                    const savedData = snapshot.val();
-                    console.log('✅ Data verification - RTDB contains:', savedData);
-                    
-                    if (savedData && savedData.role === 'user') {
-                        console.log('✅ Role verification successful - Role is set to:', savedData.role);
-                    } else {
-                        console.error('❌ Role verification failed - Role not found or incorrect');
-                    }
-                    
-                    // Also try to read all users to verify structure
-                    console.log('🔥 Reading all loanusers to verify structure...');
-                    const allUsersSnapshot = await rtdb.ref('loanusers').once('value');
-                    const allUsers = allUsersSnapshot.val();
-                    console.log('✅ All users in RTDB:', allUsers);
-                    
-                } catch (rtdbError) {
-                    console.error('❌ RTDB Save Error:', rtdbError);
-                    console.error('❌ Error details:', rtdbError.message);
-                    console.error('❌ Error code:', rtdbError.code);
-                    
-                    // Try alternative method - direct reference
-                    console.log('🔥 Trying alternative save method...');
-                    try {
-                        await firebase.database().ref('loanusers/' + user.uid).set(rtdbUserData);
-                        console.log('✅ Alternative method successful!');
-                    } catch (altError) {
-                        console.error('❌ Alternative method also failed:', altError);
-                    }
-                }
+                // Save user data to loanusers database
+                const rtdbRef = rtdb.ref('loanusers/' + user.uid);
+                await rtdbRef.set(rtdbUserData);
+                console.log('✅ User data saved to loanusers database successfully!');
                 
                 userData = newUserData;
                 showMessage(`Welcome ${name}! Registration successful. User data saved to both databases.`, 'success');
