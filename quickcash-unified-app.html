@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickCash - Unified Loan Application</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary: #6c63ff;
+            --secondary: #4a42e8;
+            --accent: #ff6584;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --info: #17a2b8;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --gradient-bg: linear-gradient(135deg, #6e8efb, #a777e3);
+            --dashboard-bg: #f5f7fa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            transition: all 0.8s ease;
+            overflow-x: hidden;
+        }
+        
+        body.dashboard-mode {
+            background: var(--dashboard-bg);
+        }
+        
+        /* ============ LOADING SCREEN ============ */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: white;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .loading-subtitle {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        /* ============ LOGIN SYSTEM STYLES ============ */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            opacity: 1;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        
+        .login-container.slide-out {
+            opacity: 0;
+            transform: translateX(-100vw);
+        }
+        
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            animation: slideInUp 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .auth-header {
+            background: linear-gradient(135deg, #4a6cf7, #8a3ffb);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .auth-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .auth-logo i {
+            margin-right: 12px;
+            font-size: 2.2rem;
+        }
+        
+        .auth-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 18px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .auth-tab.active {
+            color: var(--primary);
+            background: white;
+            border-bottom-color: var(--primary);
+        }
+        
+        .auth-tab:hover:not(.active) {
+            background: #f1f3f4;
+            color: var(--secondary);
+        }
+        
+        .auth-content {
+            padding: 30px;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+            animation: fadeInContent 0.5s ease;
+        }
+        
+        @keyframes fadeInContent {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+        
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.1);
+            outline: none;
+            background: white;
+        }
+        
+        .form-input.valid {
+            border-color: var(--success);
+            background: #f0f9f0;
+        }
+        
+        .form-input.invalid {
+            border-color: var(--danger);
+            background: #fef2f2;
+        }
+        
+        .password-wrapper {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6b7280;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+        
+        .password-toggle:hover {
+            color: var(--primary);
+        }
+        
+        .field-error {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none;
+            font-weight: 500;
+        }
+        
+        .password-strength {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .strength-weak { color: var(--danger); }
+        .strength-medium { color: var(--warning); }
+        .strength-strong { color: var(--success); }
+        
+        .auth-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .auth-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 99, 255, 0.4);
+        }
+        
+        .auth-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .auth-button.loading {
+            color: transparent;
+        }
+        
+        .button-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        
+        .auth-button.loading .button-spinner {
+            display: block;
+        }
+        
+        .auth-messages {
+            margin-bottom: 20px;
+        }
+        
+        .message {
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            font-weight: 500;
+            display: none;
+            animation: slideInMessage 0.4s ease;
+        }
+        
+        @keyframes slideInMessage {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        
+        .message.success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+        
+        /* ============ DASHBOARD STYLES ============ */
+        .dashboard-container {
+            display: none;
+            min-height: 100vh;
+            padding-bottom: 80px;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        
+        .dashboard-container.slide-in {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(108, 99, 255, 0.3);
+        }
+        
+        .dashboard-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+        
+        .dashboard-logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .profile-button {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .profile-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .welcome-section {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px 20px;
+            margin: 20px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(108, 99, 255, 0.2);
+            animation: slideInUp 0.6s ease 0.2s both;
+        }
+        
+        .welcome-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .welcome-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .features-showcase {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            margin: 0 20px 20px;
+            border-radius: 16px;
+            overflow-x: auto;
+            gap: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            animation: slideInUp 0.6s ease 0.3s both;
+        }
+
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 18px 15px;
+            min-width: 130px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 28px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .feature-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .feature-desc {
+            font-size: 0.8rem;
+            color: #718096;
+        }
+
+        .trust-badge {
+            text-align: center;
+            padding: 12px 20px;
+            font-size: 0.85rem;
+            color: #666;
+            background: white;
+            margin: 0 20px 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            animation: slideInUp 0.6s ease 0.4s both;
+        }
+        
+        .loan-showcase {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            border-radius: 16px;
+            padding: 25px 20px;
+            margin: 0 20px 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(106, 17, 203, 0.3);
+            animation: slideInUp 0.6s ease 0.5s both;
+        }
+        
+        .loan-showcase-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .loan-showcase-amount {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 15px 0;
+        }
+        
+        .loan-details-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .loan-detail-item {
+            text-align: center;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+        
+        .detail-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        .primary-action-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            width: 100%;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .primary-action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .status-displays {
+            margin: 0 20px 25px;
+        }
+        
+        .status-card {
+            border-radius: 16px;
+            padding: 25px 20px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            margin-bottom: 20px;
+            display: none;
+            animation: slideInUp 0.6s ease both;
+        }
+        
+        .status-approved {
+            background: linear-gradient(135deg, var(--success), #8BC34A);
+        }
+        
+        .status-rejected {
+            background: linear-gradient(135deg, var(--danger), #e57373);
+        }
+        
+        .status-active {
+            background: linear-gradient(135deg, #2196F3, #03A9F4);
+        }
+        
+        .status-processing {
+            background: linear-gradient(135deg, var(--warning), #FF9800);
+        }
+        
+        .status-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+        
+        .status-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .status-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 15px 0;
+        }
+        
+        .processing-spinner {
+            font-size: 2.5rem;
+            animation: spin 2s linear infinite;
+            margin: 15px 0;
+        }
+        
+        .quick-actions-section {
+            margin: 25px 20px;
+            animation: slideInUp 0.6s ease 0.6s both;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .toggle-button {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-button:hover {
+            background: rgba(108, 99, 255, 0.1);
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        
+        .actions-grid.collapsed {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        
+        .action-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .action-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(108, 99, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+        
+        .action-label {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--dark);
+        }
+        
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            text-align: center;
+            color: #9ca3af;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 12px;
+            min-width: 60px;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+            background: rgba(108, 99, 255, 0.1);
+        }
+        
+        .nav-item:hover {
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .nav-item i {
+            font-size: 1.3rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item span {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        /* ============ NOTIFICATION SYSTEM ============ */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            transform: translateX(400px);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: linear-gradient(135deg, var(--success), #10b981);
+        }
+        
+        .notification.error {
+            background: linear-gradient(135deg, var(--danger), #ef4444);
+        }
+        
+        .notification.info {
+            background: linear-gradient(135deg, var(--info), #3b82f6);
+        }
+        
+        /* ============ RESPONSIVE DESIGN ============ */
+        @media (max-width: 768px) {
+            .auth-card {
+                margin: 10px;
+                border-radius: 20px;
+            }
+            
+            .auth-content {
+                padding: 25px 20px;
+            }
+            
+            .loan-details-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .features-showcase {
+                padding: 15px;
+                margin: 0 15px 15px;
+            }
+            
+            .feature-item {
+                min-width: 110px;
+                padding: 15px 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .auth-header {
+                padding: 25px 15px;
+            }
+            
+            .auth-logo {
+                font-size: 1.7rem;
+            }
+            
+            .loan-details-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ============ UTILITY CLASSES ============ */
+        .hidden {
+            display: none !important;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">QuickCash</div>
+        <div class="loading-subtitle">Initializing your loan application...</div>
+    </div>
+
+    <!-- Login System -->
+    <div class="login-container" id="loginContainer">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Quick Cash
+                </div>
+                <div class="auth-subtitle">Get instant loans with minimal documentation</div>
+            </div>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="switchAuthTab('login')">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </div>
+                <div class="auth-tab" onclick="switchAuthTab('register')">
+                    <i class="fas fa-user-plus"></i> Register
+                </div>
+            </div>
+            
+            <div class="auth-content">
+                <div class="auth-messages" id="authMessages"></div>
+                
+                <!-- Login Form -->
+                <form class="auth-form active" id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="loginMobile">
+                            <i class="fas fa-mobile-alt"></i> Mobile Number
+                        </label>
+                        <input type="text" id="loginMobile" class="form-input" placeholder="Enter your mobile number" maxlength="10" required>
+                        <div class="field-error" id="loginMobileError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="loginPassword">
+                            <i class="fas fa-lock"></i> Password
+                        </label>
+                        <div class="password-wrapper">
+                            <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                            <i class="password-toggle fas fa-eye" onclick="togglePasswordVisibility('loginPassword', this)"></i>
+                        </div>
+                        <div class="field-error" id="loginPasswordError"></div>
+                    </div>
+                    
+                    <button type="submit" class="auth-button" id="loginButton">
+                        <div class="button-spinner"></div>
+                        <span class="button-text">Sign In</span>
+                    </button>
+                </form>
+                
+                <!-- Register Form -->
+                <form class="auth-form" id="registerForm">
+                    <div class="form-group">
+                        <label class="form-label" for="registerName">
+                            <i class="fas fa-user"></i> Full Name
+                        </label>
+                        <input type="text" id="registerName" class="form-input" placeholder="Enter your full name" required>
+                        <div class="field-error" id="registerNameError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="registerMobile">
+                            <i class="fas fa-mobile-alt"></i> Mobile Number
+                        </label>
+                        <input type="text" id="registerMobile" class="form-input" placeholder="Enter your mobile number" maxlength="10" required>
+                        <div class="field-error" id="registerMobileError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="registerPassword">
+                            <i class="fas fa-lock"></i> Password (min 6 characters)
+                        </label>
+                        <div class="password-wrapper">
+                            <input type="password" id="registerPassword" class="form-input" placeholder="Create a password" required>
+                            <i class="password-toggle fas fa-eye" onclick="togglePasswordVisibility('registerPassword', this)"></i>
+                        </div>
+                        <div class="password-strength" id="passwordStrength"></div>
+                        <div class="field-error" id="registerPasswordError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="confirmPassword">
+                            <i class="fas fa-lock"></i> Confirm Password
+                        </label>
+                        <div class="password-wrapper">
+                            <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm your password" required>
+                            <i class="password-toggle fas fa-eye" onclick="togglePasswordVisibility('confirmPassword', this)"></i>
+                        </div>
+                        <div class="field-error" id="confirmPasswordError"></div>
+                    </div>
+                    
+                    <button type="submit" class="auth-button" id="registerButton">
+                        <div class="button-spinner"></div>
+                        <span class="button-text">Create Account</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard System -->
+    <div class="dashboard-container" id="dashboardContainer">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-logo">
+                <i class="fas fa-money-bill-wave"></i>
+                QuickCash
+            </div>
+            <button class="profile-button" onclick="showProfileSection()">
+                <i class="fas fa-user"></i>
+            </button>
+        </div>
+        
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="welcome-title" id="welcomeTitle">Welcome, User!</div>
+            <div class="welcome-subtitle">We're here to help you with your financial needs</div>
+        </div>
+        
+        <!-- Features Showcase -->
+        <div class="features-showcase">
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                <div class="feature-title">Fast Approval</div>
+                <div class="feature-desc">Within Minutes</div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-money-bill-wave"></i></div>
+                <div class="feature-title">Instant Loan</div>
+                <div class="feature-desc">Direct to Account</div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                <div class="feature-title">Secure Process</div>
+                <div class="feature-desc">256-bit Encryption</div>
+            </div>
+        </div>
+
+        <div class="trust-badge">
+            <i class="fab fa-amazon" style="color: #FF9900;"></i> 
+            Trusted by Amazon - Safe & Secure - 24/7 Support
+        </div>
+        
+        <!-- Status Displays -->
+        <div class="status-displays">
+            <!-- Approved Status -->
+            <div class="status-card status-approved" id="approvedStatus">
+                <div class="status-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="status-title">Loan Approved!</div>
+                <div class="status-amount" id="approvedAmount">₹50,000</div>
+                <p>Your loan has been approved and will be credited to your account within 24 hours.</p>
+                <button class="primary-action-btn" onclick="viewLoanDetails()">View Details</button>
+            </div>
+            
+            <!-- Active Loan Status -->
+            <div class="status-card status-active" id="activeStatus">
+                <div class="status-icon"><i class="fas fa-credit-card"></i></div>
+                <div class="status-title">Active Loan</div>
+                <div class="status-amount" id="activeAmount">₹25,000</div>
+                <div class="loan-details-grid">
+                    <div class="loan-detail-item">
+                        <div class="detail-value" id="remainingAmount">₹15,000</div>
+                        <div class="detail-label">Remaining</div>
+                    </div>
+                    <div class="loan-detail-item">
+                        <div class="detail-value" id="nextPayment">₹5,000</div>
+                        <div class="detail-label">Next Payment</div>
+                    </div>
+                    <div class="loan-detail-item">
+                        <div class="detail-value" id="dueDate">15 Days</div>
+                        <div class="detail-label">Due In</div>
+                    </div>
+                </div>
+                <button class="primary-action-btn" onclick="makePayment()">Make Payment</button>
+            </div>
+            
+            <!-- Processing Status -->
+            <div class="status-card status-processing" id="processingStatus">
+                <div class="processing-spinner"><i class="fas fa-spinner"></i></div>
+                <div class="status-title">Application Processing</div>
+                <div class="status-amount" id="processingAmount">₹30,000</div>
+                <p>Your loan application is being reviewed. You'll receive an update within 24 hours.</p>
+            </div>
+            
+            <!-- Rejected Status -->
+            <div class="status-card status-rejected" id="rejectedStatus">
+                <div class="status-icon"><i class="fas fa-times-circle"></i></div>
+                <div class="status-title">Application Declined</div>
+                <div class="status-amount" id="rejectedAmount">₹40,000</div>
+                <p>Unfortunately, we couldn't approve your loan application at this time. Please try again later.</p>
+                <button class="primary-action-btn" onclick="applyForLoan()">Apply Again</button>
+            </div>
+        </div>
+        
+        <!-- Default Loan Showcase -->
+        <div class="loan-showcase" id="defaultLoanShowcase">
+            <div class="loan-showcase-title">Fast And Secure Loan</div>
+            <div class="loan-showcase-amount">₹500,000</div>
+            <div class="loan-details-grid">
+                <div class="loan-detail-item">
+                    <div class="detail-value">3 Years</div>
+                    <div class="detail-label">Tenure</div>
+                </div>
+                <div class="loan-detail-item">
+                    <div class="detail-value">0.05%</div>
+                    <div class="detail-label">Interest Rate</div>
+                </div>
+                <div class="loan-detail-item">
+                    <div class="detail-value">Fast</div>
+                    <div class="detail-label">Approval</div>
+                </div>
+            </div>
+            <button class="primary-action-btn" onclick="applyForLoan()">Apply Now</button>
+        </div>
+        
+        <!-- Quick Actions Section -->
+        <div class="quick-actions-section">
+            <div class="section-header">
+                <div class="section-title">Quick Actions</div>
+                <button class="toggle-button" id="toggleActions">
+                    <span id="toggleText">Hide</span>
+                    <i class="fas fa-chevron-up" id="toggleIcon"></i>
+                </button>
+            </div>
+            
+            <div class="actions-grid" id="actionsGrid">
+                <button class="action-item" onclick="showProfileSection()">
+                    <div class="action-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="action-label">Profile</div>
+                </button>
+                
+                <button class="action-item" onclick="showMyLoans()">
+                    <div class="action-icon">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <div class="action-label">My Loans</div>
+                </button>
+                
+                <button class="action-item" onclick="showHistory()">
+                    <div class="action-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div class="action-label">History</div>
+                </button>
+                
+                <button class="action-item" onclick="showRepayment()">
+                    <div class="action-icon">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                    <div class="action-label">Repay</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-navigation">
+            <div class="nav-item active" onclick="showHomeSection()">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </div>
+            <div class="nav-item" onclick="showRepayment()">
+                <i class="fas fa-hand-holding-usd"></i>
+                <span>Repay</span>
+            </div>
+            <div class="nav-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAL5e-5eQfgf1nI6hWTnhwLFgK0Cp89aa0",
+            authDomain: "aviator-pr01.firebaseapp.com",
+            databaseURL: "https://aviator-pr01-default-rtdb.firebaseio.com",
+            projectId: "aviator-pr01",
+            storageBucket: "aviator-pr01.firebasestorage.app",
+            messagingSenderId: "290788041297",
+            appId: "1:290788041297:web:168f99d1532997fb778e70",
+            measurementId: "G-ENCBTT4BL8"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const rtdb = firebase.database();
+        
+        // Global State
+        let currentUser = null;
+        let userLoans = [];
+        let isAuthenticating = false;
+        
+        // DOM Elements
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loginContainer = document.getElementById('loginContainer');
+        const dashboardContainer = document.getElementById('dashboardContainer');
+        
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+        });
+        
+        function initializeApp() {
+            // Show loading screen
+            showLoading();
+            
+            // Check authentication state
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    loadUserData().then(() => {
+                        showDashboard();
+                        hideLoading();
+                    });
+                } else {
+                    showLoginSystem();
+                    hideLoading();
+                }
+            });
+        }
+        
+        function setupEventListeners() {
+            // Auth form submissions
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('registerForm').addEventListener('submit', handleRegister);
+            
+            // Real-time validation
+            document.getElementById('registerPassword').addEventListener('input', checkPasswordStrength);
+            document.getElementById('confirmPassword').addEventListener('input', checkPasswordMatch);
+            document.getElementById('registerMobile').addEventListener('input', validateMobileInput);
+            document.getElementById('loginMobile').addEventListener('input', validateMobileInput);
+            
+            // Quick actions toggle
+            document.getElementById('toggleActions').addEventListener('click', toggleQuickActions);
+        }
+        
+        function showLoading() {
+            loadingOverlay.classList.remove('hidden');
+        }
+        
+        function hideLoading() {
+            setTimeout(() => {
+                loadingOverlay.classList.add('hidden');
+            }, 1500);
+        }
+        
+        function showLoginSystem() {
+            loginContainer.style.display = 'flex';
+            dashboardContainer.style.display = 'none';
+            document.body.classList.remove('dashboard-mode');
+            document.body.style.background = 'var(--gradient-bg)';
+        }
+        
+        function showDashboard() {
+            // Smooth transition
+            loginContainer.classList.add('slide-out');
+            
+            setTimeout(() => {
+                loginContainer.style.display = 'none';
+                dashboardContainer.style.display = 'block';
+                document.body.classList.add('dashboard-mode');
+                
+                setTimeout(() => {
+                    dashboardContainer.classList.add('slide-in');
+                }, 50);
+            }, 400);
+        }
+        
+        function switchAuthTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Update forms
+            document.querySelectorAll('.auth-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            document.getElementById(tabName + 'Form').classList.add('active');
+            
+            // Clear messages and errors
+            clearAuthMessages();
+            clearFieldErrors();
+        }
+        
+        function togglePasswordVisibility(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            if (isAuthenticating) return;
+            
+            const mobile = document.getElementById('loginMobile').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            // Validate inputs
+            if (!validateLoginForm(mobile, password)) {
+                return;
+            }
+            
+            isAuthenticating = true;
+            const loginButton = document.getElementById('loginButton');
+            setButtonLoading(loginButton, true);
+            
+            try {
+                // Convert mobile to email format for Firebase Auth
+                const email = `${mobile}@quickcash.com`;
+                
+                // Sign in with Firebase Auth
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Get user data from Firestore
+                const userDoc = await db.collection('loanuser').doc(user.uid).get();
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    showAuthMessage(`Welcome back, ${userData.name}!`, 'success');
+                    
+                    // Update last login time
+                    await db.collection('loanuser').doc(user.uid).update({
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                        loginCount: firebase.firestore.FieldValue.increment(1)
+                    });
+                    
+                    // Dashboard will show automatically via onAuthStateChanged
+                } else {
+                    throw new Error('User data not found');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                handleAuthError(error);
+            } finally {
+                isAuthenticating = false;
+                setButtonLoading(loginButton, false);
+            }
+        }
+        
+        async function handleRegister(e) {
+            e.preventDefault();
+            
+            if (isAuthenticating) return;
+            
+            const name = document.getElementById('registerName').value.trim();
+            const mobile = document.getElementById('registerMobile').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Validate inputs
+            if (!validateRegisterForm(name, mobile, password, confirmPassword)) {
+                return;
+            }
+            
+            isAuthenticating = true;
+            const registerButton = document.getElementById('registerButton');
+            setButtonLoading(registerButton, true);
+            
+            try {
+                // Check if mobile number already exists
+                const existingUser = await db.collection('loanuser')
+                    .where('mobile', '==', mobile)
+                    .get();
+                
+                if (!existingUser.empty) {
+                    throw new Error('Mobile number already registered');
+                }
+                
+                // Convert mobile to email format for Firebase Auth
+                const email = `${mobile}@quickcash.com`;
+                
+                // Create user with Firebase Auth
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Update user profile
+                await user.updateProfile({
+                    displayName: name
+                });
+                
+                // Create user document in Firestore with 'loanuser' collection
+                const userData = {
+                    uid: user.uid,
+                    name: name,
+                    mobile: mobile,
+                    email: email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                    loginCount: 1,
+                    totalLoans: 0,
+                    totalBorrowed: 0,
+                    activeLoans: 0,
+                    creditScore: 750,
+                    isVerified: false,
+                    status: 'active'
+                };
+                
+                await db.collection('loanuser').doc(user.uid).set(userData);
+                
+                // Also store in Realtime Database for quick access
+                await rtdb.ref('loanusers/' + user.uid).set({
+                    name: name,
+                    mobile: mobile,
+                    email: email,
+                    createdAt: firebase.database.ServerValue.TIMESTAMP,
+                    status: 'active'
+                });
+                
+                showAuthMessage(`Welcome ${name}! Registration successful.`, 'success');
+                
+                // Dashboard will show automatically via onAuthStateChanged
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                handleAuthError(error);
+            } finally {
+                isAuthenticating = false;
+                setButtonLoading(registerButton, false);
+            }
+        }
+        
+        async function loadUserData() {
+            try {
+                // Update welcome message
+                const displayName = currentUser.displayName || 'User';
+                document.getElementById('welcomeTitle').textContent = `Welcome, ${displayName}!`;
+                
+                // Load user document from Firestore
+                const userDoc = await db.collection('loanuser').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    // Store user data for later use
+                    window.userData = userData;
+                }
+                
+                // Load user loans
+                await loadUserLoans();
+                
+                // Update loan status display
+                updateLoanStatusDisplay();
+                
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showNotification('Error loading user data', 'error');
+            }
+        }
+        
+        async function loadUserLoans() {
+            try {
+                const loansSnapshot = await db.collection('loans')
+                    .where('userId', '==', currentUser.uid)
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                
+                userLoans = [];
+                loansSnapshot.forEach(doc => {
+                    userLoans.push({ id: doc.id, ...doc.data() });
+                });
+                
+            } catch (error) {
+                console.error('Error loading loans:', error);
+            }
+        }
+        
+        function updateLoanStatusDisplay() {
+            // Hide all status cards first
+            document.querySelectorAll('.status-card').forEach(card => {
+                card.style.display = 'none';
+            });
+            
+            // Show default loan showcase if no loans
+            if (userLoans.length === 0) {
+                document.getElementById('defaultLoanShowcase').style.display = 'block';
+                return;
+            }
+            
+            // Get the most recent loan
+            const recentLoan = userLoans[0];
+            
+            // Hide default showcase
+            document.getElementById('defaultLoanShowcase').style.display = 'none';
+            
+            switch (recentLoan.status) {
+                case 'approved':
+                    document.getElementById('approvedStatus').style.display = 'block';
+                    document.getElementById('approvedAmount').textContent = `₹${recentLoan.amount.toLocaleString()}`;
+                    break;
+                case 'active':
+                    document.getElementById('activeStatus').style.display = 'block';
+                    document.getElementById('activeAmount').textContent = `₹${recentLoan.amount.toLocaleString()}`;
+                    document.getElementById('remainingAmount').textContent = `₹${(recentLoan.remainingAmount || recentLoan.amount).toLocaleString()}`;
+                    break;
+                case 'pending':
+                    document.getElementById('processingStatus').style.display = 'block';
+                    document.getElementById('processingAmount').textContent = `₹${recentLoan.amount.toLocaleString()}`;
+                    break;
+                case 'rejected':
+                    document.getElementById('rejectedStatus').style.display = 'block';
+                    document.getElementById('rejectedAmount').textContent = `₹${recentLoan.amount.toLocaleString()}`;
+                    break;
+                default:
+                    document.getElementById('defaultLoanShowcase').style.display = 'block';
+            }
+        }
+        
+        async function applyForLoan() {
+            const amount = prompt('Enter loan amount (₹):');
+            if (!amount || isNaN(amount) || amount <= 0) {
+                showNotification('Please enter a valid amount', 'error');
+                return;
+            }
+            
+            try {
+                const loanData = {
+                    userId: currentUser.uid,
+                    amount: parseInt(amount),
+                    tenure: 12, // Default 12 months
+                    interestRate: 12, // Default 12% annual
+                    status: 'pending',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                await db.collection('loans').add(loanData);
+                
+                // Update user stats
+                await db.collection('loanuser').doc(currentUser.uid).update({
+                    totalLoans: firebase.firestore.FieldValue.increment(1),
+                    totalBorrowed: firebase.firestore.FieldValue.increment(parseInt(amount))
+                });
+                
+                showNotification('Loan application submitted successfully!', 'success');
+                
+                // Reload user data
+                await loadUserData();
+                
+            } catch (error) {
+                console.error('Error applying for loan:', error);
+                showNotification('Error submitting loan application', 'error');
+            }
+        }
+        
+        function toggleQuickActions() {
+            const actionsGrid = document.getElementById('actionsGrid');
+            const toggleText = document.getElementById('toggleText');
+            const toggleIcon = document.getElementById('toggleIcon');
+            const isCollapsed = actionsGrid.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                actionsGrid.classList.remove('collapsed');
+                toggleText.textContent = 'Hide';
+                toggleIcon.classList.remove('fa-chevron-down');
+                toggleIcon.classList.add('fa-chevron-up');
+            } else {
+                actionsGrid.classList.add('collapsed');
+                toggleText.textContent = 'Show';
+                toggleIcon.classList.remove('fa-chevron-up');
+                toggleIcon.classList.add('fa-chevron-down');
+            }
+        }
+        
+        // Validation Functions
+        function validateLoginForm(mobile, password) {
+            let isValid = true;
+            
+            clearFieldErrors();
+            
+            if (!mobile) {
+                showFieldError('loginMobileError', 'Mobile number is required');
+                document.getElementById('loginMobile').classList.add('invalid');
+                isValid = false;
+            } else if (!isValidMobile(mobile)) {
+                showFieldError('loginMobileError', 'Please enter a valid 10-digit mobile number');
+                document.getElementById('loginMobile').classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('loginMobile').classList.remove('invalid');
+                document.getElementById('loginMobile').classList.add('valid');
+            }
+            
+            if (!password) {
+                showFieldError('loginPasswordError', 'Password is required');
+                document.getElementById('loginPassword').classList.add('invalid');
+                isValid = false;
+            } else if (password.length < 6) {
+                showFieldError('loginPasswordError', 'Password must be at least 6 characters');
+                document.getElementById('loginPassword').classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('loginPassword').classList.remove('invalid');
+                document.getElementById('loginPassword').classList.add('valid');
+            }
+            
+            return isValid;
+        }
+        
+        function validateRegisterForm(name, mobile, password, confirmPassword) {
+            let isValid = true;
+            
+            clearFieldErrors();
+            
+            if (!name) {
+                showFieldError('registerNameError', 'Full name is required');
+                document.getElementById('registerName').classList.add('invalid');
+                isValid = false;
+            } else if (name.length < 2) {
+                showFieldError('registerNameError', 'Name must be at least 2 characters');
+                document.getElementById('registerName').classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('registerName').classList.remove('invalid');
+                document.getElementById('registerName').classList.add('valid');
+            }
+            
+            if (!mobile) {
+                showFieldError('registerMobileError', 'Mobile number is required');
+                document.getElementById('registerMobile').classList.add('invalid');
+                isValid = false;
+            } else if (!isValidMobile(mobile)) {
+                showFieldError('registerMobileError', 'Please enter a valid 10-digit mobile number');
+                document.getElementById('registerMobile').classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('registerMobile').classList.remove('invalid');
+                document.getElementById('registerMobile').classList.add('valid');
+            }
+            
+            if (!password) {
+                showFieldError('registerPasswordError', 'Password is required');
+                document.getElementById('registerPassword').classList.add('invalid');
+                isValid = false;
+            } else if (password.length < 6) {
+                showFieldError('registerPasswordError', 'Password must be at least 6 characters');
+                document.getElementById('registerPassword').classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('registerPassword').classList.remove('invalid');
+                document.getElementById('registerPassword').classList.add('valid');
+            }
+            
+            if (!confirmPassword) {
+                showFieldError('confirmPasswordError', 'Please confirm your password');
+                document.getElementById('confirmPassword').classList.add('invalid');
+                isValid = false;
+            } else if (password !== confirmPassword) {
+                showFieldError('confirmPasswordError', 'Passwords do not match');
+                document.getElementById('confirmPassword').classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('confirmPassword').classList.remove('invalid');
+                document.getElementById('confirmPassword').classList.add('valid');
+            }
+            
+            return isValid;
+        }
+        
+        function isValidMobile(mobile) {
+            const mobileRegex = /^[6-9]\d{9}$/;
+            return mobileRegex.test(mobile);
+        }
+        
+        function validateMobileInput(e) {
+            const input = e.target;
+            let value = input.value.replace(/\D/g, '');
+            
+            if (value.length > 10) {
+                value = value.substring(0, 10);
+            }
+            
+            input.value = value;
+            
+            if (value.length === 10 && isValidMobile(value)) {
+                input.classList.remove('invalid');
+                input.classList.add('valid');
+            } else if (value.length > 0) {
+                input.classList.remove('valid');
+                input.classList.add('invalid');
+            } else {
+                input.classList.remove('invalid', 'valid');
+            }
+        }
+        
+        function checkPasswordStrength() {
+            const password = document.getElementById('registerPassword').value;
+            const strengthDiv = document.getElementById('passwordStrength');
+            
+            if (password.length === 0) {
+                strengthDiv.innerHTML = '';
+                return;
+            }
+            
+            let strength = 0;
+            
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+            
+            let strengthText = '';
+            let strengthClass = '';
+            
+            if (strength <= 2) {
+                strengthText = 'Weak';
+                strengthClass = 'strength-weak';
+            } else if (strength <= 3) {
+                strengthText = 'Medium';
+                strengthClass = 'strength-medium';
+            } else {
+                strengthText = 'Strong';
+                strengthClass = 'strength-strong';
+            }
+            
+            strengthDiv.innerHTML = `<span class="${strengthClass}">Password strength: ${strengthText}</span>`;
+        }
+        
+        function checkPasswordMatch() {
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const confirmInput = document.getElementById('confirmPassword');
+            
+            if (confirmPassword.length === 0) {
+                confirmInput.classList.remove('invalid', 'valid');
+                return;
+            }
+            
+            if (password === confirmPassword) {
+                confirmInput.classList.remove('invalid');
+                confirmInput.classList.add('valid');
+            } else {
+                confirmInput.classList.remove('valid');
+                confirmInput.classList.add('invalid');
+            }
+        }
+        
+        // UI Helper Functions
+        function setButtonLoading(button, loading) {
+            if (loading) {
+                button.disabled = true;
+                button.classList.add('loading');
+            } else {
+                button.disabled = false;
+                button.classList.remove('loading');
+            }
+        }
+        
+        function showAuthMessage(message, type) {
+            const messagesContainer = document.getElementById('authMessages');
+            messagesContainer.innerHTML = `<div class="message ${type}">${message}</div>`;
+            messagesContainer.querySelector('.message').style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    clearAuthMessages();
+                }, 3000);
+            }
+        }
+        
+        function clearAuthMessages() {
+            document.getElementById('authMessages').innerHTML = '';
+        }
+        
+        function showFieldError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+        
+        function clearFieldErrors() {
+            document.querySelectorAll('.field-error').forEach(error => {
+                error.style.display = 'none';
+            });
+            
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.classList.remove('invalid', 'valid');
+            });
+        }
+        
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            document.querySelectorAll('.notification').forEach(notification => {
+                notification.remove();
+            });
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Hide notification after 4 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 400);
+            }, 4000);
+        }
+        
+        function handleAuthError(error) {
+            let message = 'An error occurred. Please try again.';
+            
+            switch (error.code) {
+                case 'auth/user-not-found':
+                    message = 'No account found with this mobile number.';
+                    break;
+                case 'auth/wrong-password':
+                    message = 'Incorrect password. Please try again.';
+                    break;
+                case 'auth/email-already-in-use':
+                    message = 'Mobile number already registered. Please login instead.';
+                    break;
+                case 'auth/weak-password':
+                    message = 'Password should be at least 6 characters.';
+                    break;
+                case 'auth/network-request-failed':
+                    message = 'Network error. Please check your connection.';
+                    break;
+                case 'auth/too-many-requests':
+                    message = 'Too many attempts. Please try again later.';
+                    break;
+                default:
+                    if (error.message.includes('Mobile number already registered')) {
+                        message = 'Mobile number already registered. Please login instead.';
+                    } else if (error.message.includes('User data not found')) {
+                        message = 'Account data not found. Please contact support.';
+                    } else {
+                        message = error.message || message;
+                    }
+            }
+            
+            showAuthMessage(message, 'error');
+        }
+        
+        // Dashboard Functions
+        function showHomeSection() {
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            showNotification('You are already on the home page', 'info');
+        }
+        
+        function showProfileSection() {
+            showNotification('Profile section coming soon!', 'info');
+        }
+        
+        function showMyLoans() {
+            showNotification('My Loans section coming soon!', 'info');
+        }
+        
+        function showHistory() {
+            showNotification('History section coming soon!', 'info');
+        }
+        
+        function showRepayment() {
+            showNotification('Repayment section coming soon!', 'info');
+        }
+        
+        function viewLoanDetails() {
+            showNotification('Loan details will be available soon!', 'info');
+        }
+        
+        function makePayment() {
+            const amount = prompt('Enter payment amount (₹):');
+            if (!amount || isNaN(amount) || amount <= 0) {
+                showNotification('Please enter a valid amount', 'error');
+                return;
+            }
+            
+            showNotification('Payment gateway integration coming soon!', 'info');
+        }
+        
+        async function logout() {
+            try {
+                await auth.signOut();
+                showNotification('Logged out successfully', 'success');
+                // Auth state will change and show login automatically
+            } catch (error) {
+                showNotification('Error logging out', 'error');
+            }
+        }
+    </script>
+</body>
+</html>

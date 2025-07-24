@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoanHub - Your Trusted Lending Partner</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 80px;
+            padding: 2rem 0;
+        }
+
+        .section {
+            background: white;
+            margin: 2rem 0;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-content {
+            padding: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
+            color: white;
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        /* Loan Calculator */
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .range-input {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .range-value {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        .calculation-result {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .result-item {
+            margin: 1rem 0;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .result-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Application Form */
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 2rem;
+            margin: 1rem 0;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .form-section h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        /* Dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .dashboard-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+        }
+
+        .dashboard-card h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .calculator-grid,
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <i class="fas fa-university"></i> LoanHub
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#" onclick="showSection('home')">Home</a></li>
+                    <li><a href="#" onclick="showSection('calculator')">Calculator</a></li>
+                    <li><a href="#" onclick="showSection('apply')">Apply</a></li>
+                    <li><a href="#" onclick="showSection('dashboard')">Dashboard</a></li>
+                    <li><a href="#" onclick="showSection('contact')">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="hero fade-in">
+                <h1>Get Your Dream Loan Today</h1>
+                <p>Fast approval, competitive rates, and flexible terms tailored for you</p>
+                <div class="cta-buttons">
+                    <button class="btn btn-primary" onclick="showSection('calculator')">
+                        <i class="fas fa-calculator"></i> Calculate Loan
+                    </button>
+                    <button class="btn btn-secondary" onclick="showSection('apply')">
+                        <i class="fas fa-file-alt"></i> Apply Now
+                    </button>
+                </div>
+            </div>
+
+            <div class="section-content">
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-bolt"></i> Quick Approval</h3>
+                        <p>Get approved in as little as 24 hours with our streamlined process.</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-percent"></i> Competitive Rates</h3>
+                        <p>Enjoy some of the lowest interest rates in the market starting from 3.5% APR.</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-shield-alt"></i> Secure & Trusted</h3>
+                        <p>Your data is protected with bank-level security and encryption.</p>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-headset"></i> 24/7 Support</h3>
+                        <p>Our dedicated team is here to help you every step of the way.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Calculator Section -->
+        <section id="calculator" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-calculator"></i> Loan Calculator</h2>
+                <p>Calculate your monthly payments and total interest</p>
+            </div>
+            <div class="section-content">
+                <div class="calculator-grid">
+                    <div>
+                        <div class="form-group">
+                            <label for="loanAmount">Loan Amount ($)</label>
+                            <input type="range" id="loanAmount" class="range-input" min="1000" max="500000" value="50000" oninput="updateCalculator()">
+                            <div class="range-value" id="loanAmountValue">$50,000</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="interestRate">Interest Rate (%)</label>
+                            <input type="range" id="interestRate" class="range-input" min="1" max="30" step="0.1" value="5.5" oninput="updateCalculator()">
+                            <div class="range-value" id="interestRateValue">5.5%</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="loanTerm">Loan Term (years)</label>
+                            <input type="range" id="loanTerm" class="range-input" min="1" max="30" value="15" oninput="updateCalculator()">
+                            <div class="range-value" id="loanTermValue">15 years</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="loanType">Loan Type</label>
+                            <select id="loanType" onchange="updateCalculator()">
+                                <option value="personal">Personal Loan</option>
+                                <option value="home">Home Loan</option>
+                                <option value="auto">Auto Loan</option>
+                                <option value="business">Business Loan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="calculation-result">
+                        <div class="result-item">
+                            <span class="result-value" id="monthlyPayment">$362.07</span>
+                            <span class="result-label">Monthly Payment</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-value" id="totalInterest">$15,172.60</span>
+                            <span class="result-label">Total Interest</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-value" id="totalAmount">$65,172.60</span>
+                            <span class="result-label">Total Amount</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="showSection('apply')" style="margin-top: 1rem;">
+                            Apply for This Loan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Application Section -->
+        <section id="apply" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-file-alt"></i> Loan Application</h2>
+                <p>Complete your loan application in minutes</p>
+            </div>
+            <div class="section-content">
+                <form class="form-container" id="loanApplication">
+                    <div class="form-section">
+                        <h3>Personal Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name *</label>
+                                <input type="text" id="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name *</label>
+                                <input type="text" id="lastName" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number *</label>
+                                <input type="tel" id="phone" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address *</label>
+                            <input type="text" id="address" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="city">City *</label>
+                                <input type="text" id="city" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="zipCode">ZIP Code *</label>
+                                <input type="text" id="zipCode" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Employment Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="employer">Employer *</label>
+                                <input type="text" id="employer" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="jobTitle">Job Title *</label>
+                                <input type="text" id="jobTitle" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="annualIncome">Annual Income ($) *</label>
+                                <input type="number" id="annualIncome" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="employmentLength">Employment Length (years) *</label>
+                                <input type="number" id="employmentLength" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Loan Details</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="requestedAmount">Requested Amount ($) *</label>
+                                <input type="number" id="requestedAmount" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="loanPurpose">Loan Purpose *</label>
+                                <select id="loanPurpose" required>
+                                    <option value="">Select Purpose</option>
+                                    <option value="home">Home Purchase</option>
+                                    <option value="auto">Auto Purchase</option>
+                                    <option value="personal">Personal Use</option>
+                                    <option value="business">Business</option>
+                                    <option value="education">Education</option>
+                                    <option value="debt">Debt Consolidation</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="terms" required>
+                        <label for="terms">I agree to the Terms and Conditions *</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="privacy" required>
+                        <label for="privacy">I agree to the Privacy Policy *</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 2rem;">
+                        <i class="fas fa-paper-plane"></i> Submit Application
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-tachometer-alt"></i> Loan Dashboard</h2>
+                <p>Track your loan applications and manage your account</p>
+            </div>
+            <div class="section-content">
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>Application Status</h3>
+                        <div style="margin: 1rem 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin: 0.5rem 0;">
+                                <span>Home Loan - $250,000</span>
+                                <span class="status-badge status-approved">Approved</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin: 0.5rem 0;">
+                                <span>Auto Loan - $35,000</span>
+                                <span class="status-badge status-pending">Under Review</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin: 0.5rem 0;">
+                                <span>Personal Loan - $15,000</span>
+                                <span class="status-badge status-rejected">Declined</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <h3>Active Loans</h3>
+                        <div style="margin: 1rem 0;">
+                            <div style="margin: 1rem 0;">
+                                <strong>Home Loan</strong><br>
+                                <small>Balance: $234,567 | Monthly: $1,245</small>
+                            </div>
+                            <div style="margin: 1rem 0;">
+                                <strong>Auto Loan</strong><br>
+                                <small>Balance: $18,432 | Monthly: $387</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <h3>Payment History</h3>
+                        <div style="margin: 1rem 0;">
+                            <div style="display: flex; justify-content: space-between; margin: 0.5rem 0;">
+                                <span>Dec 2024</span>
+                                <span style="color: #28a745;">✓ Paid</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin: 0.5rem 0;">
+                                <span>Nov 2024</span>
+                                <span style="color: #28a745;">✓ Paid</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin: 0.5rem 0;">
+                                <span>Oct 2024</span>
+                                <span style="color: #28a745;">✓ Paid</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <h3>Quick Actions</h3>
+                        <div style="margin: 1rem 0;">
+                            <button class="btn btn-primary" style="width: 100%; margin: 0.5rem 0;" onclick="showSection('apply')">
+                                New Application
+                            </button>
+                            <button class="btn btn-secondary" style="width: 100%; margin: 0.5rem 0;">
+                                Make Payment
+                            </button>
+                            <button class="btn btn-secondary" style="width: 100%; margin: 0.5rem 0;">
+                                Download Statement
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-envelope"></i> Contact Us</h2>
+                <p>Get in touch with our loan specialists</p>
+            </div>
+            <div class="section-content">
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-phone"></i> Phone Support</h3>
+                        <p><strong>1-800-LOAN-HUB</strong></p>
+                        <p>Monday - Friday: 8AM - 8PM EST<br>
+                        Saturday: 9AM - 5PM EST</p>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-envelope"></i> Email Support</h3>
+                        <p><strong>support@loanhub.com</strong></p>
+                        <p>We typically respond within 2-4 hours during business days.</p>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-map-marker-alt"></i> Office Location</h3>
+                        <p><strong>LoanHub Headquarters</strong><br>
+                        123 Financial District<br>
+                        New York, NY 10004</p>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-comments"></i> Live Chat</h3>
+                        <p>Chat with our specialists in real-time</p>
+                        <button class="btn btn-primary" style="margin-top: 1rem;">
+                            Start Live Chat
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                targetSection.classList.add('fade-in');
+            }
+
+            // Update URL hash
+            window.location.hash = sectionId;
+        }
+
+        // Loan Calculator
+        function updateCalculator() {
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            const interestRate = parseFloat(document.getElementById('interestRate').value) / 100 / 12;
+            const loanTerm = parseInt(document.getElementById('loanTerm').value) * 12;
+
+            // Update display values
+            document.getElementById('loanAmountValue').textContent = '$' + loanAmount.toLocaleString();
+            document.getElementById('interestRateValue').textContent = (parseFloat(document.getElementById('interestRate').value)).toFixed(1) + '%';
+            document.getElementById('loanTermValue').textContent = document.getElementById('loanTerm').value + ' years';
+
+            // Calculate monthly payment
+            let monthlyPayment = 0;
+            if (interestRate > 0) {
+                monthlyPayment = loanAmount * (interestRate * Math.pow(1 + interestRate, loanTerm)) / (Math.pow(1 + interestRate, loanTerm) - 1);
+            } else {
+                monthlyPayment = loanAmount / loanTerm;
+            }
+
+            const totalAmount = monthlyPayment * loanTerm;
+            const totalInterest = totalAmount - loanAmount;
+
+            // Update results
+            document.getElementById('monthlyPayment').textContent = '$' + monthlyPayment.toFixed(2);
+            document.getElementById('totalInterest').textContent = '$' + totalInterest.toFixed(2);
+            document.getElementById('totalAmount').textContent = '$' + totalAmount.toFixed(2);
+
+            // Update form with calculated values
+            document.getElementById('requestedAmount').value = loanAmount;
+        }
+
+        // Form Submission
+        document.getElementById('loanApplication').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="loading"></span> Processing...';
+            submitBtn.disabled = true;
+
+            // Simulate API call
+            setTimeout(() => {
+                // Store application data
+                const applicationData = {
+                    id: 'APP' + Date.now(),
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    address: document.getElementById('address').value,
+                    city: document.getElementById('city').value,
+                    zipCode: document.getElementById('zipCode').value,
+                    employer: document.getElementById('employer').value,
+                    jobTitle: document.getElementById('jobTitle').value,
+                    annualIncome: document.getElementById('annualIncome').value,
+                    employmentLength: document.getElementById('employmentLength').value,
+                    requestedAmount: document.getElementById('requestedAmount').value,
+                    loanPurpose: document.getElementById('loanPurpose').value,
+                    status: 'pending',
+                    submittedDate: new Date().toISOString()
+                };
+
+                // Save to localStorage
+                let applications = JSON.parse(localStorage.getItem('loanApplications') || '[]');
+                applications.push(applicationData);
+                localStorage.setItem('loanApplications', JSON.stringify(applications));
+
+                // Show success message
+                alert('Application submitted successfully! Your application ID is: ' + applicationData.id);
+                
+                // Reset form
+                e.target.reset();
+                
+                // Navigate to dashboard
+                showSection('dashboard');
+                
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 2000);
+        });
+
+        // Initialize calculator on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCalculator();
+            
+            // Handle URL hash navigation
+            if (window.location.hash) {
+                const section = window.location.hash.substring(1);
+                showSection(section);
+            }
+        });
+
+        // Handle browser back/forward buttons
+        window.addEventListener('hashchange', function() {
+            if (window.location.hash) {
+                const section = window.location.hash.substring(1);
+                showSection(section);
+            } else {
+                showSection('home');
+            }
+        });
+
+        // Mobile menu toggle (if needed)
+        function toggleMobileMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        // Form validation helpers
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function validatePhone(phone) {
+            const re = /^\(\d{3}\) \d{3}-\d{4}$/;
+            return re.test(phone) || /^\d{10}$/.test(phone.replace(/\D/g, ''));
+        }
+
+        // Auto-format phone number
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 6) {
+                value = `(${value.slice(0,3)}) ${value.slice(3,6)}-${value.slice(6,10)}`;
+            } else if (value.length >= 3) {
+                value = `(${value.slice(0,3)}) ${value.slice(3)}`;
+            }
+            e.target.value = value;
+        });
+
+        // Real-time form validation
+        document.querySelectorAll('input[required]').forEach(input => {
+            input.addEventListener('blur', function() {
+                if (!this.value.trim()) {
+                    this.style.borderColor = '#dc3545';
+                } else {
+                    this.style.borderColor = '#28a745';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
