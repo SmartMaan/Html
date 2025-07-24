@@ -116,9 +116,8 @@
             color: white;
         }
 
-        /* Hero Section - Travel Agency Theme */
+        /* Hero Section - Travel Agency Theme with Blurred Background */
         .hero {
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.9) 0%, rgba(59, 130, 246, 0.9) 100%);
             padding: 8rem 0 4rem;
             text-align: center;
             color: white;
@@ -154,7 +153,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.9) 0%, rgba(59, 130, 246, 0.9) 100%);
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(2px);
             z-index: 1;
         }
 
@@ -326,7 +326,13 @@
         .stat-number {
             font-size: 2rem;
             font-weight: 700;
-            display: block;
+            display: inline-block;
+        }
+
+        .stat-plus {
+            font-size: 2rem;
+            font-weight: 700;
+            display: inline-block;
         }
 
         .stat-label {
@@ -1683,6 +1689,213 @@
             gap: 0.5rem;
         }
 
+        /* Hero Stats Management */
+        .stats-management-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-management-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+
+        .stat-management-card h4 {
+            color: #374151;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .stats-preview {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f1f5f9;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .preview-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .preview-stat {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-stat i {
+            font-size: 1.5rem;
+            color: #2563eb;
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-stat span {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.3rem;
+        }
+
+        .preview-stat label {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        /* Enhanced Users Management */
+        .users-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .users-search {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .users-search input {
+            padding: 0.8rem 3rem 0.8rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            background: white;
+            font-size: 0.9rem;
+            width: 300px;
+            transition: all 0.3s;
+        }
+
+        .users-search i {
+            position: absolute;
+            right: 1rem;
+            color: #9ca3af;
+        }
+
+        .users-filters select {
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            font-size: 0.9rem;
+        }
+
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .user-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            border: 1px solid #e5e7eb;
+        }
+
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .user-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .user-info h4 {
+            margin: 0 0 0.3rem 0;
+            color: #1f2937;
+        }
+
+        .user-email {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .user-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .btn-view-bookings {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .btn-view-bookings:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-toggle-role {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .btn-toggle-role:hover {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-verify-user {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .btn-verify-user:hover {
+            background: #d97706;
+            color: white;
+        }
+
         /* Load More Button */
         .load-more-btn {
             margin: 2rem auto;
@@ -2297,21 +2510,28 @@
                         <div class="stat-item">
                             <i class="fas fa-map-marked-alt"></i>
                             <div>
-                                <span class="stat-number">1000+</span>
+                                <span class="stat-number" data-target="1000" id="destinationsCount">0</span><span class="stat-plus">+</span>
                                 <span class="stat-label">Destinations</span>
                             </div>
                         </div>
                         <div class="stat-item">
                             <i class="fas fa-users"></i>
                             <div>
-                                <span class="stat-number">50K+</span>
-                                <span class="stat-label">Happy Travelers</span>
+                                <span class="stat-number" data-target="50000" id="customersCount">0</span><span class="stat-plus">+</span>
+                                <span class="stat-label">Happy Customers</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-plane"></i>
+                            <div>
+                                <span class="stat-number" data-target="2000" id="travelsCount">0</span><span class="stat-plus">+</span>
+                                <span class="stat-label">Successful Travels</span>
                             </div>
                         </div>
                         <div class="stat-item">
                             <i class="fas fa-star"></i>
                             <div>
-                                <span class="stat-number">4.9</span>
+                                <span class="stat-number" data-target="4.9" id="ratingCount">0</span>
                                 <span class="stat-label">Average Rating</span>
                             </div>
                         </div>
@@ -2406,6 +2626,7 @@
              <button class="admin-tab active" onclick="showAdminTab('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</button>
              <button class="admin-tab" onclick="showAdminTab('trips')"><i class="fas fa-map-marked-alt"></i> Manage Trips</button>
                              <button class="admin-tab" onclick="showAdminTab('images')"><i class="fas fa-images"></i> Hero Images</button>
+                <button class="admin-tab" onclick="showAdminTab('stats')"><i class="fas fa-chart-bar"></i> Hero Stats</button>
                 <button class="admin-tab" onclick="showAdminTab('footer')"><i class="fas fa-edit"></i> Footer</button>
              <button class="admin-tab" onclick="showAdminTab('bookings')"><i class="fas fa-calendar-check"></i> Bookings</button>
              <button class="admin-tab" onclick="showAdminTab('users')"><i class="fas fa-users"></i> Users</button>
@@ -2603,6 +2824,86 @@
             </div>
         </div>
 
+        <!-- Hero Stats Management -->
+        <div class="admin-content" id="statsAdmin">
+            <div class="stats-manager">
+                <h3><i class="fas fa-chart-bar"></i> Hero Statistics Management</h3>
+                <p>Manage the statistics displayed on the hero section of your website</p>
+                
+                <div class="stats-management-grid">
+                    <div class="stat-management-card">
+                        <h4><i class="fas fa-map-marked-alt"></i> Destinations</h4>
+                        <div class="form-group">
+                            <label>Number of Destinations</label>
+                            <input type="number" id="adminDestinations" placeholder="1000" min="0">
+                        </div>
+                        <button class="btn btn-primary" onclick="updateHeroStat('destinations')">
+                            <i class="fas fa-save"></i> Update
+                        </button>
+                    </div>
+                    
+                    <div class="stat-management-card">
+                        <h4><i class="fas fa-users"></i> Happy Customers</h4>
+                        <div class="form-group">
+                            <label>Number of Happy Customers</label>
+                            <input type="number" id="adminCustomers" placeholder="50000" min="0">
+                        </div>
+                        <button class="btn btn-primary" onclick="updateHeroStat('customers')">
+                            <i class="fas fa-save"></i> Update
+                        </button>
+                    </div>
+                    
+                    <div class="stat-management-card">
+                        <h4><i class="fas fa-plane"></i> Successful Travels</h4>
+                        <div class="form-group">
+                            <label>Number of Successful Travels</label>
+                            <input type="number" id="adminTravels" placeholder="2000" min="0">
+                        </div>
+                        <button class="btn btn-primary" onclick="updateHeroStat('travels')">
+                            <i class="fas fa-save"></i> Update
+                        </button>
+                    </div>
+                    
+                    <div class="stat-management-card">
+                        <h4><i class="fas fa-star"></i> Average Rating</h4>
+                        <div class="form-group">
+                            <label>Average Rating (0.0 - 5.0)</label>
+                            <input type="number" id="adminRating" placeholder="4.9" min="0" max="5" step="0.1">
+                        </div>
+                        <button class="btn btn-primary" onclick="updateHeroStat('rating')">
+                            <i class="fas fa-save"></i> Update
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="stats-preview">
+                    <h4><i class="fas fa-eye"></i> Live Preview</h4>
+                    <div class="preview-stats">
+                        <div class="preview-stat">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <span id="previewDestinations">1000+</span>
+                            <label>Destinations</label>
+                        </div>
+                        <div class="preview-stat">
+                            <i class="fas fa-users"></i>
+                            <span id="previewCustomers">50000+</span>
+                            <label>Happy Customers</label>
+                        </div>
+                        <div class="preview-stat">
+                            <i class="fas fa-plane"></i>
+                            <span id="previewTravels">2000+</span>
+                            <label>Successful Travels</label>
+                        </div>
+                        <div class="preview-stat">
+                            <i class="fas fa-star"></i>
+                            <span id="previewRating">4.9</span>
+                            <label>Average Rating</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Footer & Social Media Management -->
         <div class="admin-content" id="footerAdmin">
             <div class="footer-manager">
@@ -2699,11 +3000,29 @@
              </div>
          </div>
 
-        <!-- User Role Management -->
+        <!-- Enhanced User Management -->
         <div class="admin-content" id="usersAdmin">
-            <h3>User Role Management</h3>
-            <div id="usersList">
-                <!-- Users will be loaded here -->
+            <div class="users-manager">
+                <h3><i class="fas fa-users-cog"></i> User Management</h3>
+                <p>Manage users, roles, and view their booking history</p>
+                
+                <div class="users-controls">
+                    <div class="users-search">
+                        <input type="text" id="usersSearchInput" placeholder="Search users..." class="search-input">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="users-filters">
+                        <select id="userRoleFilter" onchange="filterUsers()">
+                            <option value="all">All Roles</option>
+                            <option value="admin">Admins</option>
+                            <option value="user">Users</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="users-grid" id="usersList">
+                    <!-- Users will be loaded here -->
+                </div>
             </div>
         </div>
     </div>
@@ -3413,6 +3732,8 @@
             initializeFreeFeatures();
             initializeHeroImages();
             loadFooterSettings();
+            initializeCounterAnimation();
+            loadHeroStats();
             
             // Check authentication state
             auth.onAuthStateChanged(user => {
@@ -3714,6 +4035,8 @@
             // Load specific data for tabs
             if (tabName === 'footer') {
                 loadFooterSettings();
+            } else if (tabName === 'stats') {
+                loadHeroStats();
             }
         }
 
@@ -4135,7 +4458,7 @@
             }
         }
 
-        async function loadUsersList() {
+        async function loadUsers() {
             if (!isAdmin) return;
             
             try {
@@ -4143,32 +4466,239 @@
                 const usersList = document.getElementById('usersList');
                 usersList.innerHTML = '';
                 
+                const usersArray = [];
                 users.forEach(doc => {
-                    const user = doc.data();
-                    const userCard = createUserCard(doc.id, user);
+                    usersArray.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Sort users by role (admins first) then by email
+                usersArray.sort((a, b) => {
+                    if (a.role === 'admin' && b.role !== 'admin') return -1;
+                    if (b.role === 'admin' && a.role !== 'admin') return 1;
+                    return a.email.localeCompare(b.email);
+                });
+                
+                usersArray.forEach(user => {
+                    const userCard = createEnhancedUserCard(user);
                     usersList.appendChild(userCard);
                 });
+
+                // Show total count
+                const totalUsers = usersArray.length;
+                const adminCount = usersArray.filter(u => u.role === 'admin').length;
+                console.log(`Loaded ${totalUsers} users (${adminCount} admins, ${totalUsers - adminCount} regular users)`);
+                
             } catch (error) {
                 console.error('Error loading users:', error);
+                document.getElementById('usersList').innerHTML = '<p>Error loading users. Please try again.</p>';
             }
         }
 
-        function createUserCard(userId, user) {
+        function createEnhancedUserCard(user) {
             const card = document.createElement('div');
-            card.className = 'review-card';
+            card.className = 'user-card';
+            
+            const displayName = user.displayName || user.email.split('@')[0];
+            const joinDate = user.createdAt ? new Date(user.createdAt.toDate()).toLocaleDateString() : 'Recently';
+            const isVerified = user.verified || false;
             
             card.innerHTML = `
-                <div class="review-header">
-                    <div class="reviewer-info">
-                        <div class="reviewer-avatar">${user.email[0].toUpperCase()}</div>
-                        <div>
-                            <div><strong>${user.email}</strong></div>
-                            <div class="role-badge ${user.role === 'admin' ? 'admin' : ''}">${user.role}</div>
+                <div class="user-header">
+                    <div class="user-avatar">
+                        ${user.photoURL ? 
+                            `<img src="${user.photoURL}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">` :
+                            displayName[0].toUpperCase()
+                        }
+                    </div>
+                    <div class="user-info">
+                        <h4>
+                            ${displayName}
+                            ${isVerified ? '<i class="fas fa-check-circle" style="color: #22c55e; margin-left: 0.5rem;" title="Verified"></i>' : ''}
+                        </h4>
+                        <div class="user-email">${user.email}</div>
+                        <div class="user-meta">
+                            <span class="role-badge ${user.role === 'admin' ? 'admin' : 'user'}">${user.role?.toUpperCase() || 'USER'}</span>
+                            <span class="join-date">Joined: ${joinDate}</span>
                         </div>
                     </div>
-                    <div>
-                        <select onchange="changeUserRole('${userId}', this.value)">
-                            <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+                </div>
+                
+                <div class="user-stats">
+                    <div class="user-stat">
+                        <i class="fas fa-calendar-check"></i>
+                        <span id="userBookings-${user.id}">Loading...</span>
+                        <label>Bookings</label>
+                    </div>
+                    <div class="user-stat">
+                        <i class="fas fa-star"></i>
+                        <span id="userReviews-${user.id}">Loading...</span>
+                        <label>Reviews</label>
+                    </div>
+                </div>
+                
+                <div class="user-actions">
+                    <button class="user-btn btn-view-bookings" onclick="viewUserBookings('${user.id}', '${user.email}')">
+                        <i class="fas fa-eye"></i> View Bookings
+                    </button>
+                    <button class="user-btn btn-toggle-role" onclick="toggleUserRole('${user.id}', '${user.role || 'user'}')">
+                        <i class="fas fa-user-cog"></i> ${user.role === 'admin' ? 'Remove Admin' : 'Make Admin'}
+                    </button>
+                                         <button class="user-btn btn-verify-user" onclick="toggleUserVerification('${user.id}', ${isVerified})">
+                         <i class="fas fa-${isVerified ? 'times' : 'check'}-circle"></i> ${isVerified ? 'Remove Verification' : 'Verify User'}
+                     </button>
+                 </div>
+            `;
+            
+            // Load user stats asynchronously
+            loadUserBookingStats(user.id);
+            
+            return card;
+        }
+
+        async function loadUserBookingStats(userId) {
+            try {
+                // Get user bookings count
+                const bookingsSnapshot = await db.collection('bookings').where('userId', '==', userId).get();
+                const bookingsCount = bookingsSnapshot.size;
+                
+                // Get user reviews count
+                const reviewsSnapshot = await db.collection('reviews').where('userId', '==', userId).get();
+                const reviewsCount = reviewsSnapshot.size;
+                
+                // Update the display
+                const bookingsElement = document.getElementById(`userBookings-${userId}`);
+                const reviewsElement = document.getElementById(`userReviews-${userId}`);
+                
+                if (bookingsElement) bookingsElement.textContent = bookingsCount;
+                if (reviewsElement) reviewsElement.textContent = reviewsCount;
+                
+            } catch (error) {
+                console.error('Error loading user stats:', error);
+                const bookingsElement = document.getElementById(`userBookings-${userId}`);
+                const reviewsElement = document.getElementById(`userReviews-${userId}`);
+                
+                if (bookingsElement) bookingsElement.textContent = '0';
+                if (reviewsElement) reviewsElement.textContent = '0';
+            }
+        }
+
+        // User management functions
+        async function viewUserBookings(userId, userEmail) {
+            try {
+                const bookingsSnapshot = await db.collection('bookings').where('userId', '==', userId).orderBy('createdAt', 'desc').get();
+                
+                if (bookingsSnapshot.empty) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'No Bookings',
+                        text: `${userEmail} has no bookings yet.`,
+                        confirmButtonColor: '#2563eb'
+                    });
+                    return;
+                }
+
+                let bookingsHtml = '<div class="user-bookings-list">';
+                bookingsSnapshot.forEach(doc => {
+                    const booking = doc.data();
+                    const bookingDate = booking.createdAt ? new Date(booking.createdAt.toDate()).toLocaleDateString() : 'Unknown';
+                    
+                    bookingsHtml += `
+                        <div class="booking-item">
+                            <div class="booking-info">
+                                <h4>${booking.tripName || 'Unknown Trip'}</h4>
+                                <p><strong>Booking ID:</strong> ${booking.bookingId}</p>
+                                <p><strong>Date:</strong> ${bookingDate}</p>
+                                <p><strong>Status:</strong> <span class="status-${booking.status}">${booking.status?.toUpperCase() || 'PENDING'}</span></p>
+                                <p><strong>Travelers:</strong> ${booking.travelers || 1}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                bookingsHtml += '</div>';
+
+                Swal.fire({
+                    title: `<i class="fas fa-calendar-check"></i> ${userEmail}'s Bookings`,
+                    html: bookingsHtml,
+                    width: '600px',
+                    confirmButtonText: 'Close',
+                    confirmButtonColor: '#2563eb'
+                });
+
+            } catch (error) {
+                console.error('Error loading user bookings:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to load user bookings.',
+                    confirmButtonColor: '#2563eb'
+                });
+            }
+        }
+
+        async function toggleUserRole(userId, currentRole) {
+            const newRole = currentRole === 'admin' ? 'user' : 'admin';
+            const action = newRole === 'admin' ? 'promote to admin' : 'remove admin privileges';
+            
+            const result = await Swal.fire({
+                title: `${newRole === 'admin' ? 'Promote User' : 'Remove Admin'}?`,
+                text: `Are you sure you want to ${action} for this user?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: newRole === 'admin' ? '#16a34a' : '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: `Yes, ${newRole === 'admin' ? 'Promote' : 'Remove'}`,
+                cancelButtonText: 'Cancel'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    await db.collection('users').doc(userId).set({ role: newRole }, { merge: true });
+                    await database.ref('users/' + userId).update({ role: newRole });
+                    
+                    loadUsers(); // Reload users list
+                    sendFreeNotification('Success', `User role updated to ${newRole}`, 'success');
+                    
+                } catch (error) {
+                    console.error('Error updating user role:', error);
+                    sendFreeNotification('Error', 'Failed to update user role', 'error');
+                }
+            }
+        }
+
+        async function toggleUserVerification(userId, isCurrentlyVerified) {
+            const newVerificationStatus = !isCurrentlyVerified;
+            const action = newVerificationStatus ? 'verify' : 'remove verification from';
+            
+            const result = await Swal.fire({
+                title: `${newVerificationStatus ? 'Verify' : 'Remove Verification'}?`,
+                text: `Are you sure you want to ${action} this user?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: newVerificationStatus ? '#22c55e' : '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: `Yes, ${newVerificationStatus ? 'Verify' : 'Remove'}`,
+                cancelButtonText: 'Cancel'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    await db.collection('users').doc(userId).set({ verified: newVerificationStatus }, { merge: true });
+                    await database.ref('users/' + userId).update({ verified: newVerificationStatus });
+                    
+                    loadUsers(); // Reload users list
+                    sendFreeNotification('Success', `User ${newVerificationStatus ? 'verified' : 'verification removed'}`, 'success');
+                    
+                } catch (error) {
+                    console.error('Error updating user verification:', error);
+                    sendFreeNotification('Error', 'Failed to update user verification', 'error');
+                }
+            }
+        }
+
+        function changeUserRole(userId, this.value) {
+            // Legacy function - keeping for compatibility
+            const newRole = this.value;
+            toggleUserRole(userId, newRole === 'admin' ? 'user' : 'admin');
                             <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
                         </select>
                     </div>
@@ -5246,6 +5776,139 @@
             document.getElementById('instagramLink').href = instagram;
             document.getElementById('linkedinLink').href = linkedin;
             document.getElementById('youtubeLink').href = youtube;
+        }
+
+        // === HERO STATS MANAGEMENT ===
+        function initializeCounterAnimation() {
+            const observerOptions = {
+                threshold: 0.5,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateCounters();
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            const heroStats = document.querySelector('.hero-stats');
+            if (heroStats) {
+                observer.observe(heroStats);
+            }
+        }
+
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number[data-target]');
+            
+            counters.forEach(counter => {
+                const target = parseFloat(counter.getAttribute('data-target'));
+                const increment = target / 100;
+                let current = 0;
+                
+                const updateCounter = () => {
+                    if (current < target) {
+                        current += increment;
+                        if (current > target) current = target;
+                        
+                        // Format the number based on its value
+                        if (target >= 1000) {
+                            counter.textContent = Math.floor(current).toLocaleString();
+                        } else {
+                            counter.textContent = current.toFixed(1);
+                        }
+                        
+                        requestAnimationFrame(updateCounter);
+                    }
+                };
+                
+                updateCounter();
+            });
+        }
+
+        async function loadHeroStats() {
+            try {
+                const snapshot = await database.ref('siteSettings/heroStats').once('value');
+                const stats = snapshot.val();
+                
+                if (stats) {
+                    // Update data-target attributes
+                    document.getElementById('destinationsCount').setAttribute('data-target', stats.destinations || 1000);
+                    document.getElementById('customersCount').setAttribute('data-target', stats.customers || 50000);
+                    document.getElementById('travelsCount').setAttribute('data-target', stats.travels || 2000);
+                    document.getElementById('ratingCount').setAttribute('data-target', stats.rating || 4.9);
+                    
+                    // Update admin form values
+                    if (isAdmin) {
+                        document.getElementById('adminDestinations').value = stats.destinations || 1000;
+                        document.getElementById('adminCustomers').value = stats.customers || 50000;
+                        document.getElementById('adminTravels').value = stats.travels || 2000;
+                        document.getElementById('adminRating').value = stats.rating || 4.9;
+                        
+                        updateStatsPreview();
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading hero stats:', error);
+            }
+        }
+
+        async function updateHeroStat(statType) {
+            if (!isAdmin) {
+                sendFreeNotification('Error', 'Admin access required', 'error');
+                return;
+            }
+
+            const values = {
+                destinations: document.getElementById('adminDestinations').value,
+                customers: document.getElementById('adminCustomers').value,
+                travels: document.getElementById('adminTravels').value,
+                rating: document.getElementById('adminRating').value
+            };
+
+            const value = parseFloat(values[statType]);
+            if (isNaN(value) || value < 0) {
+                sendFreeNotification('Error', 'Please enter a valid number', 'error');
+                return;
+            }
+
+            if (statType === 'rating' && (value < 0 || value > 5)) {
+                sendFreeNotification('Error', 'Rating must be between 0.0 and 5.0', 'error');
+                return;
+            }
+
+            try {
+                await database.ref(`siteSettings/heroStats/${statType}`).set(value);
+                
+                // Update the counter on the page
+                const counterId = statType === 'destinations' ? 'destinationsCount' :
+                                 statType === 'customers' ? 'customersCount' :
+                                 statType === 'travels' ? 'travelsCount' : 'ratingCount';
+                
+                document.getElementById(counterId).setAttribute('data-target', value);
+                animateCounters();
+                
+                updateStatsPreview();
+                sendFreeNotification('Success', `${statType.charAt(0).toUpperCase() + statType.slice(1)} updated successfully!`, 'success');
+                
+            } catch (error) {
+                console.error('Error updating hero stat:', error);
+                sendFreeNotification('Error', 'Failed to update statistic', 'error');
+            }
+        }
+
+        function updateStatsPreview() {
+            const destinations = document.getElementById('adminDestinations').value || 1000;
+            const customers = document.getElementById('adminCustomers').value || 50000;
+            const travels = document.getElementById('adminTravels').value || 2000;
+            const rating = document.getElementById('adminRating').value || 4.9;
+
+            document.getElementById('previewDestinations').textContent = parseInt(destinations).toLocaleString() + '+';
+            document.getElementById('previewCustomers').textContent = parseInt(customers).toLocaleString() + '+';
+            document.getElementById('previewTravels').textContent = parseInt(travels).toLocaleString() + '+';
+            document.getElementById('previewRating').textContent = parseFloat(rating).toFixed(1);
         }
 
         // === USER PROFILE MANAGEMENT ===
