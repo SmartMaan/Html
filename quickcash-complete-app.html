@@ -310,6 +310,174 @@
          .slide-in {
              animation: slideIn 0.6s ease-out;
          }
+         
+         /* KYC Warning */
+         .kyc-warning {
+             background: #ff4757;
+             color: white;
+             padding: 10px;
+             border-radius: 8px;
+             margin-top: 10px;
+             text-align: center;
+             font-weight: 500;
+             animation: pulse 1.5s infinite;
+         }
+         
+         .kyc-warning i {
+             margin-right: 8px;
+         }
+         
+         @keyframes pulse {
+             0% { opacity: 1; }
+             50% { opacity: 0.7; }
+             100% { opacity: 1; }
+         }
+         
+         .apply-btn.locked {
+             background: #ccc;
+             color: #666;
+             cursor: not-allowed;
+             opacity: 0.6;
+         }
+         
+         .apply-btn.locked:hover {
+             transform: none;
+             box-shadow: none;
+         }
+         
+         /* KYC Section Styles */
+         .kyc-section { display: none; padding: 20px; padding-bottom: 100px; background-color: #f5f7fa; }
+         
+         .form-container {
+             background-color: white;
+             border-radius: 15px;
+             padding: 30px;
+             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+             max-width: 600px;
+             margin: 20px auto;
+             animation: fadeIn 0.5s ease-out;
+         }
+         
+         .form-title {
+             font-size: 1.8rem;
+             color: #4a6cf7;
+             margin-bottom: 25px;
+             text-align: center;
+             font-weight: 600;
+         }
+         
+         .error {
+             color: #ff4757;
+             background-color: rgba(255, 71, 87, 0.1);
+             padding: 12px 15px;
+             border-radius: 8px;
+             margin-bottom: 20px;
+             font-size: 0.9rem;
+             display: flex;
+             align-items: center;
+             animation: shake 0.5s;
+         }
+         
+         @keyframes shake {
+             0%, 100% { transform: translateX(0); }
+             20%, 60% { transform: translateX(-5px); }
+             40%, 80% { transform: translateX(5px); }
+         }
+         
+         .error i {
+             margin-right: 10px;
+         }
+         
+         .form-group {
+             margin-bottom: 20px;
+             position: relative;
+         }
+         
+         .form-group label {
+             display: block;
+             margin-bottom: 8px;
+             font-weight: 500;
+             color: #555;
+         }
+         
+         .form-control {
+             width: 100%;
+             padding: 12px 15px;
+             border: 1px solid #ddd;
+             border-radius: 8px;
+             font-size: 1rem;
+             transition: all 0.3s;
+             background-color: #f9f9f9;
+         }
+         
+         .form-control:focus {
+             border-color: #4a6cf7;
+             outline: none;
+             background-color: white;
+             box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
+         }
+         
+         .form-control.error-field {
+             border-color: #ff4757;
+             animation: shake 0.5s;
+         }
+         
+         .error-message {
+             color: #ff4757;
+             font-size: 0.8rem;
+             margin-top: 5px;
+             display: none;
+         }
+         
+         .word-count {
+             position: absolute;
+             right: 15px;
+             bottom: 15px;
+             font-size: 0.8rem;
+             color: #ff4757;
+         }
+         
+         .word-count.valid {
+             color: #28a745;
+         }
+         
+         .next-btn {
+             width: 100%;
+             padding: 15px;
+             background: linear-gradient(135deg, #4a6cf7, #8a3ffb);
+             color: white;
+             border: none;
+             border-radius: 10px;
+             font-size: 1.1rem;
+             font-weight: 600;
+             cursor: pointer;
+             transition: all 0.3s;
+             margin-top: 10px;
+             box-shadow: 0 5px 15px rgba(74, 108, 247, 0.3);
+         }
+         
+         .next-btn:hover {
+             background: linear-gradient(135deg, #3a5ce4, #7a2ffa);
+             transform: translateY(-3px);
+             box-shadow: 0 8px 20px rgba(74, 108, 247, 0.4);
+         }
+         
+         .next-btn i {
+             margin-left: 8px;
+             transition: transform 0.3s;
+         }
+         
+         .next-btn:hover i {
+             transform: translateX(5px);
+         }
+         
+         select.form-control {
+             appearance: none;
+             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+             background-repeat: no-repeat;
+             background-position: right 15px center;
+             background-size: 15px;
+         }
         
         /* Profile Section */
         .profile-section { display: none; padding: 20px; padding-bottom: 100px; }
@@ -538,7 +706,11 @@
                     <div class="detail-label">Approval</div>
                 </div>
             </div>
-            <button class="apply-btn" onclick="showLoanApplicationForm()">Apply Now</button>
+                         <button class="apply-btn" id="applyBtn" onclick="checkKYCAndApply()">Apply Now</button>
+             <div id="kycWarning" class="kyc-warning" style="display: none;">
+                 <i class="fas fa-exclamation-triangle"></i>
+                 <span>Verify your account first</span>
+             </div>
         </div>
             
         <!-- Quick Actions - 2x2 Grid -->
@@ -631,6 +803,99 @@
         <button class="logout-btn" onclick="logout()">
             <i class="fas fa-sign-out-alt"></i> Logout
         </button>
+    </div>
+
+    <!-- KYC Verification Section -->
+    <div class="kyc-section" id="kycSection" style="display: none;">
+        <div class="app-header">
+            <button class="back-btn" onclick="showSection('dashboard')">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="app-logo">
+                <i class="fas fa-money-bill-wave"></i> Quick Cash
+            </div>
+        </div>
+        
+        <div class="form-container">
+            <h2 class="form-title">Complete Your KYC</h2>
+            
+            <div id="kycError" class="error" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="kycErrorText"></span>
+            </div>
+            
+            <form id="kycForm">
+                <div class="form-group">
+                    <label for="kycName">Name (as per PAN)</label>
+                    <input type="text" id="kycName" name="name" class="form-control" required>
+                    <div class="error-message" id="kycNameError">Please Enter Your Name</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="kycDob">Date of Birth</label>
+                    <input type="date" id="kycDob" name="dob" class="form-control" required>
+                    <div class="error-message" id="kycDobError">Please Select Your Date Of Birth (as per PAN)</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="kycAadhar">Aadhar Number</label>
+                    <input type="text" id="kycAadhar" name="aadhar" class="form-control" required pattern="[0-9]{12}" maxlength="12">
+                    <div class="error-message" id="kycAadharError">Please Enter 12 digit Aadhar Number</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="kycPan">PAN Number</label>
+                    <input type="text" id="kycPan" name="pan" class="form-control" required pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10" style="text-transform: uppercase;">
+                    <div class="error-message" id="kycPanError">Please Enter 10 Digit PAN Number (Format: ABCDE1234F)</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="kycOccupation">Occupation</label>
+                    <select id="kycOccupation" name="occupation" class="form-control" required>
+                        <option value="">Select Occupation</option>
+                        <option value="Salaried">Salaried</option>
+                        <option value="Self Employed">Self Employed</option>
+                        <option value="Business">Business</option>
+                        <option value="Student">Student</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <div class="error-message" id="kycOccupationError">Please Select Your Occupation</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="kycMarital">Marital Status</label>
+                    <select id="kycMarital" name="marital" class="form-control" required>
+                        <option value="">Select Marital Status</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Divorced">Divorced</option>
+                        <option value="Widowed">Widowed</option>
+                    </select>
+                    <div class="error-message" id="kycMaritalError">Please Select Your Marital Status</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="kycPurpose">Purpose of Loan (min 10 words)</label>
+                    <textarea id="kycPurpose" name="purpose" class="form-control" required rows="4"></textarea>
+                    <div class="word-count" id="kycWordCount">0/10 words</div>
+                    <div class="error-message" id="kycPurposeError">Please Enter At Least 10 Words</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="kycIncome">Monthly Income (₹)</label>
+                    <input type="number" id="kycIncome" name="income" class="form-control" min="12000" required>
+                    <div class="error-message" id="kycIncomeError">Minimum Required Income ₹12,000</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="kycLoanAmount">Loan Amount Needed (₹)</label>
+                    <input type="number" id="kycLoanAmount" name="loan_amount" class="form-control" min="1000" required>
+                    <div class="error-message" id="kycLoanAmountError">Please Enter Loan Amount</div>
+                </div>
+                
+                <button type="submit" class="next-btn">Complete Verification <i class="fas fa-check-circle"></i></button>
+            </form>
+        </div>
     </div>
 
     <!-- Repay Section -->
@@ -851,8 +1116,185 @@
         let userLoans = [];
         let selectedLoan = null;
         
+        // KYC Form Validation and Submission
+        function initializeKYCForm() {
+            const kycForm = document.getElementById('kycForm');
+            if (!kycForm) return;
+            
+            // Real-time validation and error messages
+            kycForm.addEventListener('input', function(e) {
+                const target = e.target;
+                
+                if (target.id === 'kycPurpose') {
+                    updateKYCWordCount();
+                }
+                
+                validateKYCField(target);
+            });
+            
+            // Validate on blur
+            kycForm.addEventListener('focusout', function(e) {
+                validateKYCField(e.target);
+            });
+            
+            // Form submission
+            kycForm.addEventListener('submit', handleKYCSubmission);
+        }
+        
+        // Word count for purpose textarea
+        function updateKYCWordCount() {
+            const purpose = document.getElementById('kycPurpose');
+            const wordCount = document.getElementById('kycWordCount');
+            const words = purpose.value.trim() === '' ? 0 : purpose.value.trim().split(/\s+/).length;
+            
+            wordCount.textContent = `${words}/10 words`;
+            
+            if (words >= 10) {
+                wordCount.classList.add('valid');
+                wordCount.classList.remove('error');
+            } else {
+                wordCount.classList.remove('valid');
+                wordCount.classList.add('error');
+            }
+        }
+        
+        // Field validation
+        function validateKYCField(field) {
+            const errorElement = document.getElementById(`${field.id}Error`);
+            if (!errorElement) return;
+            
+            if (field.validity.valid) {
+                field.classList.remove('error-field');
+                errorElement.style.display = 'none';
+            } else {
+                field.classList.add('error-field');
+                
+                if (field.validity.valueMissing) {
+                    switch(field.id) {
+                        case 'kycName': errorElement.textContent = 'Please Enter Your Name'; break;
+                        case 'kycDob': errorElement.textContent = 'Please Select Your Date Of Birth (as per PAN)'; break;
+                        case 'kycAadhar': errorElement.textContent = 'Please Enter 12 digit Aadhar Number'; break;
+                        case 'kycPan': errorElement.textContent = 'Please Enter 10 Digit PAN Number'; break;
+                        case 'kycOccupation': errorElement.textContent = 'Please Select Your Occupation'; break;
+                        case 'kycMarital': errorElement.textContent = 'Please Select Your Marital Status'; break;
+                        case 'kycPurpose': errorElement.textContent = 'Please Enter At Least 10 Words'; break;
+                        case 'kycIncome': errorElement.textContent = 'Please Enter Your Monthly Income'; break;
+                        case 'kycLoanAmount': errorElement.textContent = 'Please Enter Loan Amount'; break;
+                    }
+                } else if (field.validity.patternMismatch) {
+                    if (field.id === 'kycPan') {
+                        errorElement.textContent = 'Please Match The PAN Format (ABCDE1234F)';
+                    } else if (field.id === 'kycAadhar') {
+                        errorElement.textContent = 'Please Enter 12 Digit Aadhar Number';
+                    }
+                } else if (field.validity.rangeUnderflow && field.id === 'kycIncome') {
+                    errorElement.textContent = 'Minimum Required Income ₹12,000';
+                }
+                
+                errorElement.style.display = 'block';
+            }
+        }
+        
+        // KYC Form submission
+        async function handleKYCSubmission(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            let isValid = true;
+            const requiredFields = form.querySelectorAll('[required]');
+            
+            requiredFields.forEach(field => {
+                validateKYCField(field);
+                if (!field.validity.valid) {
+                    isValid = false;
+                }
+            });
+            
+            // Special validation for word count
+            const purpose = document.getElementById('kycPurpose');
+            const words = purpose.value.trim() === '' ? 0 : purpose.value.trim().split(/\s+/).length;
+            
+            if (words < 10) {
+                document.getElementById('kycPurposeError').style.display = 'block';
+                purpose.classList.add('error-field');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                // Scroll to first error
+                const firstError = document.querySelector('.error-field');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return;
+            }
+            
+            try {
+                const kycData = {
+                    name: document.getElementById('kycName').value.trim(),
+                    dob: document.getElementById('kycDob').value,
+                    aadhar: document.getElementById('kycAadhar').value.trim(),
+                    pan: document.getElementById('kycPan').value.trim().toUpperCase(),
+                    occupation: document.getElementById('kycOccupation').value,
+                    marital: document.getElementById('kycMarital').value,
+                    purpose: document.getElementById('kycPurpose').value.trim(),
+                    income: parseInt(document.getElementById('kycIncome').value),
+                    loanAmount: parseInt(document.getElementById('kycLoanAmount').value),
+                    submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                // Update user document with KYC data
+                await db.collection('loanuser').doc(currentUser.uid).update({
+                    kycData: kycData,
+                    kycStatus: 'verified',
+                    kycVerified: true,
+                    kycSubmittedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Also update in Realtime Database
+                await rtdb.ref('loanusers/' + currentUser.uid).update({
+                    kycData: kycData,
+                    kycStatus: 'verified',
+                    kycVerified: true,
+                    kycSubmittedAt: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                // Update local userData
+                userData.kycData = kycData;
+                userData.kycStatus = 'verified';
+                userData.kycVerified = true;
+                
+                showMessage('KYC verification completed successfully!', 'success');
+                
+                // Update UI
+                updateKYCStatus();
+                
+                // Go back to dashboard
+                setTimeout(() => {
+                    showSection('dashboard');
+                }, 2000);
+                
+            } catch (error) {
+                console.error('KYC submission error:', error);
+                showKYCError(error.message || 'Failed to submit KYC. Please try again.');
+            }
+        }
+        
+        function showKYCError(message) {
+            const errorDiv = document.getElementById('kycError');
+            const errorText = document.getElementById('kycErrorText');
+            
+            errorText.textContent = message;
+            errorDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+        
         // Initialize App
         document.addEventListener('DOMContentLoaded', function() {
+            initializeKYCForm();
             showLoading();
             
             auth.onAuthStateChanged(user => {
@@ -895,6 +1337,7 @@
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('dashboardContainer').style.display = 'none';
             document.getElementById('profileSection').style.display = 'none';
+            document.getElementById('kycSection').style.display = 'none';
             document.getElementById('repaySection').style.display = 'none';
             
             // Show requested section
@@ -905,6 +1348,10 @@
                     break;
                 case 'dashboard':
                     document.getElementById('dashboardContainer').style.display = 'block';
+                    document.body.classList.add('dashboard-mode');
+                    break;
+                case 'kyc':
+                    document.getElementById('kycSection').style.display = 'block';
                     document.body.classList.add('dashboard-mode');
                     updateNavigation('dashboard');
                     break;
@@ -1027,7 +1474,10 @@
                     isVerified: false,
                     isActive: true,
                     status: 'active',
-                    profileComplete: true
+                    profileComplete: true,
+                    kycStatus: 'pending',
+                    kycVerified: false,
+                    kycData: null
                 };
                 
                 await db.collection('loanuser').doc(user.uid).set(newUserData);
@@ -1105,8 +1555,42 @@
                  roleElement.style.background = 'var(--primary)';
              }
              
+             // Check KYC status and update UI
+             updateKYCStatus();
+             
              // Initialize toggle functionality
              initializeToggleActions();
+         }
+         
+         function updateKYCStatus() {
+             const applyBtn = document.getElementById('applyBtn');
+             const kycWarning = document.getElementById('kycWarning');
+             
+             if (!userData.kycVerified) {
+                 // Lock the apply button
+                 applyBtn.classList.add('locked');
+                 applyBtn.textContent = 'Verify Account First';
+                 applyBtn.onclick = function() { showSection('kyc'); };
+                 
+                 // Show warning
+                 kycWarning.style.display = 'block';
+             } else {
+                 // Enable the apply button
+                 applyBtn.classList.remove('locked');
+                 applyBtn.textContent = 'Apply Now';
+                 applyBtn.onclick = function() { showLoanApplicationForm(); };
+                 
+                 // Hide warning
+                 kycWarning.style.display = 'none';
+             }
+         }
+         
+         function checkKYCAndApply() {
+             if (!userData.kycVerified) {
+                 showSection('kyc');
+             } else {
+                 showLoanApplicationForm();
+             }
          }
          
          function initializeToggleActions() {
