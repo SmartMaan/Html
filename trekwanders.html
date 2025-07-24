@@ -1,0 +1,2167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrekWanders - Your Ultimate Travel Companion</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .nav-logo i {
+            margin-right: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-menu a:hover {
+            color: #2563eb;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #2563eb;
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .nav-auth {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            display: none;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .bar {
+            width: 25px;
+            height: 3px;
+            background-color: #333;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+        }
+
+        .btn-secondary:hover {
+            background: #2563eb;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+        }
+
+        .btn-outline:hover {
+            background: #2563eb;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+                        url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1920&h=1080&fit=crop') center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            max-width: 700px;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 3rem;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        /* Search Section */
+        .search-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            margin-top: -100px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        /* Destinations Section */
+        .destinations {
+            padding: 120px 0 80px;
+            background: #f8fafc;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: #6b7280;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .destinations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .destination-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .destination-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .destination-image {
+            position: relative;
+            height: 250px;
+            overflow: hidden;
+        }
+
+        .destination-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .destination-card:hover .destination-image img {
+            transform: scale(1.1);
+        }
+
+        .destination-overlay {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .destination-price {
+            background: rgba(37, 99, 235, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+        }
+
+        .destination-content {
+            padding: 1.5rem;
+        }
+
+        .destination-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+
+        .destination-content p {
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .destination-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .destination-rating i {
+            color: #fbbf24;
+        }
+
+        .destination-rating span {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .stat-item p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 80px 0;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .testimonial-rating {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial-rating i {
+            color: #fbbf24;
+        }
+
+        .testimonial-content p {
+            font-style: italic;
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .testimonial-author img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .testimonial-author h4 {
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+
+        .testimonial-author span {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1f2937;
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo i {
+            margin-right: 0.5rem;
+            color: #2563eb;
+        }
+
+        .footer-section p {
+            color: #9ca3af;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: #2563eb;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: #374151;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #374151;
+            color: #9ca3af;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-header h2 {
+            color: #1f2937;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .close:hover {
+            color: #ef4444;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .auth-switch a {
+            color: #2563eb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .auth-switch a:hover {
+            text-decoration: underline;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+            background: white;
+            margin: 100px 0 50px;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .admin-tab {
+            padding: 1rem 2rem;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .admin-tab.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .admin-content {
+            display: none;
+        }
+
+        .admin-content.active {
+            display: block;
+        }
+
+        .destinations-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .destination-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+
+        .destination-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Full Page Destinations */
+        .full-destinations {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 3000;
+            overflow-y: auto;
+        }
+
+        .full-destinations-header {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .destinations-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.8rem 1.5rem;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 70px;
+                flex-direction: column;
+                background-color: white;
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+                padding: 2rem 0;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .nav-toggle {
+                display: flex;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+
+            .destinations-filters {
+                justify-content: center;
+            }
+
+            .admin-tabs {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .destinations-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-2 {
+            margin-bottom: 1rem;
+        }
+
+        .mt-2 {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-mountain"></i>
+                <span>TrekWanders</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#destinations">Destinations</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#" onclick="showAllDestinations()">View All</a></li>
+            </ul>
+            <div class="nav-auth">
+                <div class="user-info" id="userInfo">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <span id="userName"></span>
+                    <button class="btn btn-secondary" onclick="logout()">Logout</button>
+                </div>
+                <div id="authButtons">
+                    <button class="btn btn-secondary" onclick="openAuthModal('login')">Login</button>
+                    <button class="btn btn-primary" onclick="openAuthModal('register')">Register</button>
+                </div>
+            </div>
+            <div class="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Discover Your Next Adventure</h1>
+            <p>Explore breathtaking destinations and create unforgettable memories with TrekWanders. Your journey to extraordinary experiences starts here.</p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="document.getElementById('destinations').scrollIntoView()">Explore Destinations</button>
+                <button class="btn btn-secondary" onclick="showAllDestinations()">View All Trips</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="container">
+        <div class="search-section">
+            <form class="search-form" onsubmit="searchDestinations(event)">
+                <div class="form-group">
+                    <label for="destination">Destination</label>
+                    <input type="text" id="destination" placeholder="Where do you want to go?">
+                </div>
+                <div class="form-group">
+                    <label for="checkin">Check-in</label>
+                    <input type="date" id="checkin">
+                </div>
+                <div class="form-group">
+                    <label for="checkout">Check-out</label>
+                    <input type="date" id="checkout">
+                </div>
+                <div class="form-group">
+                    <label for="guests">Guests</label>
+                    <select id="guests">
+                        <option value="1">1 Guest</option>
+                        <option value="2">2 Guests</option>
+                        <option value="3">3 Guests</option>
+                        <option value="4">4 Guests</option>
+                        <option value="5+">5+ Guests</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Destinations Section -->
+    <section id="destinations" class="destinations">
+        <div class="container">
+            <div class="section-header">
+                <h2>Popular Destinations</h2>
+                <p>Discover amazing places around the world with TrekWanders</p>
+            </div>
+            <div class="destinations-grid" id="destinationsGrid">
+                <!-- Destinations will be loaded here -->
+            </div>
+            <div class="text-center">
+                <button class="btn btn-primary" onclick="showAllDestinations()">View More Destinations</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h3 id="happyUsers">25,000</h3>
+                    <p>Happy Travelers</p>
+                </div>
+                <div class="stat-item">
+                    <h3 id="totalDestinations">150</h3>
+                    <p>Destinations</p>
+                </div>
+                <div class="stat-item">
+                    <h3 id="totalTrips">5,000</h3>
+                    <p>Successful Trips</p>
+                </div>
+                <div class="stat-item">
+                    <h3 id="customerSatisfaction">98%</h3>
+                    <p>Customer Satisfaction</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2>What Our Travelers Say</h2>
+                <p>Real experiences from real adventurers</p>
+            </div>
+            <div class="testimonials-grid" id="testimonialsGrid">
+                <!-- Testimonials will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Panel -->
+    <div class="container">
+        <div class="admin-panel" id="adminPanel">
+            <div class="admin-header">
+                <h2><i class="fas fa-cog"></i> Admin Dashboard</h2>
+                <span>Welcome, Admin!</span>
+            </div>
+            
+            <div class="admin-tabs">
+                <button class="admin-tab active" onclick="showAdminTab('destinations')">Manage Destinations</button>
+                <button class="admin-tab" onclick="showAdminTab('stats')">Update Stats</button>
+                <button class="admin-tab" onclick="showAdminTab('testimonials')">Manage Testimonials</button>
+                <button class="admin-tab" onclick="showAdminTab('footer')">Footer Settings</button>
+                <button class="admin-tab" onclick="showAdminTab('users')">User Management</button>
+            </div>
+
+            <!-- Destinations Management -->
+            <div class="admin-content active" id="admin-destinations">
+                <div class="admin-header">
+                    <h3>Manage Destinations</h3>
+                    <button class="btn btn-primary" onclick="openDestinationModal()">Add New Destination</button>
+                </div>
+                <div class="destinations-list" id="adminDestinationsList">
+                    <!-- Admin destinations list will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Stats Management -->
+            <div class="admin-content" id="admin-stats">
+                <h3>Update Website Statistics</h3>
+                <form onsubmit="updateStats(event)">
+                    <div class="form-group">
+                        <label for="adminHappyUsers">Happy Users</label>
+                        <input type="number" id="adminHappyUsers" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminTotalDestinations">Total Destinations</label>
+                        <input type="number" id="adminTotalDestinations" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminTotalTrips">Total Trips</label>
+                        <input type="number" id="adminTotalTrips" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminCustomerSatisfaction">Customer Satisfaction (%)</label>
+                        <input type="number" id="adminCustomerSatisfaction" min="0" max="100" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Statistics</button>
+                </form>
+            </div>
+
+            <!-- Testimonials Management -->
+            <div class="admin-content" id="admin-testimonials">
+                <div class="admin-header">
+                    <h3>Manage Testimonials</h3>
+                    <button class="btn btn-primary" onclick="openTestimonialModal()">Add New Testimonial</button>
+                </div>
+                <div id="adminTestimonialsList">
+                    <!-- Admin testimonials list will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Footer Settings -->
+            <div class="admin-content" id="admin-footer">
+                <h3>Footer Settings</h3>
+                <form onsubmit="updateFooter(event)">
+                    <div class="form-group">
+                        <label for="footerDescription">Company Description</label>
+                        <textarea id="footerDescription" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="footerEmail">Contact Email</label>
+                        <input type="email" id="footerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="footerPhone">Contact Phone</label>
+                        <input type="tel" id="footerPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="footerAddress">Address</label>
+                        <textarea id="footerAddress" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Footer</button>
+                </form>
+            </div>
+
+            <!-- User Management -->
+            <div class="admin-content" id="admin-users">
+                <h3>User Management</h3>
+                <div id="usersList">
+                    <!-- Users list will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" id="mainFooter">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-mountain"></i>
+                        <span>TrekWanders</span>
+                    </div>
+                    <p id="footerDesc">Your trusted partner in creating unforgettable travel experiences around the world. Adventure awaits!</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#destinations">Destinations</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="#">Adventure Tours</a></li>
+                        <li><a href="#">Cultural Experiences</a></li>
+                        <li><a href="#">Wildlife Safaris</a></li>
+                        <li><a href="#">Mountain Trekking</a></li>
+                        <li><a href="#">Beach Holidays</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p id="footerContactEmail">Email: info@trekwanders.com</p>
+                    <p id="footerContactPhone">Phone: +1 (555) 123-4567</p>
+                    <p id="footerContactAddress">123 Adventure Street<br>Travel City, TC 12345</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TrekWanders. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="authTitle">Login</h2>
+                <button class="close" onclick="closeAuthModal()">&times;</button>
+            </div>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <div class="form-group" id="nameGroup" style="display: none;">
+                    <label for="authName">Full Name</label>
+                    <input type="text" id="authName" placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label for="authEmail">Email</label>
+                    <input type="email" id="authEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="authPassword">Password</label>
+                    <input type="password" id="authPassword" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <span id="authSubmitText">Login</span>
+                    <div class="loading hidden" id="authLoading"></div>
+                </button>
+            </form>
+            <div class="auth-switch">
+                <p id="authSwitchText">Don't have an account? <a id="authSwitchLink" onclick="switchAuthMode()">Register here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Destination Modal -->
+    <div id="destinationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="destinationModalTitle">Add New Destination</h2>
+                <button class="close" onclick="closeDestinationModal()">&times;</button>
+            </div>
+            <form id="destinationForm" onsubmit="handleDestination(event)">
+                <div class="form-group">
+                    <label for="destName">Destination Name</label>
+                    <input type="text" id="destName" required>
+                </div>
+                <div class="form-group">
+                    <label for="destLocation">Location</label>
+                    <input type="text" id="destLocation" required>
+                </div>
+                <div class="form-group">
+                    <label for="destImage">Image URL</label>
+                    <input type="url" id="destImage" required>
+                </div>
+                <div class="form-group">
+                    <label for="destPrice">Price</label>
+                    <input type="text" id="destPrice" placeholder="e.g., $1,299" required>
+                </div>
+                <div class="form-group">
+                    <label for="destRating">Rating (1-5)</label>
+                    <input type="number" id="destRating" min="1" max="5" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="destDescription">Description</label>
+                    <textarea id="destDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="destCategory">Category</label>
+                    <select id="destCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="adventure">Adventure</option>
+                        <option value="beach">Beach</option>
+                        <option value="mountain">Mountain</option>
+                        <option value="cultural">Cultural</option>
+                        <option value="wildlife">Wildlife</option>
+                        <option value="luxury">Luxury</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <span id="destSubmitText">Add Destination</span>
+                    <div class="loading hidden" id="destLoading"></div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Testimonial Modal -->
+    <div id="testimonialModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Testimonial</h2>
+                <button class="close" onclick="closeTestimonialModal()">&times;</button>
+            </div>
+            <form id="testimonialForm" onsubmit="handleTestimonial(event)">
+                <div class="form-group">
+                    <label for="testName">Customer Name</label>
+                    <input type="text" id="testName" required>
+                </div>
+                <div class="form-group">
+                    <label for="testImage">Customer Image URL</label>
+                    <input type="url" id="testImage" required>
+                </div>
+                <div class="form-group">
+                    <label for="testRating">Rating (1-5)</label>
+                    <input type="number" id="testRating" min="1" max="5" required>
+                </div>
+                <div class="form-group">
+                    <label for="testReview">Review</label>
+                    <textarea id="testReview" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="testLocation">Trip Location</label>
+                    <input type="text" id="testLocation" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Add Testimonial</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Full Page Destinations -->
+    <div id="fullDestinations" class="full-destinations">
+        <div class="full-destinations-header">
+            <div class="container">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>All Destinations</h2>
+                    <button class="btn btn-secondary" onclick="closeFullDestinations()">Close</button>
+                </div>
+            </div>
+        </div>
+        <div class="container" style="padding: 2rem 0;">
+            <div class="destinations-filters">
+                <button class="filter-btn active" onclick="filterDestinations('all')">All</button>
+                <button class="filter-btn" onclick="filterDestinations('adventure')">Adventure</button>
+                <button class="filter-btn" onclick="filterDestinations('beach')">Beach</button>
+                <button class="filter-btn" onclick="filterDestinations('mountain')">Mountain</button>
+                <button class="filter-btn" onclick="filterDestinations('cultural')">Cultural</button>
+                <button class="filter-btn" onclick="filterDestinations('wildlife')">Wildlife</button>
+                <button class="filter-btn" onclick="filterDestinations('luxury')">Luxury</button>
+            </div>
+            <div class="destinations-grid" id="fullDestinationsGrid">
+                <!-- All destinations will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvOQHC2jH6HJnK5lPzE8tG9mYqXxYoJzs",
+            authDomain: "trekwanders-travel.firebaseapp.com",
+            projectId: "trekwanders-travel",
+            storageBucket: "trekwanders-travel.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef123456789012"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Global variables
+        let currentUser = null;
+        let isAdmin = false;
+        let authMode = 'login';
+        let editingDestinationId = null;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            // Set up authentication state listener
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    checkUserRole(user);
+                    updateUIForUser(user);
+                } else {
+                    currentUser = null;
+                    isAdmin = false;
+                    updateUIForGuest();
+                }
+            });
+
+            // Load initial data
+            loadDestinations();
+            loadTestimonials();
+            loadStats();
+            loadFooterSettings();
+
+            // Set up mobile navigation
+            setupMobileNav();
+
+            // Set up smooth scrolling
+            setupSmoothScrolling();
+        }
+
+        // Authentication Functions
+        function openAuthModal(mode) {
+            authMode = mode;
+            const modal = document.getElementById('authModal');
+            const title = document.getElementById('authTitle');
+            const nameGroup = document.getElementById('nameGroup');
+            const submitText = document.getElementById('authSubmitText');
+            const switchText = document.getElementById('authSwitchText');
+            const switchLink = document.getElementById('authSwitchLink');
+
+            if (mode === 'register') {
+                title.textContent = 'Register';
+                nameGroup.style.display = 'block';
+                submitText.textContent = 'Register';
+                switchText.innerHTML = 'Already have an account? <a id="authSwitchLink" onclick="switchAuthMode()">Login here</a>';
+                document.getElementById('authName').required = true;
+            } else {
+                title.textContent = 'Login';
+                nameGroup.style.display = 'none';
+                submitText.textContent = 'Login';
+                switchText.innerHTML = 'Don\'t have an account? <a id="authSwitchLink" onclick="switchAuthMode()">Register here</a>';
+                document.getElementById('authName').required = false;
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').style.display = 'none';
+            document.getElementById('authForm').reset();
+        }
+
+        function switchAuthMode() {
+            authMode = authMode === 'login' ? 'register' : 'login';
+            openAuthModal(authMode);
+        }
+
+        async function handleAuth(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            const name = document.getElementById('authName').value;
+            
+            const loading = document.getElementById('authLoading');
+            const submitText = document.getElementById('authSubmitText');
+            
+            loading.classList.remove('hidden');
+            submitText.classList.add('hidden');
+
+            try {
+                if (authMode === 'register') {
+                    // Create user account
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+
+                    // Update profile with name
+                    await user.updateProfile({
+                        displayName: name
+                    });
+
+                    // Create user document in Firestore
+                    await db.collection('users').doc(user.uid).set({
+                        name: name,
+                        email: email,
+                        role: 'user',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    alert('Registration successful! Welcome to TrekWanders!');
+                } else {
+                    // Sign in user
+                    await auth.signInWithEmailAndPassword(email, password);
+                    
+                    // Update last login
+                    if (currentUser) {
+                        await db.collection('users').doc(currentUser.uid).update({
+                            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                }
+                
+                closeAuthModal();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                loading.classList.add('hidden');
+                submitText.classList.remove('hidden');
+            }
+        }
+
+        async function logout() {
+            try {
+                await auth.signOut();
+                alert('Logged out successfully!');
+            } catch (error) {
+                alert('Error logging out: ' + error.message);
+            }
+        }
+
+        async function checkUserRole(user) {
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    isAdmin = userData.role === 'admin';
+                }
+            } catch (error) {
+                console.error('Error checking user role:', error);
+            }
+        }
+
+        function updateUIForUser(user) {
+            document.getElementById('authButtons').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'flex';
+            document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
+            document.getElementById('userAvatar').textContent = (user.displayName || user.email)[0].toUpperCase();
+            
+            if (isAdmin) {
+                document.getElementById('adminPanel').style.display = 'block';
+                loadAdminData();
+            } else {
+                document.getElementById('adminPanel').style.display = 'none';
+            }
+        }
+
+        function updateUIForGuest() {
+            document.getElementById('authButtons').style.display = 'flex';
+            document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+
+        // Destinations Functions
+        async function loadDestinations() {
+            try {
+                const snapshot = await db.collection('destinations').orderBy('createdAt', 'desc').get();
+                const destinationsGrid = document.getElementById('destinationsGrid');
+                const fullDestinationsGrid = document.getElementById('fullDestinationsGrid');
+                
+                destinationsGrid.innerHTML = '';
+                fullDestinationsGrid.innerHTML = '';
+
+                let count = 0;
+                snapshot.forEach(doc => {
+                    const destination = { id: doc.id, ...doc.data() };
+                    const card = createDestinationCard(destination);
+                    
+                    // Show only first 6 in main section
+                    if (count < 6) {
+                        destinationsGrid.appendChild(card.cloneNode(true));
+                    }
+                    
+                    // Show all in full page
+                    fullDestinationsGrid.appendChild(card);
+                    count++;
+                });
+
+                // Load sample destinations if none exist
+                if (count === 0) {
+                    loadSampleDestinations();
+                }
+            } catch (error) {
+                console.error('Error loading destinations:', error);
+                loadSampleDestinations();
+            }
+        }
+
+        function loadSampleDestinations() {
+            const sampleDestinations = [
+                {
+                    id: 'sample1',
+                    name: 'Swiss Alps Adventure',
+                    location: 'Switzerland',
+                    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop',
+                    price: '$2,499',
+                    rating: 4.9,
+                    description: 'Experience the breathtaking beauty of the Swiss Alps with guided mountain treks and luxury accommodations.',
+                    category: 'mountain'
+                },
+                {
+                    id: 'sample2',
+                    name: 'Tropical Paradise',
+                    location: 'Maldives',
+                    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+                    price: '$3,299',
+                    rating: 4.8,
+                    description: 'Relax in overwater bungalows and enjoy crystal-clear waters in this tropical paradise.',
+                    category: 'beach'
+                },
+                {
+                    id: 'sample3',
+                    name: 'Safari Adventure',
+                    location: 'Kenya',
+                    image: 'https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=400&h=300&fit=crop',
+                    price: '$1,899',
+                    rating: 4.7,
+                    description: 'Witness the incredible wildlife of Africa on this amazing safari adventure.',
+                    category: 'wildlife'
+                }
+            ];
+
+            const destinationsGrid = document.getElementById('destinationsGrid');
+            const fullDestinationsGrid = document.getElementById('fullDestinationsGrid');
+            
+            sampleDestinations.forEach(destination => {
+                const card = createDestinationCard(destination);
+                destinationsGrid.appendChild(card.cloneNode(true));
+                fullDestinationsGrid.appendChild(card);
+            });
+        }
+
+        function createDestinationCard(destination) {
+            const card = document.createElement('div');
+            card.className = 'destination-card';
+            card.setAttribute('data-category', destination.category);
+            
+            const stars = '★'.repeat(Math.floor(destination.rating)) + '☆'.repeat(5 - Math.floor(destination.rating));
+            
+            card.innerHTML = `
+                <div class="destination-image">
+                    <img src="${destination.image}" alt="${destination.name}">
+                    <div class="destination-overlay">
+                        <div class="destination-price">${destination.price}</div>
+                    </div>
+                </div>
+                <div class="destination-content">
+                    <h3>${destination.name}</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> ${destination.location}</p>
+                    <div class="destination-rating">
+                        <span style="color: #fbbf24;">${stars}</span>
+                        <span>${destination.rating} (${Math.floor(Math.random() * 1000) + 100} reviews)</span>
+                    </div>
+                    <p>${destination.description}</p>
+                    <button class="btn btn-primary" onclick="bookDestination('${destination.id}')">Book Now</button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function bookDestination(destinationId) {
+            if (!currentUser) {
+                alert('Please login to book a destination.');
+                openAuthModal('login');
+                return;
+            }
+            
+            alert('Booking feature will be implemented soon! Thank you for your interest.');
+        }
+
+        // Admin Functions
+        function showAdminTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.admin-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`admin-${tabName}`).classList.add('active');
+        }
+
+        async function loadAdminData() {
+            if (!isAdmin) return;
+            
+            await loadAdminDestinations();
+            await loadAdminStats();
+            await loadAdminTestimonials();
+            await loadAdminUsers();
+            await loadAdminFooterSettings();
+        }
+
+        async function loadAdminDestinations() {
+            try {
+                const snapshot = await db.collection('destinations').orderBy('createdAt', 'desc').get();
+                const list = document.getElementById('adminDestinationsList');
+                list.innerHTML = '';
+
+                snapshot.forEach(doc => {
+                    const destination = { id: doc.id, ...doc.data() };
+                    const item = document.createElement('div');
+                    item.className = 'destination-item';
+                    item.innerHTML = `
+                        <div>
+                            <h4>${destination.name}</h4>
+                            <p>${destination.location} - ${destination.price}</p>
+                        </div>
+                        <div class="destination-actions">
+                            <button class="btn btn-small btn-secondary" onclick="editDestination('${destination.id}')">Edit</button>
+                            <button class="btn btn-small" style="background: #ef4444; color: white;" onclick="deleteDestination('${destination.id}')">Delete</button>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Error loading admin destinations:', error);
+            }
+        }
+
+        function openDestinationModal(destinationId = null) {
+            editingDestinationId = destinationId;
+            const modal = document.getElementById('destinationModal');
+            const title = document.getElementById('destinationModalTitle');
+            const submitText = document.getElementById('destSubmitText');
+            
+            if (destinationId) {
+                title.textContent = 'Edit Destination';
+                submitText.textContent = 'Update Destination';
+                // Load destination data for editing
+                loadDestinationForEdit(destinationId);
+            } else {
+                title.textContent = 'Add New Destination';
+                submitText.textContent = 'Add Destination';
+                document.getElementById('destinationForm').reset();
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeDestinationModal() {
+            document.getElementById('destinationModal').style.display = 'none';
+            document.getElementById('destinationForm').reset();
+            editingDestinationId = null;
+        }
+
+        async function handleDestination(event) {
+            event.preventDefault();
+            
+            if (!isAdmin) {
+                alert('Access denied. Admin privileges required.');
+                return;
+            }
+            
+            const destinationData = {
+                name: document.getElementById('destName').value,
+                location: document.getElementById('destLocation').value,
+                image: document.getElementById('destImage').value,
+                price: document.getElementById('destPrice').value,
+                rating: parseFloat(document.getElementById('destRating').value),
+                description: document.getElementById('destDescription').value,
+                category: document.getElementById('destCategory').value,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            const loading = document.getElementById('destLoading');
+            const submitText = document.getElementById('destSubmitText');
+            
+            loading.classList.remove('hidden');
+            submitText.classList.add('hidden');
+
+            try {
+                if (editingDestinationId) {
+                    // Update existing destination
+                    await db.collection('destinations').doc(editingDestinationId).update(destinationData);
+                    alert('Destination updated successfully!');
+                } else {
+                    // Add new destination
+                    destinationData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    await db.collection('destinations').add(destinationData);
+                    alert('Destination added successfully!');
+                }
+                
+                closeDestinationModal();
+                loadDestinations();
+                loadAdminDestinations();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                loading.classList.add('hidden');
+                submitText.classList.remove('hidden');
+            }
+        }
+
+        async function deleteDestination(destinationId) {
+            if (!isAdmin || !confirm('Are you sure you want to delete this destination?')) return;
+            
+            try {
+                await db.collection('destinations').doc(destinationId).delete();
+                alert('Destination deleted successfully!');
+                loadDestinations();
+                loadAdminDestinations();
+            } catch (error) {
+                alert('Error deleting destination: ' + error.message);
+            }
+        }
+
+        async function editDestination(destinationId) {
+            openDestinationModal(destinationId);
+        }
+
+        async function loadDestinationForEdit(destinationId) {
+            try {
+                const doc = await db.collection('destinations').doc(destinationId).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('destName').value = data.name;
+                    document.getElementById('destLocation').value = data.location;
+                    document.getElementById('destImage').value = data.image;
+                    document.getElementById('destPrice').value = data.price;
+                    document.getElementById('destRating').value = data.rating;
+                    document.getElementById('destDescription').value = data.description;
+                    document.getElementById('destCategory').value = data.category;
+                }
+            } catch (error) {
+                console.error('Error loading destination for edit:', error);
+            }
+        }
+
+        // Statistics Functions
+        async function loadStats() {
+            try {
+                const doc = await db.collection('settings').doc('stats').get();
+                if (doc.exists) {
+                    const stats = doc.data();
+                    document.getElementById('happyUsers').textContent = stats.happyUsers?.toLocaleString() || '25,000';
+                    document.getElementById('totalDestinations').textContent = stats.totalDestinations?.toLocaleString() || '150';
+                    document.getElementById('totalTrips').textContent = stats.totalTrips?.toLocaleString() || '5,000';
+                    document.getElementById('customerSatisfaction').textContent = (stats.customerSatisfaction || 98) + '%';
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadAdminStats() {
+            try {
+                const doc = await db.collection('settings').doc('stats').get();
+                if (doc.exists) {
+                    const stats = doc.data();
+                    document.getElementById('adminHappyUsers').value = stats.happyUsers || 25000;
+                    document.getElementById('adminTotalDestinations').value = stats.totalDestinations || 150;
+                    document.getElementById('adminTotalTrips').value = stats.totalTrips || 5000;
+                    document.getElementById('adminCustomerSatisfaction').value = stats.customerSatisfaction || 98;
+                }
+            } catch (error) {
+                console.error('Error loading admin stats:', error);
+            }
+        }
+
+        async function updateStats(event) {
+            event.preventDefault();
+            
+            if (!isAdmin) {
+                alert('Access denied. Admin privileges required.');
+                return;
+            }
+            
+            const statsData = {
+                happyUsers: parseInt(document.getElementById('adminHappyUsers').value),
+                totalDestinations: parseInt(document.getElementById('adminTotalDestinations').value),
+                totalTrips: parseInt(document.getElementById('adminTotalTrips').value),
+                customerSatisfaction: parseInt(document.getElementById('adminCustomerSatisfaction').value),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            try {
+                await db.collection('settings').doc('stats').set(statsData);
+                alert('Statistics updated successfully!');
+                loadStats();
+            } catch (error) {
+                alert('Error updating statistics: ' + error.message);
+            }
+        }
+
+        // Testimonials Functions
+        async function loadTestimonials() {
+            try {
+                const snapshot = await db.collection('testimonials').orderBy('createdAt', 'desc').get();
+                const testimonialsGrid = document.getElementById('testimonialsGrid');
+                testimonialsGrid.innerHTML = '';
+
+                let count = 0;
+                snapshot.forEach(doc => {
+                    const testimonial = { id: doc.id, ...doc.data() };
+                    const card = createTestimonialCard(testimonial);
+                    testimonialsGrid.appendChild(card);
+                    count++;
+                });
+
+                // Load sample testimonials if none exist
+                if (count === 0) {
+                    loadSampleTestimonials();
+                }
+            } catch (error) {
+                console.error('Error loading testimonials:', error);
+                loadSampleTestimonials();
+            }
+        }
+
+        function loadSampleTestimonials() {
+            const sampleTestimonials = [
+                {
+                    id: 'sample1',
+                    name: 'Sarah Johnson',
+                    image: 'https://images.unsplash.com/photo-1494790108755-2616b612b5b1?w=60&h=60&fit=crop&crop=face',
+                    rating: 5,
+                    review: 'TrekWanders made our Swiss Alps adventure absolutely perfect. Every detail was taken care of, and the views were breathtaking!',
+                    location: 'Swiss Alps'
+                },
+                {
+                    id: 'sample2',
+                    name: 'Michael Chen',
+                    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face',
+                    rating: 5,
+                    review: 'The Maldives trip was incredible! The overwater bungalow and crystal-clear waters exceeded all expectations.',
+                    location: 'Maldives'
+                },
+                {
+                    id: 'sample3',
+                    name: 'Emily Rodriguez',
+                    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop&crop=face',
+                    rating: 5,
+                    review: 'Professional service and attention to detail. The Kenya safari was a once-in-a-lifetime experience!',
+                    location: 'Kenya Safari'
+                }
+            ];
+
+            const testimonialsGrid = document.getElementById('testimonialsGrid');
+            sampleTestimonials.forEach(testimonial => {
+                const card = createTestimonialCard(testimonial);
+                testimonialsGrid.appendChild(card);
+            });
+        }
+
+        function createTestimonialCard(testimonial) {
+            const card = document.createElement('div');
+            card.className = 'testimonial-card';
+            
+            const stars = '★'.repeat(testimonial.rating) + '☆'.repeat(5 - testimonial.rating);
+            
+            card.innerHTML = `
+                <div class="testimonial-content">
+                    <div class="testimonial-rating">
+                        <span style="color: #fbbf24;">${stars}</span>
+                    </div>
+                    <p>"${testimonial.review}"</p>
+                </div>
+                <div class="testimonial-author">
+                    <img src="${testimonial.image}" alt="${testimonial.name}">
+                    <div>
+                        <h4>${testimonial.name}</h4>
+                        <span>${testimonial.location}</span>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function openTestimonialModal() {
+            document.getElementById('testimonialModal').style.display = 'flex';
+        }
+
+        function closeTestimonialModal() {
+            document.getElementById('testimonialModal').style.display = 'none';
+            document.getElementById('testimonialForm').reset();
+        }
+
+        async function handleTestimonial(event) {
+            event.preventDefault();
+            
+            if (!isAdmin) {
+                alert('Access denied. Admin privileges required.');
+                return;
+            }
+            
+            const testimonialData = {
+                name: document.getElementById('testName').value,
+                image: document.getElementById('testImage').value,
+                rating: parseInt(document.getElementById('testRating').value),
+                review: document.getElementById('testReview').value,
+                location: document.getElementById('testLocation').value,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            try {
+                await db.collection('testimonials').add(testimonialData);
+                alert('Testimonial added successfully!');
+                closeTestimonialModal();
+                loadTestimonials();
+                loadAdminTestimonials();
+            } catch (error) {
+                alert('Error adding testimonial: ' + error.message);
+            }
+        }
+
+        async function loadAdminTestimonials() {
+            try {
+                const snapshot = await db.collection('testimonials').orderBy('createdAt', 'desc').get();
+                const list = document.getElementById('adminTestimonialsList');
+                list.innerHTML = '';
+
+                snapshot.forEach(doc => {
+                    const testimonial = { id: doc.id, ...doc.data() };
+                    const item = document.createElement('div');
+                    item.className = 'destination-item';
+                    item.innerHTML = `
+                        <div>
+                            <h4>${testimonial.name}</h4>
+                            <p>${testimonial.location} - ${testimonial.rating} stars</p>
+                        </div>
+                        <div class="destination-actions">
+                            <button class="btn btn-small" style="background: #ef4444; color: white;" onclick="deleteTestimonial('${testimonial.id}')">Delete</button>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Error loading admin testimonials:', error);
+            }
+        }
+
+        async function deleteTestimonial(testimonialId) {
+            if (!isAdmin || !confirm('Are you sure you want to delete this testimonial?')) return;
+            
+            try {
+                await db.collection('testimonials').doc(testimonialId).delete();
+                alert('Testimonial deleted successfully!');
+                loadTestimonials();
+                loadAdminTestimonials();
+            } catch (error) {
+                alert('Error deleting testimonial: ' + error.message);
+            }
+        }
+
+        // Footer Functions
+        async function loadFooterSettings() {
+            try {
+                const doc = await db.collection('settings').doc('footer').get();
+                if (doc.exists) {
+                    const footer = doc.data();
+                    document.getElementById('footerDesc').textContent = footer.description || 'Your trusted partner in creating unforgettable travel experiences around the world. Adventure awaits!';
+                    document.getElementById('footerContactEmail').textContent = 'Email: ' + (footer.email || 'info@trekwanders.com');
+                    document.getElementById('footerContactPhone').textContent = 'Phone: ' + (footer.phone || '+1 (555) 123-4567');
+                    document.getElementById('footerContactAddress').innerHTML = (footer.address || '123 Adventure Street<br>Travel City, TC 12345');
+                }
+            } catch (error) {
+                console.error('Error loading footer settings:', error);
+            }
+        }
+
+        async function loadAdminFooterSettings() {
+            try {
+                const doc = await db.collection('settings').doc('footer').get();
+                if (doc.exists) {
+                    const footer = doc.data();
+                    document.getElementById('footerDescription').value = footer.description || '';
+                    document.getElementById('footerEmail').value = footer.email || '';
+                    document.getElementById('footerPhone').value = footer.phone || '';
+                    document.getElementById('footerAddress').value = footer.address || '';
+                }
+            } catch (error) {
+                console.error('Error loading admin footer settings:', error);
+            }
+        }
+
+        async function updateFooter(event) {
+            event.preventDefault();
+            
+            if (!isAdmin) {
+                alert('Access denied. Admin privileges required.');
+                return;
+            }
+            
+            const footerData = {
+                description: document.getElementById('footerDescription').value,
+                email: document.getElementById('footerEmail').value,
+                phone: document.getElementById('footerPhone').value,
+                address: document.getElementById('footerAddress').value,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            try {
+                await db.collection('settings').doc('footer').set(footerData);
+                alert('Footer settings updated successfully!');
+                loadFooterSettings();
+            } catch (error) {
+                alert('Error updating footer settings: ' + error.message);
+            }
+        }
+
+        // User Management Functions
+        async function loadAdminUsers() {
+            try {
+                const snapshot = await db.collection('users').orderBy('createdAt', 'desc').get();
+                const list = document.getElementById('usersList');
+                list.innerHTML = '';
+
+                snapshot.forEach(doc => {
+                    const user = { id: doc.id, ...doc.data() };
+                    const item = document.createElement('div');
+                    item.className = 'destination-item';
+                    item.innerHTML = `
+                        <div>
+                            <h4>${user.name}</h4>
+                            <p>${user.email} - Role: ${user.role}</p>
+                        </div>
+                        <div class="destination-actions">
+                            <button class="btn btn-small btn-secondary" onclick="toggleUserRole('${user.id}', '${user.role}')">
+                                ${user.role === 'admin' ? 'Make User' : 'Make Admin'}
+                            </button>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        async function toggleUserRole(userId, currentRole) {
+            if (!isAdmin || !confirm('Are you sure you want to change this user\'s role?')) return;
+            
+            const newRole = currentRole === 'admin' ? 'user' : 'admin';
+            
+            try {
+                await db.collection('users').doc(userId).update({
+                    role: newRole,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert(`User role updated to ${newRole} successfully!`);
+                loadAdminUsers();
+            } catch (error) {
+                alert('Error updating user role: ' + error.message);
+            }
+        }
+
+        // Search and Filter Functions
+        function searchDestinations(event) {
+            event.preventDefault();
+            
+            const destination = document.getElementById('destination').value;
+            const checkin = document.getElementById('checkin').value;
+            const checkout = document.getElementById('checkout').value;
+            const guests = document.getElementById('guests').value;
+            
+            if (!destination) {
+                alert('Please enter a destination to search.');
+                return;
+            }
+            
+            // For demo purposes, show an alert
+            alert(`Searching for: ${destination}\nCheck-in: ${checkin || 'Not specified'}\nCheck-out: ${checkout || 'Not specified'}\nGuests: ${guests}`);
+            
+            // In a real application, you would filter the destinations based on search criteria
+            showAllDestinations();
+        }
+
+        function showAllDestinations() {
+            document.getElementById('fullDestinations').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFullDestinations() {
+            document.getElementById('fullDestinations').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function filterDestinations(category) {
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Filter destination cards
+            const cards = document.querySelectorAll('#fullDestinationsGrid .destination-card');
+            cards.forEach(card => {
+                if (category === 'all' || card.getAttribute('data-category') === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Utility Functions
+        function setupMobileNav() {
+            const navToggle = document.querySelector('.nav-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+
+            navToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+            });
+
+            // Close mobile menu when clicking on a link
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navMenu.classList.remove('active');
+                });
+            });
+        }
+
+        function setupSmoothScrolling() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+
+        console.log('TrekWanders website loaded successfully! 🏔️✈️');
+    </script>
+</body>
+</html>
