@@ -64,50 +64,252 @@
         .back-btn:hover, .profile-btn:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.1); }
         
                  /* Dashboard */
-         .dashboard-container { display: none; min-height: 100vh; padding-bottom: 80px; }
+         .dashboard-container { display: none; min-height: 100vh; padding-bottom: 80px; background-color: #f5f7fa; }
          
-         /* Welcome Section */
-         .welcome-section { text-align: center; padding: 30px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin: 0; }
-         .welcome-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-         .welcome-subtitle { font-size: 16px; opacity: 0.9; font-weight: 400; }
+         /* Welcome Banner */
+         .welcome-banner {
+             background: linear-gradient(135deg, var(--primary), var(--secondary));
+             color: white;
+             padding: 20px;
+             border-radius: 12px;
+             margin: 20px;
+             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+             text-align: center;
+         }
          
-         /* Features Showcase */
-         .features-showcase { display: flex; justify-content: space-around; padding: 25px 15px; background: white; margin: 0; }
-         .feature-item { text-align: center; flex: 1; }
-         .feature-icon { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; margin: 0 auto 10px; }
-         .feature-title { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px; }
-         .feature-desc { font-size: 12px; color: #888; }
+         .welcome-banner h1 {
+             font-size: 1.5rem;
+             font-weight: 600;
+             margin-bottom: 5px;
+         }
          
-         /* Trust Badge */
-         .trust-badge { text-align: center; padding: 15px; background: #f8f9fa; color: #666; font-size: 14px; font-weight: 500; border-top: 1px solid #eee; }
+         .welcome-banner p {
+             font-size: 0.9rem;
+             opacity: 0.9;
+         }
          
-         /* Status Displays */
-         .status-displays { padding: 20px 15px; }
-         .status-card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); display: none; }
-         .status-card.show { display: block; animation: slideInUp 0.6s ease; }
-         .status-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 15px; }
-         .status-approved .status-icon { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; }
-         .status-active .status-icon { background: linear-gradient(135deg, #2196F3, #1976D2); color: white; }
-         .status-processing .status-icon { background: linear-gradient(135deg, #FF9800, #F57C00); color: white; }
-         .status-rejected .status-icon { background: linear-gradient(135deg, #F44336, #D32F2F); color: white; }
-         .status-title { font-size: 20px; font-weight: 600; text-align: center; margin-bottom: 8px; color: #333; }
-         .status-amount { font-size: 32px; font-weight: 700; text-align: center; margin-bottom: 15px; }
-         .status-approved .status-amount { color: #4CAF50; }
-         .status-active .status-amount { color: #2196F3; }
-         .status-processing .status-amount { color: #FF9800; }
-         .status-rejected .status-amount { color: #F44336; }
-         .status-card p { text-align: center; color: #666; margin-bottom: 20px; line-height: 1.5; }
-         .primary-action-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-         .primary-action-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4); }
-         .secondary-action-btn { width: 100%; padding: 14px; background: #f8f9fa; color: #666; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-         .secondary-action-btn:hover { background: #e9ecef; }
+         /* Mobile Features Container */
+         .mobile-features-container {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             padding: 15px;
+             background: #ffffff;
+             overflow-x: auto;
+             white-space: nowrap;
+             -webkit-overflow-scrolling: touch;
+             gap: 10px;
+         }
+
+         .feature-card {
+             display: inline-flex;
+             flex-direction: column;
+             align-items: center;
+             text-align: center;
+             background: #f8f9fa;
+             border-radius: 10px;
+             padding: 15px;
+             min-width: 120px;
+             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+             flex-shrink: 0;
+         }
+
+         .feature-icon {
+             font-size: 24px;
+             color: #007bff;
+             margin-bottom: 8px;
+         }
+
+         .feature-title {
+             font-size: 14px;
+             font-weight: 600;
+             color: #2d3748;
+             margin-bottom: 4px;
+             white-space: normal;
+         }
+
+         .feature-desc {
+             font-size: 12px;
+             color: #718096;
+             white-space: normal;
+         }
+
+         /* Hide scrollbar */
+         .mobile-features-container::-webkit-scrollbar {
+             display: none;
+         }
+
+         /* Amazon note */
+         .amazon-note {
+             text-align: center;
+             padding: 10px;
+             font-size: 12px;
+             color: #666;
+             margin-top: 5px;
+         }
          
-         /* Quick Actions */
-         .quick-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 15px 20px; }
-         .action-btn { background: white; border-radius: 12px; padding: 20px 15px; text-align: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); cursor: pointer; transition: all 0.3s ease; border: 1px solid #f0f0f0; }
-         .action-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); }
-         .action-btn i { font-size: 28px; color: var(--primary); margin-bottom: 10px; display: block; }
-         .action-btn span { font-size: 14px; font-weight: 600; color: #333; }
+         /* Loan Banner - Compact Layout */
+         .loan-banner {
+             background: linear-gradient(135deg, #6a11cb, #2575fc);
+             color: white;
+             border-radius: 12px;
+             padding: 20px;
+             margin: 0 20px 20px;
+             text-align: center;
+             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+         }
+         
+         .loan-title {
+             font-size: 1.3rem;
+             font-weight: 600;
+             margin-bottom: 5px;
+         }
+         
+         .loan-amount {
+             font-size: 2rem;
+             font-weight: 700;
+             margin: 10px 0;
+         }
+         
+         .loan-details {
+             display: flex;
+             justify-content: space-between;
+             margin: 15px 0;
+             flex-wrap: wrap;
+         }
+         
+         .loan-detail {
+             flex: 1;
+             min-width: 30%;
+             margin-bottom: 10px;
+         }
+         
+         .detail-value {
+             font-weight: 600;
+             font-size: 1.1rem;
+         }
+         
+         .detail-label {
+             font-size: 0.8rem;
+             opacity: 0.9;
+         }
+         
+         .apply-btn {
+             background: white;
+             color: var(--primary);
+             border: none;
+             padding: 12px;
+             border-radius: 8px;
+             font-weight: 600;
+             width: 100%;
+             margin-top: 10px;
+             cursor: pointer;
+             transition: all 0.3s;
+         }
+         
+         .apply-btn:hover {
+             transform: translateY(-2px);
+             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+         }
+         
+         /* Quick Actions - 2x2 Grid */
+         .quick-actions {
+             margin: 20px;
+         }
+         
+         .quick-actions-title {
+             font-size: 1.2rem;
+             font-weight: 600;
+             margin-bottom: 15px;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+         }
+         
+         .toggle-btn {
+             background: none;
+             border: none;
+             color: var(--primary);
+             font-weight: 500;
+             cursor: pointer;
+             display: flex;
+             align-items: center;
+             gap: 5px;
+         }
+         
+         .toggle-btn i {
+             transition: transform 0.3s;
+         }
+         
+         .actions-grid {
+             display: grid;
+             grid-template-columns: 1fr 1fr;
+             gap: 15px;
+             transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+         }
+         
+         .actions-grid.collapsed {
+             height: 0;
+             overflow: hidden;
+             opacity: 0;
+             transform: translateY(-20px);
+         }
+         
+         .action-btn {
+             background: white;
+             border-radius: 10px;
+             padding: 15px;
+             text-align: center;
+             box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             text-decoration: none;
+             color: var(--dark);
+             transition: all 0.3s;
+             cursor: pointer;
+         }
+         
+         .action-btn:hover {
+             transform: translateY(-3px);
+             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+         }
+         
+         .action-icon {
+             width: 40px;
+             height: 40px;
+             background: rgba(108, 99, 255, 0.1);
+             border-radius: 50%;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             margin-bottom: 10px;
+             color: var(--primary);
+         }
+         
+         .action-label {
+             font-weight: 500;
+             font-size: 0.9rem;
+         }
+         
+         /* Animations */
+         @keyframes fadeIn {
+             from { opacity: 0; transform: translateY(20px); }
+             to { opacity: 1; transform: translateY(0); }
+         }
+         
+         @keyframes slideIn {
+             from { opacity: 0; transform: translateY(30px); }
+             to { opacity: 1; transform: translateY(0); }
+         }
+         
+         .fade-in {
+             animation: fadeIn 0.5s ease-out;
+         }
+         
+         .slide-in {
+             animation: slideIn 0.6s ease-out;
+         }
         
         /* Profile Section */
         .profile-section { display: none; padding: 20px; padding-bottom: 100px; }
@@ -285,97 +487,98 @@
             </button>
         </div>
         
-        <!-- Welcome Section -->
-        <div class="welcome-section">
-            <div class="welcome-title" id="welcomeTitle">Welcome, User!</div>
-            <div class="welcome-subtitle">We're here to help you with your financial needs</div>
+        <!-- Welcome Banner -->
+        <div class="welcome-banner slide-in">
+            <h1 id="welcomeTitle">Welcome, User!</h1>
+            <p>We're here to help you with your financial needs</p>
         </div>
         
-        <!-- Features Showcase -->
-        <div class="features-showcase">
-            <div class="feature-item">
+        <div class="mobile-features-container">
+            <!-- Feature 1 -->
+            <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-bolt"></i></div>
                 <div class="feature-title">Fast Approval</div>
                 <div class="feature-desc">Within Minutes</div>
             </div>
             
-            <div class="feature-item">
+            <!-- Feature 2 -->
+            <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-money-bill-wave"></i></div>
                 <div class="feature-title">Instant Loan</div>
                 <div class="feature-desc">Direct to Account</div>
             </div>
             
-            <div class="feature-item">
+            <!-- Feature 3 -->
+            <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
                 <div class="feature-title">Secure Process</div>
                 <div class="feature-desc">256-bit Encryption</div>
             </div>
         </div>
 
-        <div class="trust-badge">
-            <i class="fab fa-amazon" style="color: #FF9900;"></i> 
-            Trusted by Amazon - Safe & Secure - 24/7 Support
+        <div class="amazon-note">
+            <i class="fab fa-amazon" style="color: #FF9900;"></i> Trusted by amazon - Safe & Secure - 24/7 support
         </div>
-        
-        <!-- Status Displays -->
-        <div class="status-displays">
-            <!-- Approved Status -->
-            <div class="status-card status-approved" id="approvedStatus">
-                <div class="status-icon"><i class="fas fa-check-circle"></i></div>
-                <div class="status-title">Loan Approved!</div>
-                <div class="status-amount" id="approvedAmount">₹50,000</div>
-                <p>Your loan has been approved and will be credited to your account within 24 hours.</p>
-                <button class="primary-action-btn" onclick="viewLoanDetails()">View Details</button>
-            </div>
             
-            <!-- Active Loan Status -->
-            <div class="status-card status-active" id="activeStatus">
-                <div class="status-icon"><i class="fas fa-credit-card"></i></div>
-                <div class="status-title">Active Loan</div>
-                <div class="status-amount" id="activeAmount">₹25,000</div>
-                <p>EMI: ₹2,500/month | Due: 15th every month</p>
-                <button class="primary-action-btn" onclick="showSection('repay')">Repay Now</button>
+        <!-- Default Loan Banner - Compact Layout -->
+        <div class="loan-banner slide-in">
+            <div class="loan-title">Fast And Secure Loan</div>
+            <div class="loan-amount">₹500,000</div>
+            <div class="loan-details">
+                <div class="loan-detail">
+                    <div class="detail-value">3 Years</div>
+                    <div class="detail-label">Tenure</div>
+                </div>
+                <div class="loan-detail">
+                    <div class="detail-value">0.05%</div>
+                    <div class="detail-label">Interest Rate</div>
+                </div>
+                <div class="loan-detail">
+                    <div class="detail-value">Fast</div>
+                    <div class="detail-label">Approval</div>
+                </div>
             </div>
-            
-            <!-- Processing Status -->
-            <div class="status-card status-processing" id="processingStatus">
-                <div class="status-icon"><i class="fas fa-clock"></i></div>
-                <div class="status-title">Application Processing</div>
-                <div class="status-amount" id="processingAmount">₹75,000</div>
-                <p>Your application is under review. You'll hear from us within 2 hours.</p>
-                <button class="secondary-action-btn" onclick="checkStatus()">Check Status</button>
-            </div>
-            
-            <!-- Rejected Status -->
-            <div class="status-card status-rejected" id="rejectedStatus">
-                <div class="status-icon"><i class="fas fa-times-circle"></i></div>
-                <div class="status-title">Application Declined</div>
-                <div class="status-amount" id="rejectedAmount">₹30,000</div>
-                <p>Unfortunately, we couldn't approve your application at this time.</p>
-                <button class="secondary-action-btn" onclick="reapply()">Apply Again</button>
-            </div>
+            <button class="apply-btn" onclick="showLoanApplicationForm()">Apply Now</button>
         </div>
-        
-        <!-- Quick Actions -->
+            
+        <!-- Quick Actions - 2x2 Grid -->
         <div class="quick-actions">
-            <div class="action-btn" onclick="showLoanApplicationForm()">
-                <i class="fas fa-plus-circle"></i>
-                <span>Apply for Loan</span>
+            <div class="quick-actions-title">
+                Quick Actions
+                <button class="toggle-btn" id="toggleActions">
+                    <span id="toggleText">Hide</span>
+                    <i class="fas fa-chevron-up" id="toggleIcon"></i>
+                </button>
             </div>
             
-            <div class="action-btn" onclick="showSection('repay')">
-                <i class="fas fa-credit-card"></i>
-                <span>Repay Loan</span>
-            </div>
-            
-            <div class="action-btn" onclick="showNotification('Calculator coming soon!', 'info')">
-                <i class="fas fa-calculator"></i>
-                <span>EMI Calculator</span>
-            </div>
-            
-            <div class="action-btn" onclick="showNotification('History coming soon!', 'info')">
-                <i class="fas fa-history"></i>
-                <span>Loan History</span>
+            <div class="actions-grid" id="actionsGrid">
+                <div class="action-btn" onclick="showSection('profile')">
+                    <div class="action-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="action-label">Profile</div>
+                </div>
+                
+                <div class="action-btn" onclick="loadMyLoans()">
+                    <div class="action-icon">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <div class="action-label">My Loans</div>
+                </div>
+                
+                <div class="action-btn" onclick="showNotification('History coming soon!', 'info')">
+                    <div class="action-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div class="action-label">History</div>
+                </div>
+                
+                <div class="action-btn" onclick="showSection('repay')">
+                    <div class="action-icon">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                    <div class="action-label">Repay</div>
+                </div>
             </div>
         </div>
     </div>
@@ -902,8 +1105,72 @@
                  roleElement.style.background = 'var(--primary)';
              }
              
-             // Show appropriate status cards based on user's loan status
-             showStatusCards();
+             // Initialize toggle functionality
+             initializeToggleActions();
+         }
+         
+         function initializeToggleActions() {
+             const toggleBtn = document.getElementById('toggleActions');
+             const actionsGrid = document.getElementById('actionsGrid');
+             const toggleText = document.getElementById('toggleText');
+             const toggleIcon = document.getElementById('toggleIcon');
+             let isCollapsed = false;
+             
+             if (toggleBtn) {
+                 toggleBtn.addEventListener('click', function() {
+                     isCollapsed = !isCollapsed;
+                     
+                     if (isCollapsed) {
+                         actionsGrid.classList.add('collapsed');
+                         toggleText.textContent = 'Show';
+                         toggleIcon.classList.remove('fa-chevron-up');
+                         toggleIcon.classList.add('fa-chevron-down');
+                         
+                         // Animate items out
+                         const items = actionsGrid.querySelectorAll('.action-btn');
+                         items.forEach((item, index) => {
+                             item.style.animation = `slideOut 0.3s ease-out ${index * 0.1}s forwards`;
+                         });
+                     } else {
+                         actionsGrid.classList.remove('collapsed');
+                         toggleText.textContent = 'Hide';
+                         toggleIcon.classList.remove('fa-chevron-down');
+                         toggleIcon.classList.add('fa-chevron-up');
+                         
+                         // Animate items in
+                         const items = actionsGrid.querySelectorAll('.action-btn');
+                         items.forEach((item, index) => {
+                             item.style.animation = `slideIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55) ${index * 0.1}s forwards`;
+                         });
+                     }
+                 });
+             }
+             
+             // Add animation styles dynamically
+             if (!document.getElementById('toggleAnimationStyles')) {
+                 const style = document.createElement('style');
+                 style.id = 'toggleAnimationStyles';
+                 style.textContent = `
+                     @keyframes slideOut {
+                         to {
+                             opacity: 0;
+                             transform: translateY(-20px) rotate(10deg);
+                         }
+                     }
+                     
+                     @keyframes slideIn {
+                         from {
+                             opacity: 0;
+                             transform: translateY(20px) rotate(-10deg);
+                         }
+                         to {
+                             opacity: 1;
+                             transform: translateY(0) rotate(0);
+                         }
+                     }
+                 `;
+                 document.head.appendChild(style);
+             }
          }
          
          function showStatusCards() {
