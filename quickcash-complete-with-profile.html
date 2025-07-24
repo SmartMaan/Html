@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickCash - Complete Loan Application</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary: #6c63ff;
+            --secondary: #4a42e8;
+            --accent: #ff6584;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --info: #17a2b8;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --gradient-bg: linear-gradient(135deg, #6e8efb, #a777e3);
+            --dashboard-bg: #f5f7fa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            transition: all 0.8s ease;
+            overflow-x: hidden;
+        }
+        
+        body.dashboard-mode {
+            background: var(--dashboard-bg);
+        }
+        
+        /* ============ LOADING SCREEN ============ */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: white;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .loading-subtitle {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        /* ============ LOGIN SYSTEM STYLES ============ */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            opacity: 1;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        
+        .login-container.slide-out {
+            opacity: 0;
+            transform: translateX(-100vw);
+        }
+        
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            animation: slideInUp 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .auth-header {
+            background: linear-gradient(135deg, #4a6cf7, #8a3ffb);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .auth-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .auth-logo i {
+            margin-right: 12px;
+            font-size: 2.2rem;
+        }
+        
+        .auth-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 18px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .auth-tab.active {
+            color: var(--primary);
+            background: white;
+            border-bottom-color: var(--primary);
+        }
+        
+        .auth-tab:hover:not(.active) {
+            background: #f1f3f4;
+            color: var(--secondary);
+        }
+        
+        .auth-content {
+            padding: 30px;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+            animation: fadeInContent 0.5s ease;
+        }
+        
+        @keyframes fadeInContent {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+        
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.1);
+            outline: none;
+            background: white;
+        }
+        
+        .form-input.valid {
+            border-color: var(--success);
+            background: #f0f9f0;
+        }
+        
+        .form-input.invalid {
+            border-color: var(--danger);
+            background: #fef2f2;
+        }
+        
+        .password-wrapper {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6b7280;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+        
+        .password-toggle:hover {
+            color: var(--primary);
+        }
+        
+        .field-error {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none;
+            font-weight: 500;
+        }
+        
+        .password-strength {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .strength-weak { color: var(--danger); }
+        .strength-medium { color: var(--warning); }
+        .strength-strong { color: var(--success); }
+        
+        .auth-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .auth-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 99, 255, 0.4);
+        }
+        
+        .auth-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .auth-button.loading {
+            color: transparent;
+        }
+        
+        .button-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        
+        .auth-button.loading .button-spinner {
+            display: block;
+        }
+        
+        .auth-messages {
+            margin-bottom: 20px;
+        }
+        
+        .message {
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            font-weight: 500;
+            display: none;
+            animation: slideInMessage 0.4s ease;
+        }
+        
+        @keyframes slideInMessage {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        
+        .message.success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+        
+        /* ============ DASHBOARD STYLES ============ */
+        .dashboard-container {
+            display: none;
+            min-height: 100vh;
+            padding-bottom: 80px;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        
+        .dashboard-container.slide-in {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(108, 99, 255, 0.3);
+        }
+        
+        .dashboard-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+        
+        .dashboard-logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        
+        .profile-button {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .profile-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        /* ============ PROFILE SECTION STYLES ============ */
+        .profile-section {
+            display: none;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(108, 99, 255, 0.3);
+            border-radius: 0 0 20px 20px;
+            margin: -20px -20px 20px -20px;
+        }
+        
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 600;
+            margin: 0 auto 15px;
+        }
+        
+        .user-name {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .user-mobile {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .user-role {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--primary);
+            color: white;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+        
+        .menu-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .menu-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #eee;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .menu-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #f8f9ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            color: var(--primary);
+            font-size: 20px;
+        }
+        
+        .menu-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .logout-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .logout-btn i {
+            margin-right: 10px;
+        }
+        
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #e84118, #ff4757);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+        }
+        
+        /* ============ POPUP STYLES ============ */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .popup-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px);
+            transition: all 0.3s;
+        }
+        
+        .popup-overlay.active .popup-content {
+            transform: translateY(0);
+        }
+        
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .popup-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .popup-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .popup-body {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .popup-body h3 {
+            margin: 15px 0 10px;
+            color: #333;
+        }
+        
+        .popup-body p {
+            margin-bottom: 10px;
+        }
+        
+        .contact-option {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 12px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .contact-option:hover {
+            background: #eef1ff;
+            transform: translateX(5px);
+        }
+        
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 18px;
+        }
+        
+        .contact-text {
+            flex: 1;
+        }
+        
+        .contact-label {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .contact-value {
+            font-size: 13px;
+            color: #666;
+            word-break: break-all;
+        }
+        
+        .popup-footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .popup-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .popup-btn:hover {
+            background: linear-gradient(135deg, #3a5ce4, #7a2ffa);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 108, 247, 0.3);
+        }
+        
+        /* ============ BOTTOM NAVIGATION ============ */
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            text-align: center;
+            color: #9ca3af;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 12px;
+            min-width: 60px;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+            background: rgba(108, 99, 255, 0.1);
+        }
+        
+        .nav-item:hover {
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .nav-item i {
+            font-size: 1.3rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item span {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        /* ============ NOTIFICATION SYSTEM ============ */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            transform: translateX(400px);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: linear-gradient(135deg, var(--success), #10b981);
+        }
+        
+        .notification.error {
+            background: linear-gradient(135deg, var(--danger), #ef4444);
+        }
+        
+        .notification.info {
+            background: linear-gradient(135deg, var(--info), #3b82f6);
+        }
+        
+        /* ============ RESPONSIVE DESIGN ============ */
+        @media (max-width: 768px) {
+            .auth-card {
+                margin: 10px;
+                border-radius: 20px;
+            }
+            
+            .auth-content {
+                padding: 25px 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .auth-header {
+                padding: 25px 15px;
+            }
+            
+            .auth-logo {
+                font-size: 1.7rem;
+            }
+            
+            .menu-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ============ UTILITY CLASSES ============ */
+        .hidden {
+            display: none !important;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">QuickCash</div>
+        <div class="loading-subtitle">Initializing your loan application...</div>
+    </div>
+
+    <!-- Login System -->
+    <div class="login-container" id="loginContainer">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Quick Cash
+                </div>
+                <div class="auth-subtitle">Get instant loans with minimal documentation</div>
+            </div>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="switchAuthTab('login')">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </div>
+                <div class="auth-tab" onclick="switchAuthTab('register')">
+                    <i class="fas fa-user-plus"></i> Register
+                </div>
+            </div>
+            
+            <div class="auth-content">
+                <div class="auth-messages" id="authMessages"></div>
+                
+                <!-- Login Form -->
+                <form class="auth-form active" id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="loginMobile">
+                            <i class="fas fa-mobile-alt"></i> Mobile Number
+                        </label>
+                        <input type="text" id="loginMobile" class="form-input" placeholder="Enter your mobile number" maxlength="10" required>
+                        <div class="field-error" id="loginMobileError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="loginPassword">
+                            <i class="fas fa-lock"></i> Password
+                        </label>
+                        <div class="password-wrapper">
+                            <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                            <i class="password-toggle fas fa-eye" onclick="togglePasswordVisibility('loginPassword', this)"></i>
+                        </div>
+                        <div class="field-error" id="loginPasswordError"></div>
+                    </div>
+                    
+                    <button type="submit" class="auth-button" id="loginButton">
+                        <div class="button-spinner"></div>
+                        <span class="button-text">Sign In</span>
+                    </button>
+                </form>
+                
+                <!-- Register Form -->
+                <form class="auth-form" id="registerForm">
+                    <div class="form-group">
+                        <label class="form-label" for="registerName">
+                            <i class="fas fa-user"></i> Full Name
+                        </label>
+                        <input type="text" id="registerName" class="form-input" placeholder="Enter your full name" required>
+                        <div class="field-error" id="registerNameError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="registerMobile">
+                            <i class="fas fa-mobile-alt"></i> Mobile Number
+                        </label>
+                        <input type="text" id="registerMobile" class="form-input" placeholder="Enter your mobile number" maxlength="10" required>
+                        <div class="field-error" id="registerMobileError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="registerEmail">
+                            <i class="fas fa-envelope"></i> Email Address (Optional)
+                        </label>
+                        <input type="email" id="registerEmail" class="form-input" placeholder="Enter your email address">
+                        <div class="field-error" id="registerEmailError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="registerPassword">
+                            <i class="fas fa-lock"></i> Password (min 6 characters)
+                        </label>
+                        <div class="password-wrapper">
+                            <input type="password" id="registerPassword" class="form-input" placeholder="Create a password" required>
+                            <i class="password-toggle fas fa-eye" onclick="togglePasswordVisibility('registerPassword', this)"></i>
+                        </div>
+                        <div class="password-strength" id="passwordStrength"></div>
+                        <div class="field-error" id="registerPasswordError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="confirmPassword">
+                            <i class="fas fa-lock"></i> Confirm Password
+                        </label>
+                        <div class="password-wrapper">
+                            <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm your password" required>
+                            <i class="password-toggle fas fa-eye" onclick="togglePasswordVisibility('confirmPassword', this)"></i>
+                        </div>
+                        <div class="field-error" id="confirmPasswordError"></div>
+                    </div>
+                    
+                    <button type="submit" class="auth-button" id="registerButton">
+                        <div class="button-spinner"></div>
+                        <span class="button-text">Create Account</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard System -->
+    <div class="dashboard-container" id="dashboardContainer">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-logo">
+                <i class="fas fa-money-bill-wave"></i>
+                QuickCash
+            </div>
+            <button class="profile-button" onclick="showProfileSection()">
+                <i class="fas fa-user"></i>
+            </button>
+        </div>
+        
+        <!-- Dashboard Content Here (keeping it minimal for space) -->
+        <div id="homeSection" style="padding: 20px; text-align: center;">
+            <h2 id="welcomeTitle">Welcome to QuickCash!</h2>
+            <p>Your loan application dashboard</p>
+            <button onclick="applyForLoan()" style="margin-top: 20px; padding: 12px 24px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                Apply for Loan
+            </button>
+        </div>
+    </div>
+
+    <!-- Profile Section -->
+    <div class="profile-section" id="profileSection">
+        <div class="profile-header">
+            <button class="back-btn" onclick="showHomeSection()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="dashboard-logo">
+                <i class="fas fa-money-bill-wave"></i> Quick Cash
+            </div>
+        </div>
+        
+        <div class="profile-card">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <h2 class="user-name" id="userName">User Name</h2>
+            <div class="user-mobile" id="userMobile">+91 0000000000</div>
+            <div class="user-role" id="userRole">User</div>
+        </div>
+        
+        <div class="menu-container">
+            <div class="menu-item" onclick="showNotification('Settings coming soon!', 'info')">
+                <div class="menu-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <div class="menu-text">Settings</div>
+            </div>
+            
+            <div class="menu-item" onclick="showNotification('Information coming soon!', 'info')">
+                <div class="menu-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="menu-text">Information</div>
+            </div>
+            
+            <div class="menu-item" onclick="showNotification('My Loans coming soon!', 'info')">
+                <div class="menu-icon">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <div class="menu-text">My Loans</div>
+            </div>
+            
+            <div class="menu-item" onclick="showNotification('Transaction History coming soon!', 'info')">
+                <div class="menu-icon">
+                    <i class="fas fa-history"></i>
+                </div>
+                <div class="menu-text">Transaction History</div>
+            </div>
+            
+            <div class="menu-item" onclick="showContactPopup()">
+                <div class="menu-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <div class="menu-text">Contact Us</div>
+            </div>
+            
+            <div class="menu-item" onclick="showPrivacyPopup()">
+                <div class="menu-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="menu-text">Privacy Policy</div>
+            </div>
+            
+            <div class="menu-item" onclick="showTermsPopup()">
+                <div class="menu-icon">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <div class="menu-text">Terms & Conditions</div>
+            </div>
+        </div>
+        
+        <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-navigation">
+        <div class="nav-item active" onclick="showHomeSection()">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="showNotification('Repay coming soon!', 'info')">
+            <i class="fas fa-hand-holding-usd"></i>
+            <span>Repay</span>
+        </div>
+        <div class="nav-item" onclick="showNotification('History coming soon!', 'info')">
+            <i class="fas fa-history"></i>
+            <span>History</span>
+        </div>
+        <div class="nav-item" onclick="showProfileSection()">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </div>
+    </div>
+
+    <!-- Popups -->
+    <div class="popup-overlay" id="termsPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 class="popup-title">Terms & Conditions</h3>
+                <button class="popup-close" onclick="hidePopup('termsPopup')">&times;</button>
+            </div>
+            <div class="popup-body">
+                <h3>1. Loan Agreement</h3>
+                <p>By applying for a loan through Quick Cash, you agree to be bound by these terms and conditions.</p>
+                <h3>2. Interest Rates</h3>
+                <p>Interest rates vary based on loan amount, tenure, and applicant's creditworthiness.</p>
+                <h3>3. Repayment</h3>
+                <p>You agree to repay the loan amount plus interest by the due date.</p>
+            </div>
+            <div class="popup-footer">
+                <button class="popup-btn" onclick="hidePopup('termsPopup')">Got It</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="privacyPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 class="popup-title">Privacy Policy</h3>
+                <button class="popup-close" onclick="hidePopup('privacyPopup')">&times;</button>
+            </div>
+            <div class="popup-body">
+                <h3>1. Information Collection</h3>
+                <p>We collect personal information to process your loan application and provide services.</p>
+                <h3>2. Data Protection</h3>
+                <p>We implement security measures to protect your data from unauthorized access.</p>
+            </div>
+            <div class="popup-footer">
+                <button class="popup-btn" onclick="hidePopup('privacyPopup')">Got It</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="contactPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 class="popup-title">Contact Us</h3>
+                <button class="popup-close" onclick="hidePopup('contactPopup')">&times;</button>
+            </div>
+            <div class="popup-body">
+                <p>Contact us through any of the following methods:</p>
+                
+                <div class="contact-option" onclick="copyToClipboard('support@quickcash.com')">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="contact-text">
+                        <div class="contact-label">Email Us</div>
+                        <div class="contact-value">support@quickcash.com</div>
+                    </div>
+                </div>
+                
+                <div class="contact-option" onclick="copyToClipboard('+919876543210')">
+                    <div class="contact-icon">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <div class="contact-text">
+                        <div class="contact-label">WhatsApp</div>
+                        <div class="contact-value">+91 98765 43210</div>
+                    </div>
+                </div>
+                
+                <div class="contact-option" onclick="copyToClipboard('@quickcashsupport')">
+                    <div class="contact-icon">
+                        <i class="fab fa-telegram"></i>
+                    </div>
+                    <div class="contact-text">
+                        <div class="contact-label">Telegram</div>
+                        <div class="contact-value">@quickcashsupport</div>
+                    </div>
+                </div>
+            </div>
+            <div class="popup-footer">
+                <button class="popup-btn" onclick="hidePopup('contactPopup')">Got It</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAL5e-5eQfgf1nI6hWTnhwLFgK0Cp89aa0",
+            authDomain: "aviator-pr01.firebaseapp.com",
+            databaseURL: "https://aviator-pr01-default-rtdb.firebaseio.com",
+            projectId: "aviator-pr01",
+            storageBucket: "aviator-pr01.firebasestorage.app",
+            messagingSenderId: "290788041297",
+            appId: "1:290788041297:web:168f99d1532997fb778e70",
+            measurementId: "G-ENCBTT4BL8"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const rtdb = firebase.database();
+        
+        // Global State
+        let currentUser = null;
+        let userData = null;
+        let isAuthenticating = false;
+        
+        // DOM Elements
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loginContainer = document.getElementById('loginContainer');
+        const dashboardContainer = document.getElementById('dashboardContainer');
+        const profileSection = document.getElementById('profileSection');
+        
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+        });
+        
+        function initializeApp() {
+            showLoading();
+            
+            // Check authentication state
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    loadUserData().then(() => {
+                        showDashboard();
+                        hideLoading();
+                    });
+                } else {
+                    showLoginSystem();
+                    hideLoading();
+                }
+            });
+        }
+        
+        function setupEventListeners() {
+            // Auth form submissions
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('registerForm').addEventListener('submit', handleRegister);
+            
+            // Real-time validation
+            document.getElementById('registerPassword').addEventListener('input', checkPasswordStrength);
+            document.getElementById('confirmPassword').addEventListener('input', checkPasswordMatch);
+            document.getElementById('registerMobile').addEventListener('input', validateMobileInput);
+            document.getElementById('loginMobile').addEventListener('input', validateMobileInput);
+        }
+        
+        function showLoading() {
+            loadingOverlay.classList.remove('hidden');
+        }
+        
+        function hideLoading() {
+            setTimeout(() => {
+                loadingOverlay.classList.add('hidden');
+            }, 1500);
+        }
+        
+        function showLoginSystem() {
+            loginContainer.style.display = 'flex';
+            dashboardContainer.style.display = 'none';
+            profileSection.style.display = 'none';
+            document.body.classList.remove('dashboard-mode');
+        }
+        
+        function showDashboard() {
+            loginContainer.classList.add('slide-out');
+            
+            setTimeout(() => {
+                loginContainer.style.display = 'none';
+                dashboardContainer.style.display = 'block';
+                profileSection.style.display = 'none';
+                document.body.classList.add('dashboard-mode');
+                
+                setTimeout(() => {
+                    dashboardContainer.classList.add('slide-in');
+                }, 50);
+            }, 400);
+            
+            updateNavigation('home');
+        }
+        
+        function showProfileSection() {
+            dashboardContainer.style.display = 'none';
+            profileSection.style.display = 'block';
+            updateNavigation('profile');
+        }
+        
+        function showHomeSection() {
+            profileSection.style.display = 'none';
+            dashboardContainer.style.display = 'block';
+            updateNavigation('home');
+        }
+        
+        function updateNavigation(activeSection) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            if (activeSection === 'home') {
+                document.querySelector('.nav-item').classList.add('active');
+            } else if (activeSection === 'profile') {
+                document.querySelectorAll('.nav-item')[3].classList.add('active');
+            }
+        }
+        
+        function switchAuthTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Update forms
+            document.querySelectorAll('.auth-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            document.getElementById(tabName + 'Form').classList.add('active');
+            
+            // Clear messages and errors
+            clearAuthMessages();
+            clearFieldErrors();
+        }
+        
+        function togglePasswordVisibility(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            if (isAuthenticating) return;
+            
+            const mobile = document.getElementById('loginMobile').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!validateLoginForm(mobile, password)) {
+                return;
+            }
+            
+            isAuthenticating = true;
+            const loginButton = document.getElementById('loginButton');
+            setButtonLoading(loginButton, true);
+            
+            try {
+                const email = `${mobile}@quickcash.com`;
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                const userDoc = await db.collection('loanuser').doc(user.uid).get();
+                
+                if (userDoc.exists) {
+                    userData = userDoc.data();
+                    showAuthMessage(`Welcome back, ${userData.name}!`, 'success');
+                    
+                    await db.collection('loanuser').doc(user.uid).update({
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                        loginCount: firebase.firestore.FieldValue.increment(1)
+                    });
+                } else {
+                    throw new Error('User data not found');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                handleAuthError(error);
+            } finally {
+                isAuthenticating = false;
+                setButtonLoading(loginButton, false);
+            }
+        }
+        
+        async function handleRegister(e) {
+            e.preventDefault();
+            
+            if (isAuthenticating) return;
+            
+            const name = document.getElementById('registerName').value.trim();
+            const mobile = document.getElementById('registerMobile').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!validateRegisterForm(name, mobile, password, confirmPassword)) {
+                return;
+            }
+            
+            isAuthenticating = true;
+            const registerButton = document.getElementById('registerButton');
+            setButtonLoading(registerButton, true);
+            
+            try {
+                // Check if mobile number already exists
+                const existingUser = await db.collection('loanuser')
+                    .where('mobile', '==', mobile)
+                    .get();
+                
+                if (!existingUser.empty) {
+                    throw new Error('Mobile number already registered');
+                }
+                
+                const authEmail = `${mobile}@quickcash.com`;
+                const userCredential = await auth.createUserWithEmailAndPassword(authEmail, password);
+                const user = userCredential.user;
+                
+                await user.updateProfile({
+                    displayName: name
+                });
+                
+                // Enhanced user data with role and additional fields
+                const newUserData = {
+                    uid: user.uid,
+                    name: name,
+                    mobile: mobile,
+                    email: email || authEmail,
+                    password: password, // Note: In production, never store plain text passwords
+                    role: 'user', // Default role is 'user', can be 'admin'
+                    authEmail: authEmail,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                    loginCount: 1,
+                    totalLoans: 0,
+                    totalBorrowed: 0,
+                    activeLoans: 0,
+                    creditScore: 750,
+                    isVerified: false,
+                    isActive: true,
+                    status: 'active',
+                    profileComplete: true,
+                    address: '',
+                    city: '',
+                    state: '',
+                    pincode: '',
+                    occupation: '',
+                    monthlyIncome: 0,
+                    bankAccount: '',
+                    ifscCode: '',
+                    panNumber: '',
+                    aadharNumber: '',
+                    kycStatus: 'pending'
+                };
+                
+                await db.collection('loanuser').doc(user.uid).set(newUserData);
+                
+                // Also store in Realtime Database
+                await rtdb.ref('loanusers/' + user.uid).set({
+                    name: name,
+                    mobile: mobile,
+                    email: email || authEmail,
+                    role: 'user',
+                    createdAt: firebase.database.ServerValue.TIMESTAMP,
+                    status: 'active'
+                });
+                
+                userData = newUserData;
+                showAuthMessage(`Welcome ${name}! Registration successful.`, 'success');
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                handleAuthError(error);
+            } finally {
+                isAuthenticating = false;
+                setButtonLoading(registerButton, false);
+            }
+        }
+        
+        async function loadUserData() {
+            try {
+                if (!currentUser) return;
+                
+                const userDoc = await db.collection('loanuser').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    userData = userDoc.data();
+                    
+                    // Update UI with user data
+                    updateUserProfile();
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showNotification('Error loading user data', 'error');
+            }
+        }
+        
+        function updateUserProfile() {
+            if (!userData) return;
+            
+            // Update dashboard welcome
+            document.getElementById('welcomeTitle').textContent = `Welcome, ${userData.name}!`;
+            
+            // Update profile section
+            document.getElementById('userAvatar').textContent = userData.name.charAt(0).toUpperCase();
+            document.getElementById('userName').textContent = userData.name;
+            document.getElementById('userMobile').textContent = `+91 ${userData.mobile}`;
+            document.getElementById('userRole').textContent = userData.role.toUpperCase();
+            
+            // Set role color
+            const roleElement = document.getElementById('userRole');
+            if (userData.role === 'admin') {
+                roleElement.style.background = '#ff6584';
+            } else {
+                roleElement.style.background = 'var(--primary)';
+            }
+        }
+        
+        async function applyForLoan() {
+            const amount = prompt('Enter loan amount (₹):');
+            if (!amount || isNaN(amount) || amount <= 0) {
+                showNotification('Please enter a valid amount', 'error');
+                return;
+            }
+            
+            try {
+                const loanData = {
+                    userId: currentUser.uid,
+                    userName: userData.name,
+                    userMobile: userData.mobile,
+                    amount: parseInt(amount),
+                    tenure: 12,
+                    interestRate: 12,
+                    status: 'pending',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                await db.collection('loans').add(loanData);
+                
+                await db.collection('loanuser').doc(currentUser.uid).update({
+                    totalLoans: firebase.firestore.FieldValue.increment(1),
+                    totalBorrowed: firebase.firestore.FieldValue.increment(parseInt(amount))
+                });
+                
+                showNotification('Loan application submitted successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error applying for loan:', error);
+                showNotification('Error submitting loan application', 'error');
+            }
+        }
+        
+        // Validation Functions
+        function validateLoginForm(mobile, password) {
+            let isValid = true;
+            clearFieldErrors();
+            
+            if (!mobile) {
+                showFieldError('loginMobileError', 'Mobile number is required');
+                document.getElementById('loginMobile').classList.add('invalid');
+                isValid = false;
+            } else if (!isValidMobile(mobile)) {
+                showFieldError('loginMobileError', 'Please enter a valid 10-digit mobile number');
+                document.getElementById('loginMobile').classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('loginMobile').classList.remove('invalid');
+                document.getElementById('loginMobile').classList.add('valid');
+            }
+            
+            if (!password) {
+                showFieldError('loginPasswordError', 'Password is required');
+                document.getElementById('loginPassword').classList.add('invalid');
+                isValid = false;
+            } else if (password.length < 6) {
+                showFieldError('loginPasswordError', 'Password must be at least 6 characters');
+                document.getElementById('loginPassword').classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('loginPassword').classList.remove('invalid');
+                document.getElementById('loginPassword').classList.add('valid');
+            }
+            
+            return isValid;
+        }
+        
+        function validateRegisterForm(name, mobile, password, confirmPassword) {
+            let isValid = true;
+            clearFieldErrors();
+            
+            if (!name) {
+                showFieldError('registerNameError', 'Full name is required');
+                document.getElementById('registerName').classList.add('invalid');
+                isValid = false;
+            } else if (name.length < 2) {
+                showFieldError('registerNameError', 'Name must be at least 2 characters');
+                document.getElementById('registerName').classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('registerName').classList.remove('invalid');
+                document.getElementById('registerName').classList.add('valid');
+            }
+            
+            if (!mobile) {
+                showFieldError('registerMobileError', 'Mobile number is required');
+                document.getElementById('registerMobile').classList.add('invalid');
+                isValid = false;
+            } else if (!isValidMobile(mobile)) {
+                showFieldError('registerMobileError', 'Please enter a valid 10-digit mobile number');
+                document.getElementById('registerMobile').classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('registerMobile').classList.remove('invalid');
+                document.getElementById('registerMobile').classList.add('valid');
+            }
+            
+            if (!password) {
+                showFieldError('registerPasswordError', 'Password is required');
+                document.getElementById('registerPassword').classList.add('invalid');
+                isValid = false;
+            } else if (password.length < 6) {
+                showFieldError('registerPasswordError', 'Password must be at least 6 characters');
+                document.getElementById('registerPassword').classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('registerPassword').classList.remove('invalid');
+                document.getElementById('registerPassword').classList.add('valid');
+            }
+            
+            if (!confirmPassword) {
+                showFieldError('confirmPasswordError', 'Please confirm your password');
+                document.getElementById('confirmPassword').classList.add('invalid');
+                isValid = false;
+            } else if (password !== confirmPassword) {
+                showFieldError('confirmPasswordError', 'Passwords do not match');
+                document.getElementById('confirmPassword').classList.add('invalid');
+                isValid = false;
+            } else {
+                document.getElementById('confirmPassword').classList.remove('invalid');
+                document.getElementById('confirmPassword').classList.add('valid');
+            }
+            
+            return isValid;
+        }
+        
+        function isValidMobile(mobile) {
+            const mobileRegex = /^[6-9]\d{9}$/;
+            return mobileRegex.test(mobile);
+        }
+        
+        function validateMobileInput(e) {
+            const input = e.target;
+            let value = input.value.replace(/\D/g, '');
+            
+            if (value.length > 10) {
+                value = value.substring(0, 10);
+            }
+            
+            input.value = value;
+            
+            if (value.length === 10 && isValidMobile(value)) {
+                input.classList.remove('invalid');
+                input.classList.add('valid');
+            } else if (value.length > 0) {
+                input.classList.remove('valid');
+                input.classList.add('invalid');
+            } else {
+                input.classList.remove('invalid', 'valid');
+            }
+        }
+        
+        function checkPasswordStrength() {
+            const password = document.getElementById('registerPassword').value;
+            const strengthDiv = document.getElementById('passwordStrength');
+            
+            if (password.length === 0) {
+                strengthDiv.innerHTML = '';
+                return;
+            }
+            
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+            
+            let strengthText = '';
+            let strengthClass = '';
+            
+            if (strength <= 2) {
+                strengthText = 'Weak';
+                strengthClass = 'strength-weak';
+            } else if (strength <= 3) {
+                strengthText = 'Medium';
+                strengthClass = 'strength-medium';
+            } else {
+                strengthText = 'Strong';
+                strengthClass = 'strength-strong';
+            }
+            
+            strengthDiv.innerHTML = `<span class="${strengthClass}">Password strength: ${strengthText}</span>`;
+        }
+        
+        function checkPasswordMatch() {
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const confirmInput = document.getElementById('confirmPassword');
+            
+            if (confirmPassword.length === 0) {
+                confirmInput.classList.remove('invalid', 'valid');
+                return;
+            }
+            
+            if (password === confirmPassword) {
+                confirmInput.classList.remove('invalid');
+                confirmInput.classList.add('valid');
+            } else {
+                confirmInput.classList.remove('valid');
+                confirmInput.classList.add('invalid');
+            }
+        }
+        
+        // UI Helper Functions
+        function setButtonLoading(button, loading) {
+            if (loading) {
+                button.disabled = true;
+                button.classList.add('loading');
+            } else {
+                button.disabled = false;
+                button.classList.remove('loading');
+            }
+        }
+        
+        function showAuthMessage(message, type) {
+            const messagesContainer = document.getElementById('authMessages');
+            messagesContainer.innerHTML = `<div class="message ${type}">${message}</div>`;
+            messagesContainer.querySelector('.message').style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    clearAuthMessages();
+                }, 3000);
+            }
+        }
+        
+        function clearAuthMessages() {
+            document.getElementById('authMessages').innerHTML = '';
+        }
+        
+        function showFieldError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+        
+        function clearFieldErrors() {
+            document.querySelectorAll('.field-error').forEach(error => {
+                error.style.display = 'none';
+            });
+            
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.classList.remove('invalid', 'valid');
+            });
+        }
+        
+        function showNotification(message, type = 'info') {
+            document.querySelectorAll('.notification').forEach(notification => {
+                notification.remove();
+            });
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 400);
+            }, 4000);
+        }
+        
+        function handleAuthError(error) {
+            let message = 'An error occurred. Please try again.';
+            
+            switch (error.code) {
+                case 'auth/user-not-found':
+                    message = 'No account found with this mobile number.';
+                    break;
+                case 'auth/wrong-password':
+                    message = 'Incorrect password. Please try again.';
+                    break;
+                case 'auth/email-already-in-use':
+                    message = 'Mobile number already registered. Please login instead.';
+                    break;
+                case 'auth/weak-password':
+                    message = 'Password should be at least 6 characters.';
+                    break;
+                case 'auth/network-request-failed':
+                    message = 'Network error. Please check your connection.';
+                    break;
+                case 'auth/too-many-requests':
+                    message = 'Too many attempts. Please try again later.';
+                    break;
+                default:
+                    if (error.message.includes('Mobile number already registered')) {
+                        message = 'Mobile number already registered. Please login instead.';
+                    } else if (error.message.includes('User data not found')) {
+                        message = 'Account data not found. Please contact support.';
+                    } else {
+                        message = error.message || message;
+                    }
+            }
+            
+            showAuthMessage(message, 'error');
+        }
+        
+        // Popup Functions
+        function showTermsPopup() {
+            document.getElementById('termsPopup').classList.add('active');
+        }
+        
+        function showPrivacyPopup() {
+            document.getElementById('privacyPopup').classList.add('active');
+        }
+        
+        function showContactPopup() {
+            document.getElementById('contactPopup').classList.add('active');
+        }
+        
+        function hidePopup(popupId) {
+            document.getElementById(popupId).classList.remove('active');
+        }
+        
+        // Close popup when clicking outside
+        document.querySelectorAll('.popup-overlay').forEach(popup => {
+            popup.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                showNotification(`Copied: ${text}`, 'success');
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+                showNotification('Failed to copy', 'error');
+            });
+        }
+        
+        async function logout() {
+            try {
+                await auth.signOut();
+                showNotification('Logged out successfully', 'success');
+            } catch (error) {
+                showNotification('Error logging out', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
