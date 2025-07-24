@@ -1988,6 +1988,17 @@
                 console.log('✅ User data saved to loanusers database successfully!');
                 
                 userData = newUserData;
+                
+                // Log what was saved for debugging
+                console.log('✅ User registration completed!');
+                console.log('📊 Saved user data:');
+                console.log('- Username:', name);
+                console.log('- Phone Number:', mobile);
+                console.log('- Email:', email || authEmail);
+                console.log('- Account Status:', 'active');
+                console.log('- Role:', 'user');
+                console.log('- KYC Status:', 'pending');
+                
                 showMessage(`Welcome ${name}! Registration successful. User data saved to both databases.`, 'success');
                 
             } catch (error) {
@@ -2016,24 +2027,34 @@
                  function updateUserProfile() {
              if (!userData) return;
              
+             console.log('🔍 User data loaded from Firebase:', userData);
+             
              // Update dashboard welcome
              document.getElementById('welcomeTitle').textContent = `Welcome, ${userData.name}!`;
              
-             // Update profile section
+             // Update profile section with saved data
              document.getElementById('userAvatar').textContent = userData.name.charAt(0).toUpperCase();
-             document.getElementById('userName').textContent = userData.name;
-             document.getElementById('userMobile').textContent = `+91 ${userData.mobile}`;
+             document.getElementById('userName').textContent = userData.name; // Saved username
+             document.getElementById('userMobile').textContent = userData.mobile; // Saved phone number (without +91 prefix)
              document.getElementById('userEmail').textContent = userData.email || userData.authEmail;
              
-             // Update KYC status display
+             // Show user account status (saved during registration)
              const statusElement = document.getElementById('userStatus');
-             const kycStatus = userData.kycVerified ? 'KYC Verified' : 'KYC Pending';
-             statusElement.textContent = kycStatus;
-             statusElement.style.background = userData.kycVerified ? 'rgba(40, 167, 69, 0.8)' : 'rgba(255, 193, 7, 0.8)';
+             const accountStatus = userData.status ? userData.status.toUpperCase() : 'ACTIVE'; // Show saved status
+             statusElement.textContent = `Account: ${accountStatus}`;
              
-             // Update role display
+             // Color code based on account status
+             if (userData.status === 'active') {
+                 statusElement.style.background = 'rgba(40, 167, 69, 0.8)'; // Green for active
+             } else if (userData.status === 'suspended') {
+                 statusElement.style.background = 'rgba(220, 53, 69, 0.8)'; // Red for suspended
+             } else {
+                 statusElement.style.background = 'rgba(255, 193, 7, 0.8)'; // Yellow for other
+             }
+             
+             // Update role display (saved during registration)
              const roleElement = document.getElementById('userRole');
-             roleElement.textContent = userData.role.toUpperCase();
+             roleElement.textContent = userData.role.toUpperCase(); // Show saved role
              
              if (userData.role === 'admin') {
                  roleElement.style.background = 'rgba(255, 101, 132, 0.9)';
@@ -2052,6 +2073,14 @@
                      adminMenuItem.style.display = 'none';
                  }
              }
+             
+             // Log what's being displayed
+             console.log('📱 Profile displaying:');
+             console.log('- Username:', userData.name);
+             console.log('- Phone:', userData.mobile);
+             console.log('- Account Status:', userData.status);
+             console.log('- Role:', userData.role);
+             console.log('- KYC Status:', userData.kycStatus);
              
              // Check KYC status and update UI
              updateKYCStatus();
