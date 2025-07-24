@@ -1502,7 +1502,7 @@
                     submittedAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
                 
-                // Update user document with KYC data
+                // Update user document with KYC data in Firestore
                 await db.collection('loanuser').doc(currentUser.uid).update({
                     kycData: kycData,
                     kycStatus: 'verified',
@@ -1510,12 +1510,43 @@
                     kycSubmittedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
-                // Also update in Realtime Database
+                // Also update in Realtime Database with enhanced KYC tracking
                 await rtdb.ref('loanusers/' + currentUser.uid).update({
                     kycData: kycData,
                     kycStatus: 'verified',
                     kycVerified: true,
-                    kycSubmittedAt: firebase.database.ServerValue.TIMESTAMP
+                    kycSubmittedAt: firebase.database.ServerValue.TIMESTAMP,
+                    profileComplete: 100, // 100% profile completion
+                    eligibleForLoan: true,
+                    creditScore: 750 // Default credit score after KYC
+                });
+                
+                // Save KYC submission to separate collection for audit trail
+                await rtdb.ref('kyc_submissions/' + currentUser.uid).set({
+                    ...kycData,
+                    userId: currentUser.uid,
+                    userName: userData.name,
+                    userMobile: userData.mobile,
+                    submittedAt: firebase.database.ServerValue.TIMESTAMP,
+                    verifiedAt: firebase.database.ServerValue.TIMESTAMP,
+                    status: 'verified',
+                    verifiedBy: 'system' // or admin ID
+                });
+                
+                // Create admin notification for KYC verification
+                await rtdb.ref('notifications/admin').push({
+                    type: 'kyc_verification_completed',
+                    userId: currentUser.uid,
+                    userName: userData.name,
+                    userMobile: userData.mobile,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    read: false
+                });
+                
+                // Update system statistics
+                const kycStatsRef = rtdb.ref('statistics/totalKycVerified');
+                await kycStatsRef.transaction((currentCount) => {
+                    return (currentCount || 0) + 1;
                 });
                 
                 // Update local userData
@@ -1907,15 +1938,39 @@
                          loginCount: firebase.firestore.FieldValue.increment(1)
                      });
                      
-                     // Also update in Realtime Database
+                     // Also update in Realtime Database with enhanced tracking
                      try {
-                         await rtdb.ref('loanusers/' + user.uid).update({
+                         const userRef = rtdb.ref('loanusers/' + user.uid);
+                         await userRef.update({
                              lastLogin: firebase.database.ServerValue.TIMESTAMP,
-                             loginCount: firebase.database.ServerValue.increment(1)
+                             loginCount: firebase.database.ServerValue.increment(1),
+                             isOnline: true,
+                             lastActivity: firebase.database.ServerValue.TIMESTAMP
                          });
-                         console.log('Login data updated in Realtime Database');
+                         
+                         // Track login activity in separate collection
+                         const loginLogRef = rtdb.ref('user_activity/' + user.uid + '/logins');
+                         await loginLogRef.push({
+                             timestamp: firebase.database.ServerValue.TIMESTAMP,
+                             userAgent: navigator.userAgent,
+                             ip: 'client-side' // You can get actual IP from server
+                         });
+                         
+                         // Set user as offline when they disconnect
+                         const connectedRef = rtdb.ref('.info/connected');
+                         const presenceRef = rtdb.ref('loanusers/' + user.uid + '/isOnline');
+                         
+                         connectedRef.on('value', (snapshot) => {
+                             if (snapshot.val() === true) {
+                                 presenceRef.onDisconnect().set(false);
+                                 presenceRef.set(true);
+                             }
+                         });
+                         
+                         console.log('✅ Login data updated in Realtime Database');
+                         console.log('✅ User presence tracking enabled');
                      } catch (rtdbError) {
-                         console.error('Error updating login data in Realtime Database:', rtdbError);
+                         console.error('❌ Error updating login data in Realtime Database:', rtdbError);
                      }
                 } else {
                     throw new Error('User data not found');
@@ -2021,32 +2076,79 @@
                     aadharNumber: ''
                 };
                 
-                // Save to Firebase Realtime Database
+                // Save to Firebase Realtime Database with enhanced error handling
                 console.log('🔥 Attempting to save user data to Realtime Database...');
                 console.log('🔥 Database URL:', firebaseConfig.databaseURL);
                 console.log('🔥 User UID:', user.uid);
                 console.log('🔥 RTDB Path: loanusers/' + user.uid);
                 console.log('🔥 RTDB User Data:', rtdbUserData);
                 
-                // Save user data to loanusers database
-                const rtdbRef = rtdb.ref('loanusers/' + user.uid);
-                await rtdbRef.set(rtdbUserData);
-                console.log('✅ User data saved to loanusers database successfully!');
-                
-                // Verify data was saved by reading it back
-                console.log('🔍 Verifying data was saved to Firebase...');
-                const verifySnapshot = await rtdbRef.once('value');
-                const savedData = verifySnapshot.val();
-                
-                if (savedData) {
-                    console.log('✅ VERIFICATION SUCCESS - Data found in Firebase:');
-                    console.log('- Name in Firebase:', savedData.name);
-                    console.log('- Mobile in Firebase:', savedData.mobile);
-                    console.log('- Email in Firebase:', savedData.email);
-                    console.log('- Status in Firebase:', savedData.status);
-                    console.log('- Role in Firebase:', savedData.role);
-                } else {
-                    console.error('❌ VERIFICATION FAILED - No data found in Firebase!');
+                try {
+                    // Save user data to loanusers database
+                    const rtdbRef = rtdb.ref('loanusers/' + user.uid);
+                    await rtdbRef.set(rtdbUserData);
+                    console.log('✅ User data saved to loanusers database successfully!');
+                    
+                    // Also save a backup in users_backup for redundancy
+                    const backupRef = rtdb.ref('users_backup/' + user.uid);
+                    await backupRef.set({
+                        ...rtdbUserData,
+                        backupCreatedAt: firebase.database.ServerValue.TIMESTAMP
+                    });
+                    console.log('✅ User backup data saved successfully!');
+                    
+                    // Update user statistics
+                    const statsRef = rtdb.ref('statistics/totalUsers');
+                    await statsRef.transaction((currentCount) => {
+                        return (currentCount || 0) + 1;
+                    });
+                    console.log('✅ User statistics updated!');
+                    
+                    // Verify data was saved by reading it back
+                    console.log('🔍 Verifying data was saved to Firebase...');
+                    const verifySnapshot = await rtdbRef.once('value');
+                    const savedData = verifySnapshot.val();
+                    
+                    if (savedData) {
+                        console.log('✅ VERIFICATION SUCCESS - Data found in Firebase:');
+                        console.log('- Name in Firebase:', savedData.name);
+                        console.log('- Mobile in Firebase:', savedData.mobile);
+                        console.log('- Email in Firebase:', savedData.email);
+                        console.log('- Status in Firebase:', savedData.status);
+                        console.log('- Role in Firebase:', savedData.role);
+                        console.log('- Created At:', new Date(savedData.createdAt).toLocaleString());
+                        
+                        // Notify admin of new registration
+                        const notificationRef = rtdb.ref('notifications/admin');
+                        await notificationRef.push({
+                            type: 'new_user_registration',
+                            userId: user.uid,
+                            userName: rtdbUserData.name,
+                            userMobile: rtdbUserData.mobile,
+                            timestamp: firebase.database.ServerValue.TIMESTAMP,
+                            read: false
+                        });
+                        console.log('✅ Admin notification sent!');
+                        
+                    } else {
+                        console.error('❌ VERIFICATION FAILED - No data found in Firebase!');
+                        throw new Error('Failed to verify user data in Firebase');
+                    }
+                    
+                } catch (rtdbError) {
+                    console.error('❌ Firebase Realtime Database Error:', rtdbError);
+                    console.error('Error details:', rtdbError.message);
+                    
+                    // Try to rollback Firestore data if RTDB failed
+                    try {
+                        await db.collection('loanuser').doc(user.uid).delete();
+                        await user.delete(); // Delete the auth user too
+                        console.log('⚠️ Rolled back Firestore and Auth due to RTDB failure');
+                    } catch (rollbackError) {
+                        console.error('❌ Rollback failed:', rollbackError);
+                    }
+                    
+                    throw new Error(`Failed to save user data to database: ${rtdbError.message}`);
                 }
                 
                 // Also verify Firestore data
@@ -2086,15 +2188,95 @@
             try {
                 if (!currentUser) return;
                 
+                console.log('📖 Loading user data from both Firestore and Realtime Database...');
+                
+                // Load from Firestore first
                 const userDoc = await db.collection('loanuser').doc(currentUser.uid).get();
-                if (userDoc.exists) {
-                    userData = userDoc.data();
+                
+                // Load from Realtime Database
+                const rtdbSnapshot = await rtdb.ref('loanusers/' + currentUser.uid).once('value');
+                const rtdbUserData = rtdbSnapshot.val();
+                
+                if (userDoc.exists && rtdbUserData) {
+                    // Merge data from both sources, preferring Realtime Database for real-time fields
+                    const firestoreData = userDoc.data();
+                    userData = {
+                        ...firestoreData,
+                        ...rtdbUserData,
+                        // Keep Firestore timestamps for certain fields
+                        createdAt: firestoreData.createdAt,
+                        // Use RTDB for real-time tracking
+                        lastLogin: rtdbUserData.lastLogin,
+                        loginCount: rtdbUserData.loginCount,
+                        isOnline: rtdbUserData.isOnline || false
+                    };
+                    
+                    console.log('✅ User data loaded from both databases');
+                    console.log('📊 Merged user data:', {
+                        name: userData.name,
+                        mobile: userData.mobile,
+                        isOnline: userData.isOnline,
+                        loginCount: userData.loginCount,
+                        lastLogin: userData.lastLogin ? new Date(userData.lastLogin).toLocaleString() : 'Never'
+                    });
+                    
                     updateUserProfile();
+                    
+                } else if (userDoc.exists) {
+                    // Fallback to Firestore only
+                    userData = userDoc.data();
+                    console.log('⚠️ Using Firestore data only (RTDB not available)');
+                    updateUserProfile();
+                    
+                } else if (rtdbUserData) {
+                    // Fallback to RTDB only
+                    userData = rtdbUserData;
+                    console.log('⚠️ Using Realtime Database data only (Firestore not available)');
+                    updateUserProfile();
+                    
+                } else {
+                    throw new Error('User data not found in any database');
                 }
+                
+                // Set up real-time listeners for user data changes
+                setupRealtimeListeners();
+                
             } catch (error) {
-                console.error('Error loading user data:', error);
+                console.error('❌ Error loading user data:', error);
                 showNotification('Error loading user data', 'error');
             }
+        }
+        
+        function setupRealtimeListeners() {
+            if (!currentUser) return;
+            
+            // Listen for real-time updates to user profile
+            const userRef = rtdb.ref('loanusers/' + currentUser.uid);
+            userRef.on('value', (snapshot) => {
+                const updatedData = snapshot.val();
+                if (updatedData && userData) {
+                    // Update local userData with real-time changes
+                    userData = { ...userData, ...updatedData };
+                    updateUserProfile();
+                    console.log('🔄 User data updated in real-time');
+                }
+            });
+            
+            // Listen for loan updates
+            const loansRef = rtdb.ref('loans').orderByChild('userId').equalTo(currentUser.uid);
+            loansRef.on('value', (snapshot) => {
+                const loans = snapshot.val();
+                if (loans) {
+                    userLoans = Object.keys(loans).map(key => ({
+                        id: key,
+                        ...loans[key]
+                    }));
+                    displayActiveLoans();
+                    console.log('🔄 Loans updated in real-time');
+                }
+            });
+            
+            console.log('👂 Real-time listeners set up successfully');
         }
         
                  function updateUserProfile() {
@@ -2406,11 +2588,45 @@
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
                 
-                await db.collection('loans').add(loanData);
+                // Save to Firestore
+                const loanDocRef = await db.collection('loans').add(loanData);
+                const loanId = loanDocRef.id;
                 
+                // Also save to Firebase Realtime Database for real-time updates
+                const rtdbLoanData = {
+                    ...loanData,
+                    id: loanId,
+                    createdAt: firebase.database.ServerValue.TIMESTAMP,
+                    updatedAt: firebase.database.ServerValue.TIMESTAMP
+                };
+                
+                await rtdb.ref('loans/' + loanId).set(rtdbLoanData);
+                console.log('✅ Loan application saved to Realtime Database');
+                
+                // Update user loan statistics in both databases
                 await db.collection('loanuser').doc(currentUser.uid).update({
                     totalLoans: firebase.firestore.FieldValue.increment(1),
                     totalBorrowed: firebase.firestore.FieldValue.increment(amount)
+                });
+                
+                await rtdb.ref('loanusers/' + currentUser.uid).update({
+                    totalLoans: firebase.database.ServerValue.increment(1),
+                    totalBorrowed: firebase.database.ServerValue.increment(amount),
+                    activeLoans: firebase.database.ServerValue.increment(1),
+                    lastLoanApplication: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                // Create notification for admin
+                await rtdb.ref('notifications/admin').push({
+                    type: 'new_loan_application',
+                    userId: currentUser.uid,
+                    userName: userData.name,
+                    userMobile: userData.mobile,
+                    loanId: loanId,
+                    amount: amount,
+                    purpose: purpose,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    read: false
                 });
                 
                 hidePopup('loanApplicationPopup');
@@ -2643,12 +2859,113 @@
         
         async function logout() {
             try {
+                // Update user status to offline before logout
+                if (currentUser) {
+                    await rtdb.ref('loanusers/' + currentUser.uid).update({
+                        isOnline: false,
+                        lastActivity: firebase.database.ServerValue.TIMESTAMP
+                    });
+                    console.log('User status updated to offline');
+                }
+                
                 await auth.signOut();
                 showNotification('Logged out successfully', 'success');
             } catch (error) {
                 showNotification('Error logging out', 'error');
             }
         }
+        
+        // Utility Functions for Firebase Realtime Database Monitoring
+        window.firebaseUtils = {
+            // Check database connection status
+            checkConnection: () => {
+                rtdb.ref('.info/connected').once('value', (snapshot) => {
+                    const connected = snapshot.val();
+                    console.log(`🔗 Firebase Realtime Database Connection: ${connected ? '✅ Connected' : '❌ Disconnected'}`);
+                    return connected;
+                });
+            },
+            
+            // Get all users from RTDB
+            getAllUsers: async () => {
+                try {
+                    const snapshot = await rtdb.ref('loanusers').once('value');
+                    const users = snapshot.val();
+                    console.log('👥 All Users in Firebase Realtime Database:');
+                    console.table(users);
+                    return users;
+                } catch (error) {
+                    console.error('❌ Error fetching users:', error);
+                }
+            },
+            
+            // Get user statistics
+            getStatistics: async () => {
+                try {
+                    const snapshot = await rtdb.ref('statistics').once('value');
+                    const stats = snapshot.val();
+                    console.log('📊 Database Statistics:');
+                    console.table(stats);
+                    return stats;
+                } catch (error) {
+                    console.error('❌ Error fetching statistics:', error);
+                }
+            },
+            
+            // Monitor real-time data changes
+            monitorChanges: () => {
+                console.log('👂 Starting real-time monitoring...');
+                
+                // Monitor user registrations
+                rtdb.ref('loanusers').on('child_added', (snapshot) => {
+                    const userData = snapshot.val();
+                    console.log('🆕 New User Registered:', userData.name, userData.mobile);
+                });
+                
+                // Monitor loan applications
+                rtdb.ref('loans').on('child_added', (snapshot) => {
+                    const loanData = snapshot.val();
+                    console.log('💰 New Loan Application:', loanData.userName, `₹${loanData.amount}`);
+                });
+                
+                // Monitor admin notifications
+                rtdb.ref('notifications/admin').on('child_added', (snapshot) => {
+                    const notification = snapshot.val();
+                    console.log('🔔 New Admin Notification:', notification.type);
+                });
+            },
+            
+            // Stop monitoring
+            stopMonitoring: () => {
+                rtdb.ref('loanusers').off();
+                rtdb.ref('loans').off();
+                rtdb.ref('notifications/admin').off();
+                console.log('🛑 Monitoring stopped');
+            }
+        };
+        
+        // Developer helper: Log Firebase RTDB structure on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('🔍 QuickCash Firebase Realtime Database Integration');
+                console.log('📂 Database Structure:');
+                console.log('├── loanusers/          (User profiles & data)');
+                console.log('├── users_backup/       (Backup user data)');
+                console.log('├── loans/              (Loan applications)');
+                console.log('├── kyc_submissions/    (KYC verification data)');
+                console.log('├── notifications/      (System notifications)');
+                console.log('├── user_activity/      (Login & activity logs)');
+                console.log('└── statistics/         (System statistics)');
+                console.log('');
+                console.log('💡 Use window.firebaseUtils to monitor database:');
+                console.log('   • firebaseUtils.checkConnection()');
+                console.log('   • firebaseUtils.getAllUsers()');
+                console.log('   • firebaseUtils.getStatistics()');
+                console.log('   • firebaseUtils.monitorChanges()');
+                console.log('');
+                console.log('🎯 All user account creation now saves to Firebase Realtime Database!');
+            }, 2000);
+        });
     </script>
 </body>
 </html>
