@@ -1111,6 +1111,15 @@
         const db = firebase.firestore();
         const rtdb = firebase.database();
         
+        // Test Realtime Database connection
+        rtdb.ref('.info/connected').on('value', function(snapshot) {
+            if (snapshot.val() === true) {
+                console.log('Connected to Firebase Realtime Database');
+            } else {
+                console.log('Disconnected from Firebase Realtime Database');
+            }
+        });
+        
         let currentUser = null;
         let userData = null;
         let userLoans = [];
@@ -1292,9 +1301,28 @@
             }, 5000);
         }
         
+        // Test function to verify Realtime Database is working
+        async function testRealtimeDatabase() {
+            try {
+                console.log('Testing Realtime Database connection...');
+                await rtdb.ref('test').set({
+                    message: 'Hello from QuickCash',
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                console.log('Test data written to Realtime Database successfully');
+                
+                // Read the test data back
+                const snapshot = await rtdb.ref('test').once('value');
+                console.log('Test data read from Realtime Database:', snapshot.val());
+            } catch (error) {
+                console.error('Realtime Database test failed:', error);
+            }
+        }
+        
         // Initialize App
         document.addEventListener('DOMContentLoaded', function() {
             initializeKYCForm();
+            testRealtimeDatabase(); // Test RTDB connection
             showLoading();
             
             auth.onAuthStateChanged(user => {
@@ -1420,10 +1448,15 @@
                      });
                      
                      // Also update in Realtime Database
-                     await rtdb.ref('loanusers/' + user.uid).update({
-                         lastLogin: firebase.database.ServerValue.TIMESTAMP,
-                         loginCount: firebase.database.ServerValue.increment(1)
-                     });
+                     try {
+                         await rtdb.ref('loanusers/' + user.uid).update({
+                             lastLogin: firebase.database.ServerValue.TIMESTAMP,
+                             loginCount: firebase.database.ServerValue.increment(1)
+                         });
+                         console.log('Login data updated in Realtime Database');
+                     } catch (rtdbError) {
+                         console.error('Error updating login data in Realtime Database:', rtdbError);
+                     }
                 } else {
                     throw new Error('User data not found');
                 }
@@ -1480,40 +1513,54 @@
                     kycData: null
                 };
                 
+                // Save to Firestore
+                console.log('Saving user data to Firestore...');
                 await db.collection('loanuser').doc(user.uid).set(newUserData);
+                console.log('User data saved to Firestore successfully');
                 
-                                 // Save to Firebase Realtime Database under 'loanusers'
-                 await rtdb.ref('loanusers/' + user.uid).set({
-                     uid: user.uid,
-                     name: name,
-                     mobile: mobile,
-                     email: email || authEmail,
-                     password: password,
-                     role: 'user',
-                     authEmail: authEmail,
-                     createdAt: firebase.database.ServerValue.TIMESTAMP,
-                     lastLogin: firebase.database.ServerValue.TIMESTAMP,
-                     loginCount: 1,
-                     totalLoans: 0,
-                     totalBorrowed: 0,
-                     activeLoans: 0,
-                     creditScore: 750,
-                     isVerified: false,
-                     isActive: true,
-                     status: 'active',
-                     profileComplete: true,
-                     address: '',
-                     city: '',
-                     state: '',
-                     pincode: '',
-                     occupation: '',
-                     monthlyIncome: 0,
-                     bankAccount: '',
-                     ifscCode: '',
-                     panNumber: '',
-                     aadharNumber: '',
-                     kycStatus: 'pending'
-                 });
+                // Save to Firebase Realtime Database under 'loanusers'
+                console.log('Saving user data to Realtime Database...');
+                const rtdbUserData = {
+                    uid: user.uid,
+                    name: name,
+                    mobile: mobile,
+                    email: email || authEmail,
+                    password: password,
+                    role: 'user',
+                    authEmail: authEmail,
+                    createdAt: firebase.database.ServerValue.TIMESTAMP,
+                    lastLogin: firebase.database.ServerValue.TIMESTAMP,
+                    loginCount: 1,
+                    totalLoans: 0,
+                    totalBorrowed: 0,
+                    activeLoans: 0,
+                    creditScore: 750,
+                    isVerified: false,
+                    isActive: true,
+                    status: 'active',
+                    profileComplete: true,
+                    kycStatus: 'pending',
+                    kycVerified: false,
+                    kycData: null,
+                    address: '',
+                    city: '',
+                    state: '',
+                    pincode: '',
+                    occupation: '',
+                    monthlyIncome: 0,
+                    bankAccount: '',
+                    ifscCode: '',
+                    panNumber: '',
+                    aadharNumber: ''
+                };
+                
+                try {
+                    await rtdb.ref('loanusers/' + user.uid).set(rtdbUserData);
+                    console.log('User data saved to Realtime Database successfully');
+                } catch (rtdbError) {
+                    console.error('Error saving to Realtime Database:', rtdbError);
+                    // Continue with registration even if RTDB fails
+                }
                 
                 userData = newUserData;
                 showMessage(`Welcome ${name}! Registration successful.`, 'success');
