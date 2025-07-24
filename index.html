@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wanderlust Travel Agency</title>
-    <meta http-equiv="refresh" content="0; url=oldagencytreval.html">
+    <meta http-equiv="refresh" content="0; url=trekwanders.html">
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             color: white;
             display: flex;
             align-items: center;
@@ -18,12 +18,20 @@
             text-align: center;
         }
         .container {
-            max-width: 600px;
+            max-width: 700px;
             padding: 2rem;
         }
         h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .mountain-icon {
+            font-size: 3rem;
+            color: #fbbf24;
         }
         p {
             font-size: 1.2rem;
@@ -38,9 +46,19 @@
             border-radius: 50px;
             border: 2px solid rgba(255, 255, 255, 0.3);
             transition: all 0.3s ease;
+            margin: 0 0.5rem;
         }
         .btn:hover {
             background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #2563eb;
+            border-color: white;
+        }
+        .btn-primary:hover {
+            background: white;
             transform: translateY(-2px);
         }
         .spinner {
@@ -49,29 +67,70 @@
             height: 40px;
             border: 4px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top-color: white;
+            border-top-color: #fbbf24;
             animation: spin 1s ease-in-out infinite;
             margin-bottom: 1rem;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+            max-width: 600px;
+        }
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        .feature h3 {
+            margin-bottom: 0.5rem;
+            color: #fbbf24;
         }
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="spinner"></div>
-        <h1>🌍 Wanderlust Travel Agency</h1>
-        <p>Redirecting you to our beautiful travel website...</p>
-        <p>If you're not redirected automatically, click the button below:</p>
-        <a href="oldagencytreval.html" class="btn">Visit Travel Agency</a>
-    </div>
-    
-    <script>
-        // Fallback redirect after 3 seconds
-        setTimeout(function() {
-            window.location.href = 'oldagencytreval.html';
-        }, 3000);
-    </script>
-</body>
+ <body>
+     <div class="container">
+         <div class="spinner"></div>
+         <h1>
+             <span class="mountain-icon">🏔️</span>
+             TrekWanders
+         </h1>
+         <p>Your Ultimate Travel Companion - Redirecting you to amazing adventures...</p>
+         
+         <div class="features">
+             <div class="feature">
+                 <h3>🔐 User System</h3>
+                 <p>Login & Register</p>
+             </div>
+             <div class="feature">
+                 <h3>👑 Admin Panel</h3>
+                 <p>Full Management</p>
+             </div>
+             <div class="feature">
+                 <h3>🌍 Destinations</h3>
+                 <p>Explore & Filter</p>
+             </div>
+             <div class="feature">
+                 <h3>📱 Responsive</h3>
+                 <p>All Devices</p>
+             </div>
+         </div>
+         
+         <p>If you're not redirected automatically, click below:</p>
+         <a href="trekwanders.html" class="btn btn-primary">🚀 Enter TrekWanders</a>
+         <a href="oldagencytreval.html" class="btn">📍 Old Version</a>
+     </div>
+     
+     <script>
+         // Fallback redirect after 3 seconds
+         setTimeout(function() {
+             window.location.href = 'trekwanders.html';
+         }, 3000);
+     </script>
+ </body>
 </html>
