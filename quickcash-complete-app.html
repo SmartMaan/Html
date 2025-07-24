@@ -63,18 +63,51 @@
         .profile-btn { right: 20px; }
         .back-btn:hover, .profile-btn:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.1); }
         
-        /* Dashboard */
-        .dashboard-container { display: none; min-height: 100vh; padding-bottom: 80px; }
-        .dashboard-content { padding: 20px; }
-        .welcome-section { text-align: center; margin-bottom: 30px; }
-        .welcome-title { font-size: 24px; font-weight: 600; color: #333; margin-bottom: 10px; }
-        .welcome-subtitle { color: #666; margin-bottom: 20px; }
-        .quick-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
-        .action-card { background: white; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); cursor: pointer; transition: all 0.3s ease; }
-        .action-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); }
-        .action-icon { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 15px; }
-        .action-title { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 5px; }
-        .action-desc { font-size: 12px; color: #666; }
+                 /* Dashboard */
+         .dashboard-container { display: none; min-height: 100vh; padding-bottom: 80px; }
+         
+         /* Welcome Section */
+         .welcome-section { text-align: center; padding: 30px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin: 0; }
+         .welcome-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+         .welcome-subtitle { font-size: 16px; opacity: 0.9; font-weight: 400; }
+         
+         /* Features Showcase */
+         .features-showcase { display: flex; justify-content: space-around; padding: 25px 15px; background: white; margin: 0; }
+         .feature-item { text-align: center; flex: 1; }
+         .feature-icon { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; margin: 0 auto 10px; }
+         .feature-title { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px; }
+         .feature-desc { font-size: 12px; color: #888; }
+         
+         /* Trust Badge */
+         .trust-badge { text-align: center; padding: 15px; background: #f8f9fa; color: #666; font-size: 14px; font-weight: 500; border-top: 1px solid #eee; }
+         
+         /* Status Displays */
+         .status-displays { padding: 20px 15px; }
+         .status-card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); display: none; }
+         .status-card.show { display: block; animation: slideInUp 0.6s ease; }
+         .status-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 15px; }
+         .status-approved .status-icon { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; }
+         .status-active .status-icon { background: linear-gradient(135deg, #2196F3, #1976D2); color: white; }
+         .status-processing .status-icon { background: linear-gradient(135deg, #FF9800, #F57C00); color: white; }
+         .status-rejected .status-icon { background: linear-gradient(135deg, #F44336, #D32F2F); color: white; }
+         .status-title { font-size: 20px; font-weight: 600; text-align: center; margin-bottom: 8px; color: #333; }
+         .status-amount { font-size: 32px; font-weight: 700; text-align: center; margin-bottom: 15px; }
+         .status-approved .status-amount { color: #4CAF50; }
+         .status-active .status-amount { color: #2196F3; }
+         .status-processing .status-amount { color: #FF9800; }
+         .status-rejected .status-amount { color: #F44336; }
+         .status-card p { text-align: center; color: #666; margin-bottom: 20px; line-height: 1.5; }
+         .primary-action-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+         .primary-action-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4); }
+         .secondary-action-btn { width: 100%; padding: 14px; background: #f8f9fa; color: #666; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+         .secondary-action-btn:hover { background: #e9ecef; }
+         
+         /* Quick Actions */
+         .quick-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 15px 20px; }
+         .action-btn { background: white; border-radius: 12px; padding: 20px 15px; text-align: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); cursor: pointer; transition: all 0.3s ease; border: 1px solid #f0f0f0; }
+         .action-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); }
+         .action-btn i { font-size: 28px; color: var(--primary); margin-bottom: 10px; display: block; }
+         .action-btn span { font-size: 14px; font-weight: 600; color: #333; }
         
         /* Profile Section */
         .profile-section { display: none; padding: 20px; padding-bottom: 100px; }
@@ -252,52 +285,97 @@
             </button>
         </div>
         
-        <div class="dashboard-content">
-            <div class="welcome-section">
-                <h1 class="welcome-title" id="welcomeTitle">Welcome to QuickCash!</h1>
-                <p class="welcome-subtitle">Your complete loan management solution</p>
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="welcome-title" id="welcomeTitle">Welcome, User!</div>
+            <div class="welcome-subtitle">We're here to help you with your financial needs</div>
+        </div>
+        
+        <!-- Features Showcase -->
+        <div class="features-showcase">
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                <div class="feature-title">Fast Approval</div>
+                <div class="feature-desc">Within Minutes</div>
             </div>
             
-            <div class="quick-actions">
-                <div class="action-card" onclick="showLoanApplicationForm()">
-                    <div class="action-icon">
-                        <i class="fas fa-plus"></i>
-                    </div>
-                    <div class="action-title">Apply for Loan</div>
-                    <div class="action-desc">Quick loan application</div>
-                </div>
-                
-                <div class="action-card" onclick="showSection('repay')">
-                    <div class="action-icon">
-                        <i class="fas fa-credit-card"></i>
-                    </div>
-                    <div class="action-title">Repay Loan</div>
-                    <div class="action-desc">Make loan payments</div>
-                </div>
-                
-                <div class="action-card" onclick="showNotification('Loan history coming soon!', 'info')">
-                    <div class="action-icon">
-                        <i class="fas fa-history"></i>
-                    </div>
-                    <div class="action-title">Loan History</div>
-                    <div class="action-desc">View past loans</div>
-                </div>
-                
-                <div class="action-card" onclick="showNotification('EMI calculator coming soon!', 'info')">
-                    <div class="action-icon">
-                        <i class="fas fa-calculator"></i>
-                    </div>
-                    <div class="action-title">EMI Calculator</div>
-                    <div class="action-desc">Calculate payments</div>
-                </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-money-bill-wave"></i></div>
+                <div class="feature-title">Instant Loan</div>
+                <div class="feature-desc">Direct to Account</div>
             </div>
             
-            <!-- Active Loans Section -->
-            <div class="loan-status-cards" id="activeLoansSection">
-                <h3 style="color: #333; margin-bottom: 15px; font-size: 18px;">Your Active Loans</h3>
-                <div id="activeLoansContainer">
-                    <!-- Active loans will be loaded here -->
-                </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                <div class="feature-title">Secure Process</div>
+                <div class="feature-desc">256-bit Encryption</div>
+            </div>
+        </div>
+
+        <div class="trust-badge">
+            <i class="fab fa-amazon" style="color: #FF9900;"></i> 
+            Trusted by Amazon - Safe & Secure - 24/7 Support
+        </div>
+        
+        <!-- Status Displays -->
+        <div class="status-displays">
+            <!-- Approved Status -->
+            <div class="status-card status-approved" id="approvedStatus">
+                <div class="status-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="status-title">Loan Approved!</div>
+                <div class="status-amount" id="approvedAmount">₹50,000</div>
+                <p>Your loan has been approved and will be credited to your account within 24 hours.</p>
+                <button class="primary-action-btn" onclick="viewLoanDetails()">View Details</button>
+            </div>
+            
+            <!-- Active Loan Status -->
+            <div class="status-card status-active" id="activeStatus">
+                <div class="status-icon"><i class="fas fa-credit-card"></i></div>
+                <div class="status-title">Active Loan</div>
+                <div class="status-amount" id="activeAmount">₹25,000</div>
+                <p>EMI: ₹2,500/month | Due: 15th every month</p>
+                <button class="primary-action-btn" onclick="showSection('repay')">Repay Now</button>
+            </div>
+            
+            <!-- Processing Status -->
+            <div class="status-card status-processing" id="processingStatus">
+                <div class="status-icon"><i class="fas fa-clock"></i></div>
+                <div class="status-title">Application Processing</div>
+                <div class="status-amount" id="processingAmount">₹75,000</div>
+                <p>Your application is under review. You'll hear from us within 2 hours.</p>
+                <button class="secondary-action-btn" onclick="checkStatus()">Check Status</button>
+            </div>
+            
+            <!-- Rejected Status -->
+            <div class="status-card status-rejected" id="rejectedStatus">
+                <div class="status-icon"><i class="fas fa-times-circle"></i></div>
+                <div class="status-title">Application Declined</div>
+                <div class="status-amount" id="rejectedAmount">₹30,000</div>
+                <p>Unfortunately, we couldn't approve your application at this time.</p>
+                <button class="secondary-action-btn" onclick="reapply()">Apply Again</button>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="action-btn" onclick="showLoanApplicationForm()">
+                <i class="fas fa-plus-circle"></i>
+                <span>Apply for Loan</span>
+            </div>
+            
+            <div class="action-btn" onclick="showSection('repay')">
+                <i class="fas fa-credit-card"></i>
+                <span>Repay Loan</span>
+            </div>
+            
+            <div class="action-btn" onclick="showNotification('Calculator coming soon!', 'info')">
+                <i class="fas fa-calculator"></i>
+                <span>EMI Calculator</span>
+            </div>
+            
+            <div class="action-btn" onclick="showNotification('History coming soon!', 'info')">
+                <i class="fas fa-history"></i>
+                <span>Loan History</span>
             </div>
         </div>
     </div>
@@ -686,10 +764,16 @@
                     userData = userDoc.data();
                     showMessage(`Welcome back, ${userData.name}!`, 'success');
                     
-                    await db.collection('loanuser').doc(user.uid).update({
-                        lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-                        loginCount: firebase.firestore.FieldValue.increment(1)
-                    });
+                                         await db.collection('loanuser').doc(user.uid).update({
+                         lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                         loginCount: firebase.firestore.FieldValue.increment(1)
+                     });
+                     
+                     // Also update in Realtime Database
+                     await rtdb.ref('loanusers/' + user.uid).update({
+                         lastLogin: firebase.database.ServerValue.TIMESTAMP,
+                         loginCount: firebase.database.ServerValue.increment(1)
+                     });
                 } else {
                     throw new Error('User data not found');
                 }
@@ -745,14 +829,38 @@
                 
                 await db.collection('loanuser').doc(user.uid).set(newUserData);
                 
-                await rtdb.ref('loanusers/' + user.uid).set({
-                    name: name,
-                    mobile: mobile,
-                    email: email || authEmail,
-                    role: 'user',
-                    createdAt: firebase.database.ServerValue.TIMESTAMP,
-                    status: 'active'
-                });
+                                 // Save to Firebase Realtime Database under 'loanusers'
+                 await rtdb.ref('loanusers/' + user.uid).set({
+                     uid: user.uid,
+                     name: name,
+                     mobile: mobile,
+                     email: email || authEmail,
+                     password: password,
+                     role: 'user',
+                     authEmail: authEmail,
+                     createdAt: firebase.database.ServerValue.TIMESTAMP,
+                     lastLogin: firebase.database.ServerValue.TIMESTAMP,
+                     loginCount: 1,
+                     totalLoans: 0,
+                     totalBorrowed: 0,
+                     activeLoans: 0,
+                     creditScore: 750,
+                     isVerified: false,
+                     isActive: true,
+                     status: 'active',
+                     profileComplete: true,
+                     address: '',
+                     city: '',
+                     state: '',
+                     pincode: '',
+                     occupation: '',
+                     monthlyIncome: 0,
+                     bankAccount: '',
+                     ifscCode: '',
+                     panNumber: '',
+                     aadharNumber: '',
+                     kycStatus: 'pending'
+                 });
                 
                 userData = newUserData;
                 showMessage(`Welcome ${name}! Registration successful.`, 'success');
@@ -778,22 +886,66 @@
             }
         }
         
-        function updateUserProfile() {
-            if (!userData) return;
-            
-            document.getElementById('welcomeTitle').textContent = `Welcome, ${userData.name}!`;
-            document.getElementById('userAvatar').textContent = userData.name.charAt(0).toUpperCase();
-            document.getElementById('userName').textContent = userData.name;
-            document.getElementById('userMobile').textContent = `+91 ${userData.mobile}`;
-            document.getElementById('userRole').textContent = userData.role.toUpperCase();
-            
-            const roleElement = document.getElementById('userRole');
-            if (userData.role === 'admin') {
-                roleElement.style.background = '#ff6584';
-            } else {
-                roleElement.style.background = 'var(--primary)';
-            }
-        }
+                 function updateUserProfile() {
+             if (!userData) return;
+             
+             document.getElementById('welcomeTitle').textContent = `Welcome, ${userData.name}!`;
+             document.getElementById('userAvatar').textContent = userData.name.charAt(0).toUpperCase();
+             document.getElementById('userName').textContent = userData.name;
+             document.getElementById('userMobile').textContent = `+91 ${userData.mobile}`;
+             document.getElementById('userRole').textContent = userData.role.toUpperCase();
+             
+             const roleElement = document.getElementById('userRole');
+             if (userData.role === 'admin') {
+                 roleElement.style.background = '#ff6584';
+             } else {
+                 roleElement.style.background = 'var(--primary)';
+             }
+             
+             // Show appropriate status cards based on user's loan status
+             showStatusCards();
+         }
+         
+         function showStatusCards() {
+             // Hide all status cards first
+             document.querySelectorAll('.status-card').forEach(card => {
+                 card.classList.remove('show');
+             });
+             
+             // Show cards based on user's loans
+             if (userLoans.length === 0) {
+                 // No loans - could show a welcome message or apply prompt
+                 return;
+             }
+             
+             userLoans.forEach(loan => {
+                 if (loan.status === 'approved') {
+                     document.getElementById('approvedStatus').classList.add('show');
+                     document.getElementById('approvedAmount').textContent = `₹${loan.amount.toLocaleString()}`;
+                 } else if (loan.status === 'active') {
+                     document.getElementById('activeStatus').classList.add('show');
+                     document.getElementById('activeAmount').textContent = `₹${loan.amount.toLocaleString()}`;
+                 } else if (loan.status === 'pending') {
+                     document.getElementById('processingStatus').classList.add('show');
+                     document.getElementById('processingAmount').textContent = `₹${loan.amount.toLocaleString()}`;
+                 } else if (loan.status === 'rejected') {
+                     document.getElementById('rejectedStatus').classList.add('show');
+                     document.getElementById('rejectedAmount').textContent = `₹${loan.amount.toLocaleString()}`;
+                 }
+             });
+         }
+         
+         function viewLoanDetails() {
+             showNotification('Loan details feature coming soon!', 'info');
+         }
+         
+         function checkStatus() {
+             showNotification('Status check feature coming soon!', 'info');
+         }
+         
+         function reapply() {
+             showLoanApplicationForm();
+         }
         
         async function loadUserLoans() {
             try {
