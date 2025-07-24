@@ -602,12 +602,14 @@
         .btn-small:hover { transform: translateY(-1px); }
 
         /* Profile Section */
-        .profile-section { display: none; padding: 20px; padding-bottom: 100px; }
-        .profile-card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); text-align: center; }
-        .user-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 600; margin: 0 auto 15px; }
-        .user-name { font-size: 22px; font-weight: 600; margin-bottom: 5px; color: #333; }
-        .user-mobile { font-size: 16px; color: #666; margin-bottom: 15px; }
-        .user-role { display: inline-block; padding: 6px 12px; background: var(--primary); color: white; border-radius: 15px; font-size: 12px; font-weight: 500; text-transform: uppercase; }
+        .profile-section { display: none; padding: 20px; padding-bottom: 100px; background-color: #f5f7fa; }
+        .profile-card { background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 20px; padding: 30px; margin-bottom: 25px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); text-align: center; color: white; }
+        .user-avatar { width: 100px; height: 100px; border-radius: 50%; background: rgba(255, 255, 255, 0.2); color: white; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 700; margin: 0 auto 20px; border: 3px solid rgba(255, 255, 255, 0.3); }
+        .user-name { font-size: 26px; font-weight: 700; margin-bottom: 8px; color: white; }
+        .user-mobile { font-size: 18px; color: rgba(255, 255, 255, 0.9); margin-bottom: 8px; }
+        .user-email { font-size: 16px; color: rgba(255, 255, 255, 0.8); margin-bottom: 15px; }
+        .user-status { display: inline-block; padding: 8px 16px; background: rgba(255, 255, 255, 0.2); color: white; border-radius: 20px; font-size: 14px; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; }
+        .user-role { display: inline-block; padding: 6px 12px; background: rgba(255, 255, 255, 0.9); color: var(--primary); border-radius: 15px; font-size: 12px; font-weight: 600; text-transform: uppercase; }
         .menu-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
         .menu-item { background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); text-align: center; cursor: pointer; transition: all 0.3s ease; }
         .menu-item:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); }
@@ -1016,6 +1018,8 @@
             <div class="user-avatar" id="userAvatar">U</div>
             <h2 class="user-name" id="userName">User Name</h2>
             <div class="user-mobile" id="userMobile">+91 0000000000</div>
+            <div class="user-email" id="userEmail">user@example.com</div>
+            <div class="user-status" id="userStatus">KYC Pending</div>
             <div class="user-role" id="userRole">User</div>
         </div>
         
@@ -2012,22 +2016,36 @@
                  function updateUserProfile() {
              if (!userData) return;
              
+             // Update dashboard welcome
              document.getElementById('welcomeTitle').textContent = `Welcome, ${userData.name}!`;
+             
+             // Update profile section
              document.getElementById('userAvatar').textContent = userData.name.charAt(0).toUpperCase();
              document.getElementById('userName').textContent = userData.name;
              document.getElementById('userMobile').textContent = `+91 ${userData.mobile}`;
-             document.getElementById('userRole').textContent = userData.role.toUpperCase();
+             document.getElementById('userEmail').textContent = userData.email || userData.authEmail;
              
+             // Update KYC status display
+             const statusElement = document.getElementById('userStatus');
+             const kycStatus = userData.kycVerified ? 'KYC Verified' : 'KYC Pending';
+             statusElement.textContent = kycStatus;
+             statusElement.style.background = userData.kycVerified ? 'rgba(40, 167, 69, 0.8)' : 'rgba(255, 193, 7, 0.8)';
+             
+             // Update role display
              const roleElement = document.getElementById('userRole');
+             roleElement.textContent = userData.role.toUpperCase();
+             
              if (userData.role === 'admin') {
-                 roleElement.style.background = '#ff6584';
+                 roleElement.style.background = 'rgba(255, 101, 132, 0.9)';
+                 roleElement.style.color = 'white';
                  // Show admin menu item for admin users
                  const adminMenuItem = document.getElementById('adminMenuItem');
                  if (adminMenuItem) {
                      adminMenuItem.style.display = 'block';
                  }
              } else {
-                 roleElement.style.background = 'var(--primary)';
+                 roleElement.style.background = 'rgba(255, 255, 255, 0.9)';
+                 roleElement.style.color = 'var(--primary)';
                  // Hide admin menu item for regular users
                  const adminMenuItem = document.getElementById('adminMenuItem');
                  if (adminMenuItem) {
