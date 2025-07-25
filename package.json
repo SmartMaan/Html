@@ -1,36 +1,37 @@
 {
-  "name": "mines-casino-game",
+  "name": "loanhub-web-app",
   "version": "1.0.0",
-  "description": "A complete Mines casino game with Firebase authentication and real-time multiplayer support",
-  "main": "mines-game.html",
+  "description": "A comprehensive loan web application with calculator, application form, and dashboard",
+  "main": "loan-app.html",
   "scripts": {
     "start": "npx http-server . -p 3000 -c-1",
+    "dev": "npx http-server . -p 3000 -c-1 -o",
     "deploy": "firebase deploy",
     "init-firebase": "firebase init",
     "serve": "firebase serve"
   },
   "keywords": [
-    "casino",
-    "mines",
-    "game",
-    "gambling",
-    "firebase",
+    "loan",
+    "finance",
+    "banking",
+    "calculator",
+    "application",
     "html5",
     "javascript",
     "responsive",
-    "multiplayer",
-    "betting"
+    "web-app",
+    "lending"
   ],
-  "author": "Mines Casino Game",
+  "author": "LoanHub Team",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/mines-casino-game.git"
+    "url": "https://github.com/yourusername/loanhub-web-app.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/mines-casino-game/issues"
+    "url": "https://github.com/yourusername/loanhub-web-app/issues"
   },
-  "homepage": "https://github.com/yourusername/mines-casino-game#readme",
+  "homepage": "https://github.com/yourusername/loanhub-web-app#readme",
   "devDependencies": {
     "firebase-tools": "^12.9.1",
     "http-server": "^14.1.1"
