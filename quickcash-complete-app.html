@@ -27,11 +27,11 @@
         body.login-mode { background: linear-gradient(135deg, #6e8efb, #a777e3); }
         body.dashboard-mode { background: #f5f7fa; }
         
-        /* Loading Screen */
-        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; }
+        /* Loading Screen - REMOVED */
+        /* .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; }
         .loading-spinner { width: 60px; height: 60px; border: 4px solid rgba(255, 255, 255, 0.3); border-top: 4px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+        .loading-overlay.hidden { opacity: 0; pointer-events: none; } */
         
         /* Auth Container */
         .login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
@@ -818,17 +818,16 @@
     </style>
 </head>
 <body>
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
+    <!-- Loading Overlay - REMOVED -->
+    <!-- <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
         <div style="font-size: 1.5rem; font-weight: 600; margin-bottom: 10px;">QuickCash</div>
         <div style="font-size: 1rem; opacity: 0.8; margin-bottom: 20px;">Loading your application...</div>
         
-        <!-- Emergency skip button (appears after 8 seconds) -->
         <button id="skipLoadingBtn" style="display: none; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px;" onclick="forceSkipLoading()">
             Skip Loading
         </button>
-    </div>
+    </div> -->
 
     <!-- Login System -->
     <div class="login-container" id="loginContainer">
@@ -1552,48 +1551,8 @@
     <div class="toast" id="toast">UPI ID copied to clipboard!</div>
 
     <script>
-        // Emergency loading fix and skip button
-        window.addEventListener('load', () => {
-            // Show skip button after 8 seconds
-            setTimeout(() => {
-                const skipBtn = document.getElementById('skipLoadingBtn');
-                const loadingOverlay = document.getElementById('loadingOverlay');
-                if (skipBtn && loadingOverlay && !loadingOverlay.classList.contains('hidden')) {
-                    skipBtn.style.display = 'block';
-                    console.log('⏰ Showing skip loading button');
-                }
-            }, 8000);
-            
-            // Force hide loading after 15 seconds
-            setTimeout(() => {
-                const loadingOverlay = document.getElementById('loadingOverlay');
-                if (loadingOverlay && !loadingOverlay.classList.contains('hidden')) {
-                    console.log('🚨 Emergency loading fix - hiding stuck loading screen');
-                    forceSkipLoading();
-                }
-            }, 15000);
-        });
-        
-        // Force skip loading function
-        function forceSkipLoading() {
-            console.log('🚀 Force skipping loading screen');
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            if (loadingOverlay) {
-                loadingOverlay.classList.add('hidden');
-            }
-            
-            // Determine what to show
-            if (currentUser && userData) {
-                console.log('👤 User data available - showing dashboard');
-                showSection('dashboard');
-            } else if (currentUser) {
-                console.log('👤 User authenticated but no data - showing dashboard anyway');
-                showSection('dashboard');
-            } else {
-                console.log('👤 No user - showing login');
-                showSection('login');
-            }
-        }
+        // Loading screen completely removed - no emergency fixes needed
+        console.log('✅ Loading screen disabled - app starts instantly');
 
         // Firebase Configuration
         const firebaseConfig = {
@@ -2528,18 +2487,8 @@
          // Initialize App
          document.addEventListener('DOMContentLoaded', function() {
              initializeKYCForm();
-             showLoading();
              
-             // Add timeout fallback to prevent infinite loading
-             setTimeout(() => {
-                 if (!document.getElementById('loadingOverlay').classList.contains('hidden')) {
-                     console.log('⏰ Loading timeout - forcing hide loading screen');
-                     hideLoading();
-                     if (!currentUser) {
-                         showSection('login');
-                     }
-                 }
-             }, 10000); // 10 second timeout
+             console.log('🚀 QuickCash App Starting - No Loading Screen');
             
             auth.onAuthStateChanged(user => {
                 if (user) {
@@ -2555,13 +2504,11 @@
                         .then(() => {
                             console.log('✅ User loans loaded successfully');
                             showSection('dashboard');
-                            hideLoading();
                         })
                         .catch((error) => {
                             console.error('❌ Error in user data loading chain:', error);
                             // Still show dashboard even if there are errors
                             showSection('dashboard');
-                            hideLoading();
                             showNotification('Some data could not be loaded. Please refresh the page.', 'warning');
                         });
                 } else {
@@ -2570,7 +2517,6 @@
                     userData = null;
                     userLoans = [];
                     showSection('login');
-                    hideLoading();
                 }
             });
             
@@ -2585,22 +2531,13 @@
             document.getElementById('bankAccountForm').addEventListener('submit', handleBankAccountSubmission);
         }
         
+        // Loading functions removed - no loading screen needed
         function showLoading() {
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            if (loadingOverlay) {
-                loadingOverlay.classList.remove('hidden');
-                console.log('🔄 Loading screen shown');
-            }
+            console.log('🔄 Loading function called (disabled)');
         }
         
         function hideLoading() {
-            setTimeout(() => {
-                const loadingOverlay = document.getElementById('loadingOverlay');
-                if (loadingOverlay) {
-                    loadingOverlay.classList.add('hidden');
-                    console.log('✅ Loading screen hidden');
-                }
-            }, 1500);
+            console.log('✅ Hide loading function called (disabled)');
         }
         
         function showSection(sectionName) {
@@ -2617,29 +2554,35 @@
                 case 'login':
                     document.getElementById('loginContainer').style.display = 'flex';
                     document.body.classList.remove('dashboard-mode');
+                    document.body.classList.add('login-mode');
                     break;
                 case 'dashboard':
                     document.getElementById('dashboardContainer').style.display = 'block';
+                    document.body.classList.remove('login-mode');
                     document.body.classList.add('dashboard-mode');
                     break;
                 case 'admin':
                     document.getElementById('adminSection').style.display = 'block';
+                    document.body.classList.remove('login-mode');
                     document.body.classList.add('dashboard-mode');
                     loadAdminData();
                     break;
                 case 'kyc':
                     document.getElementById('kycSection').style.display = 'block';
+                    document.body.classList.remove('login-mode');
                     document.body.classList.add('dashboard-mode');
                     updateNavigation('dashboard');
                     initializeWizard();
                     break;
                 case 'profile':
                     document.getElementById('profileSection').style.display = 'block';
+                    document.body.classList.remove('login-mode');
                     document.body.classList.add('dashboard-mode');
                     updateNavigation('profile');
                     break;
                 case 'repay':
                     document.getElementById('repaySection').style.display = 'block';
+                    document.body.classList.remove('login-mode');
                     document.body.classList.add('dashboard-mode');
                     updateNavigation('repay');
                     loadLoansForRepayment();
