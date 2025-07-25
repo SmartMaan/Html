@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loan App New ERA - Complete Loan Application</title>
+    <title>QuickCash - Complete Loan Application</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -174,7 +174,7 @@
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
-                    <div style="font-size: 1.5rem; font-weight: 600; margin-bottom: 10px;">Loan App New ERA</div>
+                    <div style="font-size: 1.5rem; font-weight: 600; margin-bottom: 10px;">QuickCash</div>
         <div style="font-size: 1rem; opacity: 0.8;">Loading your application...</div>
     </div>
 
@@ -183,7 +183,7 @@
         <div class="auth-card">
             <div class="auth-header">
                 <div class="auth-logo">
-                    <i class="fas fa-money-bill-wave"></i> Loan App New ERA
+                    <i class="fas fa-money-bill-wave"></i> QuickCash
                 </div>
                 <div>Get instant loans with minimal documentation</div>
             </div>
@@ -245,7 +245,7 @@
     <div class="dashboard-container" id="dashboardContainer">
         <div class="app-header">
             <div class="app-logo">
-                <i class="fas fa-money-bill-wave"></i> Loan App New ERA
+                <i class="fas fa-money-bill-wave"></i> QuickCash
             </div>
             <button class="profile-btn" onclick="showSection('profile')">
                 <i class="fas fa-user"></i>
@@ -254,7 +254,7 @@
         
         <div class="dashboard-content">
             <div class="welcome-section">
-                <h1 class="welcome-title" id="welcomeTitle">Welcome to Loan App New ERA!</h1>
+                <h1 class="welcome-title" id="welcomeTitle">Welcome to QuickCash!</h1>
                 <p class="welcome-subtitle">Your complete loan management solution</p>
             </div>
             
@@ -309,7 +309,7 @@
                 <i class="fas fa-arrow-left"></i>
             </button>
             <div class="app-logo">
-                <i class="fas fa-money-bill-wave"></i> Loan App New ERA
+                <i class="fas fa-money-bill-wave"></i> QuickCash
             </div>
         </div>
         
@@ -359,7 +359,7 @@
                 <i class="fas fa-arrow-left"></i>
             </button>
             <div class="app-logo">
-                <i class="fas fa-money-bill-wave"></i> Loan App New ERA
+                <i class="fas fa-money-bill-wave"></i> QuickCash
             </div>
         </div>
         
@@ -465,7 +465,7 @@
             </div>
             <div>
                 <h4>1. Loan Agreement</h4>
-                <p>By applying for a loan through Loan App New ERA, you agree to be bound by these terms.</p>
+                <p>By applying for a loan through QuickCash, you agree to be bound by these terms.</p>
                 <h4>2. Interest Rates</h4>
                 <p>Interest rates vary based on loan amount and creditworthiness.</p>
                 <h4>3. Repayment</h4>
@@ -502,9 +502,9 @@
                 <button class="popup-close" onclick="hidePopup('contactPopup')">&times;</button>
             </div>
             <div>
-                <p><strong>Email:</strong> support@loanappnewera.com</p>
+                <p><strong>Email:</strong> support@quickcash.com</p>
                 <p><strong>WhatsApp:</strong> +91 98765 43210</p>
-                <p><strong>Telegram:</strong> @loanappnewera</p>
+                <p><strong>Telegram:</strong> @quickcashsupport</p>
             </div>
             <div style="margin-top: 20px; text-align: center;">
                 <button class="popup-btn" onclick="hidePopup('contactPopup')">Got It</button>
@@ -677,7 +677,7 @@
             if (!validateLoginForm(mobile, password)) return;
             
             try {
-                const email = `${mobile}@loanappnewera.com`;
+                const email = `${mobile}@quickcash.com`;
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 
@@ -716,42 +716,174 @@
                     throw new Error('Mobile number already registered');
                 }
                 
-                const authEmail = `${mobile}@loanappnewera.com`;
+                const authEmail = `${mobile}@quickcash.com`;
                 const userCredential = await auth.createUserWithEmailAndPassword(authEmail, password);
                 const user = userCredential.user;
                 
                 await user.updateProfile({ displayName: name });
                 
                 const newUserData = {
+                    // Basic User Information
                     uid: user.uid,
                     name: name,
                     mobile: mobile,
                     email: email || authEmail,
                     password: password,
-                    role: 'user',
                     authEmail: authEmail,
+                    
+                    // User Role & Status
+                    role: 'user', // 'user' or 'admin'
+                    userType: 'regular', // 'regular', 'premium', 'vip'
+                    accountStatus: 'active', // 'active', 'suspended', 'blocked'
+                    isVerified: false,
+                    isActive: true,
+                    profileComplete: true,
+                    
+                    // Personal Details
+                    fullName: name,
+                    firstName: name.split(' ')[0] || '',
+                    lastName: name.split(' ').slice(1).join(' ') || '',
+                    dateOfBirth: '',
+                    gender: '',
+                    maritalStatus: '',
+                    
+                    // Contact Information
+                    alternatePhone: '',
+                    whatsappNumber: mobile,
+                    address: {
+                        street: '',
+                        city: '',
+                        state: '',
+                        pincode: '',
+                        country: 'India'
+                    },
+                    
+                    // Identity Documents
+                    documents: {
+                        panCard: '',
+                        aadharCard: '',
+                        drivingLicense: '',
+                        passport: '',
+                        voterID: ''
+                    },
+                    
+                    // Financial Information
+                    bankDetails: {
+                        accountNumber: '',
+                        ifscCode: '',
+                        bankName: '',
+                        accountHolderName: '',
+                        accountType: ''
+                    },
+                    employment: {
+                        type: '', // 'salaried', 'self-employed', 'business', 'unemployed'
+                        companyName: '',
+                        designation: '',
+                        monthlyIncome: 0,
+                        workExperience: 0
+                    },
+                    
+                    // Loan Related Information
+                    creditScore: 750,
+                    loanEligibility: 50000,
+                    totalLoans: 0,
+                    totalBorrowed: 0,
+                    totalRepaid: 0,
+                    activeLoans: 0,
+                    completedLoans: 0,
+                    rejectedLoans: 0,
+                    defaultedLoans: 0,
+                    
+                    // App Usage Statistics
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
                     loginCount: 1,
-                    totalLoans: 0,
-                    totalBorrowed: 0,
-                    activeLoans: 0,
-                    creditScore: 750,
-                    isVerified: false,
-                    isActive: true,
-                    status: 'active',
-                    profileComplete: true
+                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+                    deviceInfo: {
+                        userAgent: navigator.userAgent,
+                        platform: navigator.platform,
+                        language: navigator.language
+                    },
+                    
+                    // Preferences
+                    preferences: {
+                        notifications: true,
+                        smsAlerts: true,
+                        emailAlerts: true,
+                        language: 'en',
+                        currency: 'INR'
+                    },
+                    
+                    // Referral System
+                    referralCode: generateReferralCode(),
+                    referredBy: '',
+                    totalReferrals: 0,
+                    referralEarnings: 0,
+                    
+                    // Admin Management Fields
+                    approvedBy: '',
+                    approvedAt: null,
+                    notes: '',
+                    tags: [],
+                    priority: 'normal', // 'low', 'normal', 'high', 'urgent'
+                    
+                    // Timestamps
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastModifiedBy: 'system'
                 };
                 
                 await db.collection('loanuser').doc(user.uid).set(newUserData);
                 
+                // Save comprehensive data to Realtime Database
                 await rtdb.ref('loanusers/' + user.uid).set({
+                    // Basic Information
                     name: name,
                     mobile: mobile,
                     email: email || authEmail,
                     role: 'user',
+                    userType: 'regular',
+                    accountStatus: 'active',
+                    
+                    // Personal Details
+                    fullName: name,
+                    firstName: name.split(' ')[0] || '',
+                    lastName: name.split(' ').slice(1).join(' ') || '',
+                    
+                    // Contact
+                    whatsappNumber: mobile,
+                    address: {
+                        country: 'India'
+                    },
+                    
+                    // Financial Summary
+                    creditScore: 750,
+                    loanEligibility: 50000,
+                    totalLoans: 0,
+                    activeLoans: 0,
+                    
+                    // Status & Verification
+                    isVerified: false,
+                    isActive: true,
+                    profileComplete: true,
+                    
+                    // Timestamps
                     createdAt: firebase.database.ServerValue.TIMESTAMP,
-                    status: 'active'
+                    lastLogin: firebase.database.ServerValue.TIMESTAMP,
+                    updatedAt: firebase.database.ServerValue.TIMESTAMP,
+                    
+                    // Referral
+                    referralCode: generateReferralCode(),
+                    totalReferrals: 0,
+                    
+                    // Admin Fields
+                    priority: 'normal',
+                    notes: '',
+                    
+                    // Device Info
+                    deviceInfo: {
+                        userAgent: navigator.userAgent,
+                        platform: navigator.platform
+                    }
                 });
                 
                 userData = newUserData;
@@ -1012,6 +1144,16 @@
             });
             
             alert(loansInfo);
+        }
+        
+        // Utility Functions
+        function generateReferralCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = 'QC';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
         }
         
         // Validation Functions
