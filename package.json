@@ -1,14 +1,21 @@
 {
-  "name": "loanhub-web-app",
+  "name": "quickcash-loan-app",
   "version": "1.0.0",
-  "description": "A comprehensive loan web application with calculator, application form, and dashboard",
-  "main": "loan-app.html",
+  "description": "Complete QuickCash loan application with Firebase integration and auto-save to GitHub",
+  "main": "quickcash-complete-app.html",
   "scripts": {
     "start": "npx http-server . -p 3000 -c-1",
     "dev": "npx http-server . -p 3000 -c-1 -o",
     "deploy": "firebase deploy",
     "init-firebase": "firebase init",
-    "serve": "firebase serve"
+    "serve": "firebase serve",
+    "save": "./auto-save-github.sh now",
+    "save:watch": "./auto-save-github.sh watch",
+    "save:status": "./auto-save-github.sh status",
+    "save:custom": "./auto-save-github.sh save",
+    "github:push": "git add . && git commit -m 'QuickCash update' && git push",
+    "github:setup": "./auto-save-github.sh setup",
+    "auto-save": "echo 'Starting QuickCash Auto-Save to GitHub...' && ./auto-save-github.sh"
   },
   "keywords": [
     "loan",
@@ -20,18 +27,22 @@
     "javascript",
     "responsive",
     "web-app",
-    "lending"
+    "lending",
+    "quickcash",
+    "firebase",
+    "auto-save",
+    "github"
   ],
-  "author": "LoanHub Team",
+  "author": "QuickCash Team",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/loanhub-web-app.git"
+    "url": "https://github.com/SmartMaan/Html.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/loanhub-web-app/issues"
+    "url": "https://github.com/SmartMaan/Html/issues"
   },
-  "homepage": "https://github.com/yourusername/loanhub-web-app#readme",
+  "homepage": "https://github.com/SmartMaan/Html#readme",
   "devDependencies": {
     "firebase-tools": "^12.9.1",
     "http-server": "^14.1.1"
