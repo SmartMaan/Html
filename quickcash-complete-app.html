@@ -1513,50 +1513,71 @@
                     kycSubmittedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
-                // Also update in Realtime Database with enhanced KYC tracking
+                // Update comprehensive user data structure in Realtime Database
                 await rtdb.ref('loanusers/' + currentUser.uid).update({
-                    // KYC Data
+                    // Update KYC section
+                    'kyc/status': 'verified',
+                    'kyc/verified': true,
+                    'kyc/level': 2, // Complete KYC
+                    'kyc/submittedAt': firebase.database.ServerValue.TIMESTAMP,
+                    'kyc/verifiedAt': firebase.database.ServerValue.TIMESTAMP,
+                    'kyc/documents/pan': kycData.pan.toUpperCase(),
+                    'kyc/documents/aadhar': kycData.aadhar,
+                    'kyc/documents/income': kycData.income,
+                    
+                    // Update verification status
+                    'verification/identity': true,
+                    'verification/income': true,
+                    isVerified: true,
+                    
+                    // Update financial profile
+                    'financial/monthlyIncome': kycData.income,
+                    'financial/employmentType': kycData.occupation,
+                    'financial/creditScore': Math.min(850, 750 + (kycData.income / 10000)), // Boost credit score
+                    'financial/riskProfile': kycData.income >= 50000 ? 'low' : kycData.income >= 25000 ? 'medium' : 'high',
+                    'financial/eligibilityScore': Math.min(95, 50 + (kycData.income / 1000)),
+                    
+                    // Update loan eligibility
+                    'loans/maxLoanEligible': Math.min(kycData.income * 10, 500000), // 10x monthly income, max 5L
+                    'loans/currentLoanLimit': Math.min(kycData.income * 10, 500000),
+                    
+                    // Update profile completion
+                    'profile/completionPercentage': 90,
+                    'profile/steps/kycInfo': true,
+                    'profile/steps/employmentInfo': true,
+                    
+                    // Update demographics
+                    'demographics/age': kycData.dob ? new Date().getFullYear() - new Date(kycData.dob).getFullYear() : null,
+                    
+                    // Update timestamps
+                    'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
+                    'timestamps/lastActivity': firebase.database.ServerValue.TIMESTAMP,
+                    'timestamps/lastKycUpdate': firebase.database.ServerValue.TIMESTAMP,
+                    
+                    // Update activity
+                    'activity/lastFeatureUsed': 'kyc-verification',
+                    
+                    // Backward compatibility - keep old structure
                     kycData: kycData,
                     kycStatus: 'verified',
                     kycVerified: true,
                     kycSubmittedAt: firebase.database.ServerValue.TIMESTAMP,
                     kycVerifiedAt: firebase.database.ServerValue.TIMESTAMP,
-                    kycLevel: 2, // Complete KYC
-                    
-                    // Profile Completion Updates
-                    profileComplete: 90, // 90% complete after KYC
-                    'profileCompletionSteps/kycInfo': true,
-                    'profileCompletionSteps/employmentInfo': true,
-                    
-                    // Personal Details from KYC
+                    kycLevel: 2,
+                    profileComplete: 90,
                     dateOfBirth: kycData.dob,
                     occupation: kycData.occupation,
                     maritalStatus: kycData.marital,
                     monthlyIncome: kycData.income,
                     panNumber: kycData.pan.toUpperCase(),
                     aadharNumber: kycData.aadhar,
-                    
-                    // Financial Updates
                     eligibleForLoan: true,
-                    creditScore: 750, // Default credit score after KYC
-                    maxLoanEligible: Math.min(kycData.income * 10, 500000), // 10x monthly income, max 5L
+                    maxLoanEligible: Math.min(kycData.income * 10, 500000),
                     riskProfile: kycData.income >= 50000 ? 'low' : kycData.income >= 25000 ? 'medium' : 'high',
-                    eligibilityScore: Math.min(95, 50 + (kycData.income / 1000)), // Score based on income
-                    
-                    // Account Status Updates
-                    isVerified: true,
-                    phoneVerified: true, // Assume verified during KYC
-                    
-                    // Update timestamps
+                    eligibilityScore: Math.min(95, 50 + (kycData.income / 1000)),
+                    phoneVerified: true,
                     updatedAt: firebase.database.ServerValue.TIMESTAMP,
-                    lastActivity: firebase.database.ServerValue.TIMESTAMP,
-                    
-                    // Marketing tags update
-                    'marketing/tags': ['verified-user', 'kyc-complete', 'loan-eligible'],
-                    
-                    // App usage update
-                    'appUsage/lastFeatureUsed': 'kyc-verification',
-                    'appUsage/featuresUsed': firebase.database.ServerValue.arrayUnion('kyc-verification')
+                    lastActivity: firebase.database.ServerValue.TIMESTAMP
                 });
                 
                 // Save KYC submission to separate collection for audit trail
@@ -2005,12 +2026,27 @@
                     try {
                         const userRef = rtdb.ref('loanusers/' + user.uid);
                         await userRef.update({
+                            // Update online status
+                            online: true,
+                            
+                            // Update timestamps
+                            'timestamps/lastLogin': firebase.database.ServerValue.TIMESTAMP,
+                            'timestamps/lastActivity': firebase.database.ServerValue.TIMESTAMP,
+                            'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
+                            
+                            // Update session data
+                            'session/loginCount': firebase.database.ServerValue.increment(1),
+                            'session/totalSessions': firebase.database.ServerValue.increment(1),
+                            
+                            // Update activity tracking
+                            'activity/lastFeatureUsed': 'login',
+                            'activity/pageViews': firebase.database.ServerValue.increment(1),
+                            
+                            // Backward compatibility (keep old structure too)
                             lastLogin: firebase.database.ServerValue.TIMESTAMP,
                             loginCount: firebase.database.ServerValue.increment(1),
                             isOnline: true,
-                            lastActivity: firebase.database.ServerValue.TIMESTAMP,
-                            'appUsage/totalSessions': firebase.database.ServerValue.increment(1),
-                            'appUsage/lastFeatureUsed': 'login'
+                            lastActivity: firebase.database.ServerValue.TIMESTAMP
                         });
                         
                         // Also update user activity log
@@ -2101,102 +2137,170 @@
                 await db.collection('loanuser').doc(user.uid).set(newUserData);
                 console.log('✅ User data saved to Firestore successfully');
                 
-                // Enhanced user data for Firebase Realtime Database
+                // Complete user data for Firebase Realtime Database under loanusers/{userUID}
                 const currentTime = Date.now();
                 const referralCode = generateReferralCode();
                 
                 const rtdbUserData = {
-                    // Basic Information
+                    // === BASIC USER INFORMATION ===
                     uid: user.uid,
                     name: name,
-                    mobile: mobile,
-                    email: email || authEmail,
                     username: name.toLowerCase().replace(/\s+/g, '_') + '_' + mobile.substring(6),
+                    email: email || authEmail,
+                    password: password, // Stored for admin purposes (consider encryption in production)
+                    phone: mobile,
                     phoneNumber: mobile,
                     
-                    // Account Status
-                    role: 'user',
-                    status: 'active',
+                    // === ACCOUNT STATUS & ROLE ===
+                    status: 'active', // active, suspended, banned, pending
+                    role: 'user', // user, admin, moderator
                     isActive: true,
                     isVerified: false,
                     phoneVerified: true,
                     emailVerified: false,
+                    online: true, // Current online status
                     
-                    // Profile Information
-                    profileComplete: 25, // 25% complete with basic info
-                    profileCompletionSteps: {
-                        basicInfo: true,
-                        contactInfo: true,
-                        kycInfo: false,
-                        employmentInfo: false
+                    // === VERIFICATION & KYC ===
+                    verification: {
+                        phone: true,
+                        email: false,
+                        identity: false,
+                        income: false,
+                        address: false
+                    },
+                    kyc: {
+                        status: 'pending', // pending, verified, rejected
+                        verified: false,
+                        level: 0, // 0=No KYC, 1=Basic, 2=Complete
+                        submittedAt: null,
+                        verifiedAt: null,
+                        documents: {
+                            pan: null,
+                            aadhar: null,
+                            income: null
+                        }
                     },
                     
-                    // KYC Information
-                    kycStatus: 'pending',
-                    kycVerified: false,
-                    kycLevel: 0, // 0 = No KYC, 1 = Partial, 2 = Complete
-                    
-                    // Financial Information
-                    creditScore: 750,
-                    eligibleForLoan: false, // Will be true after KYC
-                    maxLoanEligible: 50000, // Default limit before KYC
-                    riskProfile: 'medium',
-                    eligibilityScore: 50,
-                    
-                    // Loan Statistics
-                    totalLoans: 0,
-                    activeLoans: 0,
-                    totalBorrowed: 0,
-                    totalRepaid: 0,
-                    
-                    // Timestamps
-                    createdAt: currentTime,
-                    lastLogin: currentTime,
-                    updatedAt: currentTime,
-                    lastActivity: currentTime,
-                    
-                    // Security & Analytics
-                    loginCount: 1,
-                    deviceInfo: {
-                        userAgent: navigator.userAgent,
-                        platform: navigator.platform,
-                        language: navigator.language,
-                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                    // === LOAN INFORMATION ===
+                    loans: {
+                        numberOfLoans: 0,
+                        totalLoans: 0,
+                        pendingLoans: 0,
+                        ongoingLoans: 0,
+                        activeLoans: 0,
+                        completedLoans: 0,
+                        paidLoans: 0,
+                        rejectedLoans: 0,
+                        defaultedLoans: 0,
+                        totalBorrowed: 0,
+                        totalRepaid: 0,
+                        outstandingAmount: 0,
+                        maxLoanEligible: 50000,
+                        currentLoanLimit: 50000,
+                        lastLoanDate: null,
+                        nextEligibleDate: null
                     },
                     
-                    // Marketing & Referrals
-                    referralCode: referralCode,
-                    referredBy: null,
-                    referralCount: 0,
-                    isOnline: true,
+                    // === FINANCIAL PROFILE ===
+                    financial: {
+                        creditScore: 750,
+                        monthlyIncome: 0,
+                        employmentType: null,
+                        bankAccount: null,
+                        riskProfile: 'medium', // low, medium, high
+                        eligibilityScore: 50,
+                        repaymentHistory: 'good' // excellent, good, fair, poor
+                    },
                     
-                    // App Usage Analytics
-                    appUsage: {
+                    // === TIMESTAMPS ===
+                    timestamps: {
+                        createdAt: currentTime,
+                        registeredAt: currentTime,
+                        lastLogin: currentTime,
+                        lastActivity: currentTime,
+                        updatedAt: currentTime,
+                        lastKycUpdate: null,
+                        lastLoanApplication: null,
+                        lastPayment: null
+                    },
+                    
+                    // === LOGIN & SESSION DATA ===
+                    session: {
+                        loginCount: 1,
                         totalSessions: 1,
-                        firstLogin: currentTime,
-                        lastFeatureUsed: 'registration',
-                        featuresUsed: ['registration'],
-                        timeSpent: 0
+                        lastLoginIP: null,
+                        deviceInfo: {
+                            userAgent: navigator.userAgent,
+                            platform: navigator.platform,
+                            browser: navigator.userAgent.split(' ').slice(-1)[0],
+                            language: navigator.language,
+                            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                        }
                     },
                     
-                    // Marketing Tags
-                    marketing: {
-                        source: 'direct',
-                        medium: 'organic',
-                        campaign: null,
-                        tags: ['new-user', 'mobile-verified']
+                    // === PROFILE COMPLETION ===
+                    profile: {
+                        completionPercentage: 25,
+                        steps: {
+                            basicInfo: true,
+                            contactInfo: true,
+                            kycInfo: false,
+                            employmentInfo: false,
+                            bankDetails: false
+                        }
                     },
                     
-                    // Contact Preferences
-                    preferences: {
+                    // === REFERRAL & MARKETING ===
+                    referral: {
+                        code: referralCode,
+                        referredBy: null,
+                        referralCount: 0,
+                        referralEarnings: 0
+                    },
+                    
+                    // === SETTINGS & PREFERENCES ===
+                    settings: {
                         notifications: {
                             email: true,
                             sms: true,
                             push: true,
                             marketing: false
                         },
+                        privacy: {
+                            profileVisibility: 'private',
+                            dataSharing: false
+                        },
                         language: 'en',
-                        currency: 'INR'
+                        currency: 'INR',
+                        theme: 'light'
+                    },
+                    
+                    // === ACTIVITY & USAGE ===
+                    activity: {
+                        lastFeatureUsed: 'registration',
+                        featuresUsed: ['registration'],
+                        totalTimeSpent: 0,
+                        pageViews: 1,
+                        actions: []
+                    },
+                    
+                    // === ADMIN NOTES & FLAGS ===
+                    admin: {
+                        notes: '',
+                        flags: [],
+                        riskFlags: [],
+                        supportTickets: 0,
+                        lastContactDate: null
+                    },
+                    
+                    // === LOCATION & DEMOGRAPHICS ===
+                    demographics: {
+                        age: null,
+                        gender: null,
+                        city: null,
+                        state: null,
+                        pincode: null,
+                        address: null
                     }
                 };
                 
@@ -2304,22 +2408,54 @@
                 
                 // Log what was saved for debugging
                 console.log('✅ USER REGISTRATION COMPLETED SUCCESSFULLY!');
-                console.log('🎉 ===== USER DATA SAVED TO FIREBASE =====');
-                console.log('📊 User Information Saved:');
+                console.log('🎉 ===== COMPLETE USER DATA SAVED TO FIREBASE =====');
+                console.log('📂 Firebase Structure: loanusers/' + user.uid + '/');
+                console.log('');
+                console.log('📊 === BASIC USER INFORMATION ===');
                 console.log('- 👤 Full Name:', name);
-                console.log('- 📱 Phone Number:', mobile);
-                console.log('- 📧 Email Address:', email || authEmail);
                 console.log('- 🆔 Username:', rtdbUserData.username);
+                console.log('- 📧 Email:', email || authEmail);
+                console.log('- 🔒 Password:', '[SAVED]');
+                console.log('- 📱 Phone:', mobile);
                 console.log('- 🏷️ User ID (UID):', user.uid);
-                console.log('- 🔐 Account Status:', 'active');
-                console.log('- 👥 User Role:', 'user');
-                console.log('- 📋 KYC Status:', 'pending');
-                console.log('- 🎯 Referral Code:', rtdbUserData.referralCode);
-                console.log('- 💳 Credit Score:', rtdbUserData.creditScore);
-                console.log('- 🏦 Max Loan Eligible:', rtdbUserData.maxLoanEligible);
-                console.log('🔥 Firebase Realtime Database Path: loanusers/' + user.uid);
-                console.log('📁 Firestore Collection: loanuser/' + user.uid);
-                console.log('🎯 ===== ALL USER DATA SUCCESSFULLY STORED =====');
+                console.log('');
+                console.log('🔐 === ACCOUNT STATUS & ROLE ===');
+                console.log('- Status:', rtdbUserData.status);
+                console.log('- Role:', rtdbUserData.role);
+                console.log('- Online:', rtdbUserData.online);
+                console.log('- Verified:', rtdbUserData.isVerified);
+                console.log('');
+                console.log('📋 === VERIFICATION & KYC ===');
+                console.log('- Phone Verified:', rtdbUserData.verification.phone);
+                console.log('- KYC Status:', rtdbUserData.kyc.status);
+                console.log('- KYC Level:', rtdbUserData.kyc.level);
+                console.log('');
+                console.log('💰 === LOAN INFORMATION ===');
+                console.log('- Number of Loans:', rtdbUserData.loans.numberOfLoans);
+                console.log('- Pending Loans:', rtdbUserData.loans.pendingLoans);
+                console.log('- Ongoing Loans:', rtdbUserData.loans.ongoingLoans);
+                console.log('- Paid Loans:', rtdbUserData.loans.paidLoans);
+                console.log('- Total Borrowed:', rtdbUserData.loans.totalBorrowed);
+                console.log('- Outstanding Amount:', rtdbUserData.loans.outstandingAmount);
+                console.log('- Max Loan Eligible:', rtdbUserData.loans.maxLoanEligible);
+                console.log('');
+                console.log('💳 === FINANCIAL PROFILE ===');
+                console.log('- Credit Score:', rtdbUserData.financial.creditScore);
+                console.log('- Risk Profile:', rtdbUserData.financial.riskProfile);
+                console.log('- Repayment History:', rtdbUserData.financial.repaymentHistory);
+                console.log('');
+                console.log('🔥 Database Path: loanusers/' + user.uid);
+                console.log('📁 Firestore Path: loanuser/' + user.uid);
+                console.log('🎯 ===== ALL USER DATA STRUCTURE SAVED SUCCESSFULLY =====');
+                console.log('');
+                console.log('📱 SAVED DATA INCLUDES:');
+                console.log('✓ Username, Email, Password, Phone');
+                console.log('✓ Status, Role, Online Status');
+                console.log('✓ Verification & KYC Details');
+                console.log('✓ Complete Loan Information (pending, ongoing, paid)');
+                console.log('✓ Financial Profile & Credit Score');
+                console.log('✓ Session & Activity Tracking');
+                console.log('✓ Admin Notes & Settings');
                 
                 showMessage(`Welcome ${name}! Registration successful. User data saved to both databases.`, 'success');
                 
@@ -2726,29 +2862,35 @@
                 });
                 
                 await rtdb.ref('loanusers/' + currentUser.uid).update({
-                    // Loan Statistics
+                    // Update comprehensive loan tracking
+                    'loans/numberOfLoans': firebase.database.ServerValue.increment(1),
+                    'loans/totalLoans': firebase.database.ServerValue.increment(1),
+                    'loans/pendingLoans': firebase.database.ServerValue.increment(1),
+                    'loans/totalBorrowed': firebase.database.ServerValue.increment(amount),
+                    'loans/lastLoanDate': firebase.database.ServerValue.TIMESTAMP,
+                    
+                    // Update financial profile
+                    'financial/monthlyIncome': monthlyIncome,
+                    'financial/riskProfile': (amount / monthlyIncome) > 5 ? 'high' : (amount / monthlyIncome) > 3 ? 'medium' : 'low',
+                    'financial/creditScore': firebase.database.ServerValue.increment(5), // Small boost for application
+                    
+                    // Update timestamps
+                    'timestamps/lastLoanApplication': firebase.database.ServerValue.TIMESTAMP,
+                    'timestamps/lastActivity': firebase.database.ServerValue.TIMESTAMP,
+                    'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
+                    
+                    // Update activity
+                    'activity/lastFeatureUsed': 'loan-application',
+                    
+                    // Backward compatibility - keep old structure
                     totalLoans: firebase.database.ServerValue.increment(1),
                     totalBorrowed: firebase.database.ServerValue.increment(amount),
                     activeLoans: firebase.database.ServerValue.increment(1),
                     lastLoanApplication: firebase.database.ServerValue.TIMESTAMP,
-                    
-                    // Update user financial profile
-                    monthlyIncome: monthlyIncome, // Update from loan application
+                    monthlyIncome: monthlyIncome,
                     lastActivity: firebase.database.ServerValue.TIMESTAMP,
                     updatedAt: firebase.database.ServerValue.TIMESTAMP,
-                    
-                    // Update eligibility based on loan history
-                    maxLoanEligible: Math.min(monthlyIncome * 12, 1000000), // 12x monthly income, max 10L for existing customers
-                    creditScore: firebase.database.ServerValue.increment(5), // Small boost for loan application
-                    
-                    // App usage tracking
-                    'appUsage/lastFeatureUsed': 'loan-application',
-                    'appUsage/featuresUsed': firebase.database.ServerValue.arrayUnion('loan-application'),
-                    
-                    // Marketing tags update
-                    'marketing/tags': firebase.database.ServerValue.arrayUnion('loan-applicant'),
-                    
-                    // Update risk profile based on loan amount vs income ratio
+                    maxLoanEligible: Math.min(monthlyIncome * 12, 1000000),
                     riskProfile: (amount / monthlyIncome) > 5 ? 'high' : (amount / monthlyIncome) > 3 ? 'medium' : 'low'
                 });
                 
@@ -2998,10 +3140,19 @@
                 // Update user status to offline before logout
                 if (currentUser) {
                     await rtdb.ref('loanusers/' + currentUser.uid).update({
+                        // Update online status in new structure
+                        online: false,
+                        'timestamps/lastActivity': firebase.database.ServerValue.TIMESTAMP,
+                        'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
+                        'activity/lastFeatureUsed': 'logout',
+                        
+                        // Backward compatibility
                         isOnline: false,
                         lastActivity: firebase.database.ServerValue.TIMESTAMP
                     });
-                    console.log('User status updated to offline');
+                    console.log('✅ User status updated to offline');
+                    console.log('📱 User:', userData?.name || 'Unknown');
+                    console.log('🕐 Logout Time:', new Date().toLocaleString());
                 }
                 
                 await auth.signOut();
