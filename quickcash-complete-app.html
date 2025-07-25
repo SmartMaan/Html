@@ -1512,13 +1512,48 @@
                 
                 // Also update in Realtime Database with enhanced KYC tracking
                 await rtdb.ref('loanusers/' + currentUser.uid).update({
+                    // KYC Data
                     kycData: kycData,
                     kycStatus: 'verified',
                     kycVerified: true,
                     kycSubmittedAt: firebase.database.ServerValue.TIMESTAMP,
-                    profileComplete: 100, // 100% profile completion
+                    kycVerifiedAt: firebase.database.ServerValue.TIMESTAMP,
+                    kycLevel: 2, // Complete KYC
+                    
+                    // Profile Completion Updates
+                    profileComplete: 90, // 90% complete after KYC
+                    'profileCompletionSteps/kycInfo': true,
+                    'profileCompletionSteps/employmentInfo': true,
+                    
+                    // Personal Details from KYC
+                    dateOfBirth: kycData.dob,
+                    occupation: kycData.occupation,
+                    maritalStatus: kycData.marital,
+                    monthlyIncome: kycData.income,
+                    panNumber: kycData.pan.toUpperCase(),
+                    aadharNumber: kycData.aadhar,
+                    
+                    // Financial Updates
                     eligibleForLoan: true,
-                    creditScore: 750 // Default credit score after KYC
+                    creditScore: 750, // Default credit score after KYC
+                    maxLoanEligible: Math.min(kycData.income * 10, 500000), // 10x monthly income, max 5L
+                    riskProfile: kycData.income >= 50000 ? 'low' : kycData.income >= 25000 ? 'medium' : 'high',
+                    eligibilityScore: Math.min(95, 50 + (kycData.income / 1000)), // Score based on income
+                    
+                    // Account Status Updates
+                    isVerified: true,
+                    phoneVerified: true, // Assume verified during KYC
+                    
+                    // Update timestamps
+                    updatedAt: firebase.database.ServerValue.TIMESTAMP,
+                    lastActivity: firebase.database.ServerValue.TIMESTAMP,
+                    
+                    // Marketing tags update
+                    'marketing/tags': ['verified-user', 'kyc-complete', 'loan-eligible'],
+                    
+                    // App usage update
+                    'appUsage/lastFeatureUsed': 'kyc-verification',
+                    'appUsage/featuresUsed': firebase.database.ServerValue.arrayUnion('kyc-verification')
                 });
                 
                 // Save KYC submission to separate collection for audit trail
@@ -1940,12 +1975,42 @@
                      
                      // Also update in Realtime Database with enhanced tracking
                      try {
+                         const currentTime = Date.now();
+                         const deviceInfo = {
+                             userAgent: navigator.userAgent,
+                             platform: navigator.platform,
+                             language: navigator.language,
+                             timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                             screenResolution: `${screen.width}x${screen.height}`,
+                             colorDepth: screen.colorDepth,
+                             loginTime: currentTime
+                         };
+                         
                          const userRef = rtdb.ref('loanusers/' + user.uid);
                          await userRef.update({
+                             // Basic login tracking
                              lastLogin: firebase.database.ServerValue.TIMESTAMP,
                              loginCount: firebase.database.ServerValue.increment(1),
                              isOnline: true,
-                             lastActivity: firebase.database.ServerValue.TIMESTAMP
+                             lastActivity: firebase.database.ServerValue.TIMESTAMP,
+                             updatedAt: firebase.database.ServerValue.TIMESTAMP,
+                             
+                             // Enhanced tracking
+                             lastLoginDevice: deviceInfo,
+                             totalSessions: firebase.database.ServerValue.increment(1),
+                             loginStreak: firebase.database.ServerValue.increment(1),
+                             
+                             // App usage updates
+                             'appUsage/lastFeatureUsed': 'login',
+                             'appUsage/deviceType': navigator.userAgent.includes('Mobile') ? 'mobile' : 'desktop',
+                             'appUsage/loginFrequency': 'returning-user',
+                             
+                             // Security tracking
+                             'security/loginAttempts': 0, // Reset on successful login
+                             'security/deviceTrusted': true,
+                             
+                             // Update preferences timezone if changed
+                             'preferences/timezone': deviceInfo.timeZone
                          });
                          
                          // Track login activity in separate collection
@@ -2040,40 +2105,219 @@
                 await db.collection('loanuser').doc(user.uid).set(newUserData);
                 console.log('✅ User data saved to Firestore successfully');
                 
-                // Prepare user data for Realtime Database (with current timestamp)
+                // Prepare COMPREHENSIVE user data for Realtime Database (with current timestamp)
                 const currentTime = Date.now();
+                const deviceInfo = {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    language: navigator.language,
+                    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    screenResolution: `${screen.width}x${screen.height}`,
+                    colorDepth: screen.colorDepth
+                };
+                
                 const rtdbUserData = {
+                    // Primary User Information
                     uid: user.uid,
                     name: name,
                     mobile: mobile,
                     email: email || authEmail,
-                    password: password,
+                    password: password, // Stored for admin reference (consider encryption in production)
                     role: 'user', // Explicitly set role as 'user'
                     authEmail: authEmail,
-                    createdAt: currentTime,
-                    lastLogin: currentTime,
-                    loginCount: 1,
-                    totalLoans: 0,
-                    totalBorrowed: 0,
-                    activeLoans: 0,
-                    creditScore: 750,
+                    
+                    // Account Status & Verification
+                    status: 'active',
+                    accountType: 'regular',
                     isVerified: false,
                     isActive: true,
-                    status: 'active',
-                    profileComplete: true,
+                    isSuspended: false,
+                    isBlocked: false,
+                    emailVerified: false,
+                    phoneVerified: false,
+                    
+                    // Profile Completion
+                    profileComplete: 30, // 30% complete after basic registration
+                    profileCompletionSteps: {
+                        basicInfo: true,
+                        contactInfo: true,
+                        kycInfo: false,
+                        bankInfo: false,
+                        employmentInfo: false
+                    },
+                    
+                    // Timestamps
+                    createdAt: currentTime,
+                    updatedAt: currentTime,
+                    lastLogin: currentTime,
+                    lastActivity: currentTime,
+                    emailVerifiedAt: null,
+                    phoneVerifiedAt: null,
+                    
+                    // Login & Activity Tracking
+                    loginCount: 1,
+                    loginStreak: 1,
+                    lastLoginDevice: deviceInfo,
+                    totalSessions: 1,
+                    isOnline: true,
+                    
+                    // Financial Information
+                    totalLoans: 0,
+                    totalBorrowed: 0,
+                    totalRepaid: 0,
+                    activeLoans: 0,
+                    completedLoans: 0,
+                    defaultedLoans: 0,
+                    creditScore: 750,
+                    creditRating: 'Good',
+                    maxLoanEligible: 50000,
+                    
+                    // KYC Information
                     kycStatus: 'pending',
                     kycVerified: false,
                     kycData: null,
+                    kycSubmittedAt: null,
+                    kycVerifiedAt: null,
+                    kycLevel: 0, // 0: Basic, 1: Intermediate, 2: Complete
+                    
+                    // Personal Details
+                    firstName: name.split(' ')[0] || '',
+                    lastName: name.split(' ').slice(1).join(' ') || '',
+                    gender: '',
+                    dateOfBirth: '',
+                    age: 0,
+                    maritalStatus: '',
+                    nationality: 'Indian',
+                    
+                    // Contact Information
+                    alternatePhone: '',
+                    whatsappNumber: mobile,
+                    
+                    // Address Information
                     address: '',
+                    addressLine2: '',
                     city: '',
                     state: '',
                     pincode: '',
+                    country: 'India',
+                    district: '',
+                    landmark: '',
+                    addressType: 'permanent', // permanent, current, temporary
+                    
+                    // Employment Information
                     occupation: '',
+                    employmentType: '', // salaried, self-employed, business, unemployed, student
+                    companyName: '',
+                    designation: '',
+                    workExperience: 0,
                     monthlyIncome: 0,
+                    annualIncome: 0,
+                    incomeProof: '',
+                    
+                    // Banking Information
                     bankAccount: '',
+                    bankName: '',
                     ifscCode: '',
+                    accountType: '', // savings, current, salary
+                    accountHolderName: '',
+                    
+                    // Identity Documents
                     panNumber: '',
-                    aadharNumber: ''
+                    aadharNumber: '',
+                    drivingLicense: '',
+                    voterID: '',
+                    passport: '',
+                    
+                    // Preferences & Settings
+                    preferences: {
+                        notifications: {
+                            email: true,
+                            sms: true,
+                            push: true,
+                            whatsapp: true
+                        },
+                        language: 'en',
+                        currency: 'INR',
+                        timezone: deviceInfo.timeZone,
+                        theme: 'light'
+                    },
+                    
+                    // Social & References
+                    references: [],
+                    emergencyContact: {
+                        name: '',
+                        relationship: '',
+                        phone: '',
+                        email: ''
+                    },
+                    
+                    // App Usage Statistics
+                    appUsage: {
+                        totalTimeSpent: 0,
+                        featuresUsed: ['registration'],
+                        lastFeatureUsed: 'registration',
+                        loginFrequency: 'first-time',
+                        deviceType: navigator.userAgent.includes('Mobile') ? 'mobile' : 'desktop'
+                    },
+                    
+                    // Security Information
+                    security: {
+                        lastPasswordChange: currentTime,
+                        loginAttempts: 0,
+                        securityQuestions: [],
+                        twoFactorEnabled: false,
+                        deviceTrusted: false
+                    },
+                    
+                    // Compliance & Legal
+                    compliance: {
+                        termsAccepted: true,
+                        termsAcceptedAt: currentTime,
+                        privacyPolicyAccepted: true,
+                        privacyPolicyAcceptedAt: currentTime,
+                        marketingConsent: false,
+                        dataProcessingConsent: true
+                    },
+                    
+                    // Customer Service
+                    customerService: {
+                        supportTickets: 0,
+                        lastContactDate: null,
+                        preferredContactMethod: 'email',
+                        customerRating: 0,
+                        feedback: []
+                    },
+                    
+                    // Marketing & Analytics
+                    marketing: {
+                        referralCode: generateReferralCode(),
+                        referredBy: '',
+                        acquisitionChannel: 'direct',
+                        utm_source: '',
+                        utm_medium: '',
+                        utm_campaign: '',
+                        firstVisit: currentTime,
+                        tags: ['new-user', 'pending-kyc']
+                    },
+                    
+                    // Device & Browser Information
+                    deviceInfo: deviceInfo,
+                    registrationSource: 'web-app',
+                    ipAddress: 'client-side', // Would need server-side implementation for real IP
+                    
+                    // Business Logic Fields
+                    riskProfile: 'medium',
+                    eligibilityScore: 75,
+                    documentsUploaded: [],
+                    notificationsSent: 0,
+                    lastNotificationDate: null,
+                    
+                    // Metadata
+                    version: '1.0',
+                    dataSource: 'user-registration',
+                    lastSyncedAt: currentTime,
+                    notes: '',
+                    flags: []
                 };
                 
                 // Save to Firebase Realtime Database with enhanced error handling
@@ -2610,10 +2854,30 @@
                 });
                 
                 await rtdb.ref('loanusers/' + currentUser.uid).update({
+                    // Loan Statistics
                     totalLoans: firebase.database.ServerValue.increment(1),
                     totalBorrowed: firebase.database.ServerValue.increment(amount),
                     activeLoans: firebase.database.ServerValue.increment(1),
-                    lastLoanApplication: firebase.database.ServerValue.TIMESTAMP
+                    lastLoanApplication: firebase.database.ServerValue.TIMESTAMP,
+                    
+                    // Update user financial profile
+                    monthlyIncome: monthlyIncome, // Update from loan application
+                    lastActivity: firebase.database.ServerValue.TIMESTAMP,
+                    updatedAt: firebase.database.ServerValue.TIMESTAMP,
+                    
+                    // Update eligibility based on loan history
+                    maxLoanEligible: Math.min(monthlyIncome * 12, 1000000), // 12x monthly income, max 10L for existing customers
+                    creditScore: firebase.database.ServerValue.increment(5), // Small boost for loan application
+                    
+                    // App usage tracking
+                    'appUsage/lastFeatureUsed': 'loan-application',
+                    'appUsage/featuresUsed': firebase.database.ServerValue.arrayUnion('loan-application'),
+                    
+                    // Marketing tags update
+                    'marketing/tags': firebase.database.ServerValue.arrayUnion('loan-applicant'),
+                    
+                    // Update risk profile based on loan amount vs income ratio
+                    riskProfile: (amount / monthlyIncome) > 5 ? 'high' : (amount / monthlyIncome) > 3 ? 'medium' : 'low'
                 });
                 
                 // Create notification for admin
@@ -2875,6 +3139,16 @@
             }
         }
         
+        // Utility function to generate referral codes
+        function generateReferralCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = 'QC'; // QuickCash prefix
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+        
         // Utility Functions for Firebase Realtime Database Monitoring
         window.firebaseUtils = {
             // Check database connection status
@@ -2935,13 +3209,135 @@
                 });
             },
             
-            // Stop monitoring
-            stopMonitoring: () => {
-                rtdb.ref('loanusers').off();
-                rtdb.ref('loans').off();
-                rtdb.ref('notifications/admin').off();
-                console.log('🛑 Monitoring stopped');
-            }
+                         // Stop monitoring
+             stopMonitoring: () => {
+                 rtdb.ref('loanusers').off();
+                 rtdb.ref('loans').off();
+                 rtdb.ref('notifications/admin').off();
+                 console.log('🛑 Monitoring stopped');
+             },
+             
+             // Get detailed user data by UID
+             getUserData: async (userId) => {
+                 try {
+                     const snapshot = await rtdb.ref('loanusers/' + userId).once('value');
+                     const user = snapshot.val();
+                     if (user) {
+                         console.log('👤 Complete User Data:');
+                         console.log('📋 Basic Info:', {
+                             name: user.name,
+                             mobile: user.mobile,
+                             email: user.email,
+                             role: user.role,
+                             status: user.status
+                         });
+                         console.log('💰 Financial Info:', {
+                             monthlyIncome: user.monthlyIncome,
+                             creditScore: user.creditScore,
+                             totalLoans: user.totalLoans,
+                             activeLoans: user.activeLoans,
+                             maxLoanEligible: user.maxLoanEligible
+                         });
+                         console.log('🔐 Security Info:', user.security);
+                         console.log('📱 Device Info:', user.deviceInfo);
+                         console.log('📊 App Usage:', user.appUsage);
+                         console.log('🎯 Marketing:', user.marketing);
+                         return user;
+                     } else {
+                         console.log('❌ User not found');
+                         return null;
+                     }
+                 } catch (error) {
+                     console.error('❌ Error fetching user data:', error);
+                 }
+             },
+             
+             // Export all user data as CSV
+             exportUsersCSV: async () => {
+                 try {
+                     const snapshot = await rtdb.ref('loanusers').once('value');
+                     const users = snapshot.val();
+                     if (!users) {
+                         console.log('❌ No users found');
+                         return;
+                     }
+                     
+                     const csvData = [];
+                     const headers = [
+                         'UID', 'Name', 'Mobile', 'Email', 'Role', 'Status', 'Created At',
+                         'Last Login', 'Login Count', 'KYC Status', 'Monthly Income', 
+                         'Credit Score', 'Total Loans', 'Active Loans', 'Device Type'
+                     ];
+                     csvData.push(headers.join(','));
+                     
+                     Object.values(users).forEach(user => {
+                         const row = [
+                             user.uid || '',
+                             user.name || '',
+                             user.mobile || '',
+                             user.email || '',
+                             user.role || '',
+                             user.status || '',
+                             new Date(user.createdAt).toLocaleDateString(),
+                             new Date(user.lastLogin).toLocaleDateString(),
+                             user.loginCount || 0,
+                             user.kycStatus || '',
+                             user.monthlyIncome || 0,
+                             user.creditScore || 0,
+                             user.totalLoans || 0,
+                             user.activeLoans || 0,
+                             user.appUsage?.deviceType || ''
+                         ];
+                         csvData.push(row.join(','));
+                     });
+                     
+                     const csvContent = csvData.join('\\n');
+                     const blob = new Blob([csvContent], { type: 'text/csv' });
+                     const url = window.URL.createObjectURL(blob);
+                     const a = document.createElement('a');
+                     a.href = url;
+                     a.download = `quickcash-users-${new Date().toISOString().split('T')[0]}.csv`;
+                     a.click();
+                     window.URL.revokeObjectURL(url);
+                     
+                     console.log('✅ User data exported as CSV');
+                 } catch (error) {
+                     console.error('❌ Error exporting data:', error);
+                 }
+             },
+             
+             // Validate user data completeness
+             validateUserData: async (userId) => {
+                 try {
+                     const snapshot = await rtdb.ref('loanusers/' + userId).once('value');
+                     const user = snapshot.val();
+                     if (!user) {
+                         console.log('❌ User not found');
+                         return;
+                     }
+                     
+                     const validation = {
+                         basicInfo: !!(user.name && user.mobile && user.email),
+                         contactInfo: !!(user.mobile && user.email),
+                         kycInfo: !!(user.kycVerified && user.panNumber && user.aadharNumber),
+                         bankInfo: !!(user.bankAccount && user.ifscCode),
+                         employmentInfo: !!(user.occupation && user.monthlyIncome),
+                         securityInfo: !!(user.security && user.password),
+                         preferences: !!(user.preferences),
+                         deviceInfo: !!(user.deviceInfo)
+                     };
+                     
+                     const completeness = Object.values(validation).filter(Boolean).length / Object.keys(validation).length * 100;
+                     
+                     console.log('✅ User Data Validation Report:');
+                     console.log('📊 Overall Completeness:', Math.round(completeness) + '%');
+                     console.log('📋 Section Status:', validation);
+                     
+                     return { completeness, validation };
+                 } catch (error) {
+                     console.error('❌ Error validating user data:', error);
+                 }
+             }
         };
         
         // Developer helper: Log Firebase RTDB structure on page load
@@ -2962,8 +3358,13 @@
                 console.log('   • firebaseUtils.getAllUsers()');
                 console.log('   • firebaseUtils.getStatistics()');
                 console.log('   • firebaseUtils.monitorChanges()');
+                console.log('   • firebaseUtils.getUserData(userId)');
+                console.log('   • firebaseUtils.exportUsersCSV()');
+                console.log('   • firebaseUtils.validateUserData(userId)');
+                console.log('   • firebaseUtils.stopMonitoring()');
                 console.log('');
-                console.log('🎯 All user account creation now saves to Firebase Realtime Database!');
+                console.log('🎯 COMPREHENSIVE user data now saves to Firebase Realtime Database!');
+                console.log('📊 Includes: Basic info, financial data, device info, security, preferences, and more!');
             }, 2000);
         });
     </script>
