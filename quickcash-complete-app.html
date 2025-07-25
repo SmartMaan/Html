@@ -1361,6 +1361,14 @@
         const db = firebase.firestore();
         const rtdb = firebase.database();
         
+        // Force enable Firebase offline persistence for better reliability
+        try {
+            rtdb.goOnline();
+            console.log('🔥 Firebase Realtime Database forced online');
+        } catch (e) {
+            console.log('⚠️ Firebase already online');
+        }
+        
         // Monitor Realtime Database connection with detailed logging
         rtdb.ref('.info/connected').on('value', function(snapshot) {
             if (snapshot.val() === true) {
@@ -2318,16 +2326,31 @@
                 console.log('🔥 Complete User Data to Save:', JSON.stringify(rtdbUserData, null, 2));
                 
                 try {
+                    // Test Firebase connection first
+                    console.log('🧪 Testing Firebase Realtime Database connection...');
+                    const testRef = rtdb.ref('.info/connected');
+                    const connSnapshot = await testRef.once('value');
+                    console.log('🔗 Connection status:', connSnapshot.val() ? 'CONNECTED ✅' : 'DISCONNECTED ❌');
+                    
+                    // Test write permissions
+                    console.log('🧪 Testing write permissions...');
+                    const testWriteRef = rtdb.ref('test_write_' + Date.now());
+                    await testWriteRef.set({ test: true, timestamp: Date.now() });
+                    console.log('✅ Write permissions OK');
+                    await testWriteRef.remove(); // Clean up test data
+                    
+                    // Now save user data
                     const rtdbRef = rtdb.ref('loanusers/' + user.uid);
+                    console.log('💾 Saving user data to:', rtdbRef.toString());
                     
-                    // First check if we can write to Firebase
                     await rtdbRef.set(rtdbUserData);
-                    console.log('✅ User data SET operation completed');
+                    console.log('✅ User data SET operation completed successfully');
                     
-                    // Wait a moment for Firebase to process
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    // Wait for Firebase to process
+                    await new Promise(resolve => setTimeout(resolve, 2000));
                     
                     // Verify data was saved by reading it back
+                    console.log('🔍 Verifying saved data...');
                     const verifySnapshot = await rtdbRef.once('value');
                     const savedData = verifySnapshot.val();
                     
@@ -2350,16 +2373,64 @@
                     }
                     
                 } catch (rtdbError) {
-                    console.error('❌ FIREBASE REALTIME DATABASE ERROR:', rtdbError);
-                    console.error('❌ Error message:', rtdbError.message);
-                    console.error('❌ Error code:', rtdbError.code);
+                    console.error('❌ FIREBASE REALTIME DATABASE ERROR:');
+                    console.error('❌ Error Object:', rtdbError);
+                    console.error('❌ Error Message:', rtdbError.message);
+                    console.error('❌ Error Code:', rtdbError.code);
+                    console.error('❌ Error Stack:', rtdbError.stack);
                     
-                    // Check if it's a permission issue
+                    // Detailed error handling
                     if (rtdbError.code === 'PERMISSION_DENIED') {
-                        console.error('❌ PERMISSION DENIED - Check Firebase Realtime Database rules');
+                        console.error('🚫 PERMISSION DENIED ERROR');
+                        console.error('🔧 Solution: Update Firebase Realtime Database rules');
+                        console.error('📝 Add this rule to Firebase Console:');
+                        console.error(`{
+  "rules": {
+    "loanusers": {
+      ".read": true,
+      ".write": true
+    },
+    "test_write": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}`);
+                    } else if (rtdbError.code === 'NETWORK_ERROR') {
+                        console.error('🌐 NETWORK ERROR - Check internet connection');
+                    } else {
+                        console.error('❓ UNKNOWN ERROR - Check Firebase configuration');
                     }
                     
-                    throw new Error(`Failed to save user data: ${rtdbError.message}`);
+                    // Try alternative save method
+                    console.log('🔄 Trying alternative save method...');
+                    try {
+                        // Try saving with simplified structure first
+                        const simpleData = {
+                            uid: user.uid,
+                            name: name,
+                            email: email || authEmail,
+                            phone: mobile,
+                            password: password,
+                            role: 'user',
+                            status: 'active',
+                            online: true,
+                            createdAt: Date.now(),
+                            registeredAt: Date.now()
+                        };
+                        
+                        await rtdb.ref('loanusers/' + user.uid).set(simpleData);
+                        console.log('✅ Alternative save method successful!');
+                        console.log('📊 Saved basic user data:', simpleData);
+                        
+                        // Show success message
+                        showMessage(`Welcome ${name}! Registration successful with basic data.`, 'success');
+                        
+                    } catch (altError) {
+                        console.error('❌ Alternative save also failed:', altError);
+                        showMessage('User registration failed. Please check your internet connection and try again.', 'error');
+                        throw new Error(`All Firebase save methods failed: ${rtdbError.message}`);
+                    }
                 }
                 
                 // Also verify Firestore data
@@ -3172,7 +3243,71 @@
             return code;
         }
         
-                // Firebase Utilities for debugging
+                // Simple Firebase test function for users
+        window.testFirebase = async function() {
+            console.log('🧪 === FIREBASE CONNECTION TEST ===');
+            
+            try {
+                // Test 1: Connection check
+                console.log('1️⃣ Testing connection...');
+                const connRef = rtdb.ref('.info/connected');
+                const connSnapshot = await connRef.once('value');
+                const isConnected = connSnapshot.val();
+                console.log('🔗 Connected:', isConnected ? '✅ YES' : '❌ NO');
+                
+                if (!isConnected) {
+                    console.error('❌ Firebase is not connected. Check your internet.');
+                    return false;
+                }
+                
+                // Test 2: Write test
+                console.log('2️⃣ Testing write permissions...');
+                const testData = {
+                    test: true,
+                    timestamp: Date.now(),
+                    message: 'Test data from QuickCash app'
+                };
+                
+                const testRef = rtdb.ref('test_data_' + Date.now());
+                await testRef.set(testData);
+                console.log('✅ Write test successful');
+                
+                // Test 3: Read test  
+                console.log('3️⃣ Testing read permissions...');
+                const readSnapshot = await testRef.once('value');
+                const readData = readSnapshot.val();
+                console.log('✅ Read test successful:', readData);
+                
+                // Clean up
+                await testRef.remove();
+                console.log('🧹 Test data cleaned up');
+                
+                console.log('🎉 === ALL TESTS PASSED ===');
+                console.log('✅ Firebase is working correctly!');
+                console.log('✅ User registration should work now!');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ === FIREBASE TEST FAILED ===');
+                console.error('Error:', error);
+                console.error('❌ User registration will fail');
+                
+                if (error.code === 'PERMISSION_DENIED') {
+                    console.error('🚫 PERMISSION DENIED');
+                    console.error('🔧 SOLUTION: Go to Firebase Console > Realtime Database > Rules');
+                    console.error('📝 Replace with:');
+                    console.error(`{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}`);
+                }
+                return false;
+            }
+        };
+        
+        // Firebase Utilities for debugging
         window.firebaseUtils = {
             // Get all users from RTDB
             getAllUsers: async () => {
@@ -3268,19 +3403,26 @@
                 console.log('├── user_activity/      (Login & activity logs)');
                 console.log('└── statistics/         (System statistics)');
                 console.log('');
-                console.log('💡 Use window.firebaseUtils to debug database:');
-                console.log('   • firebaseUtils.checkConnection() - Check Firebase connection');
-                console.log('   • firebaseUtils.getAllUsers() - View all users');
-                console.log('   • firebaseUtils.testWrite() - Test Firebase write permissions');
-                console.log('   • firebaseUtils.getUser(userId) - Get specific user data');
+                console.log('🚨 IF USER DATA IS NOT SAVING:');
+                console.log('   1. Run testFirebase() in console to check Firebase connection');
+                console.log('   2. Go to Firebase Console > Realtime Database > Rules');
+                console.log('   3. Set rules to: { "rules": { ".read": true, ".write": true } }');
+                console.log('   4. Make sure database URL is correct in config');
                 console.log('');
-                console.log('🎯 User registration saves to Firebase Realtime Database!');
-                console.log('📊 Database Path: loanusers/{userId}');
+                console.log('💡 Use these functions to debug:');
+                console.log('   • testFirebase() - Test Firebase connection & permissions');
+                console.log('   • firebaseUtils.getAllUsers() - View all saved users');
+                console.log('   • firebaseUtils.checkConnection() - Check connection status');
+                console.log('   • firebaseUtils.testWrite() - Test write permissions');
                 console.log('');
-                console.log('🔧 DEBUGGING TIPS:');
-                console.log('   1. Register a new user and check browser console');
-                console.log('   2. Run firebaseUtils.getAllUsers() to see saved data');
-                console.log('   3. Check Firebase Realtime Database rules if data not saving');
+                console.log('🎯 User registration saves to: loanusers/{userId}');
+                console.log('📱 Expected data: name, email, phone, password, status, role, etc.');
+                console.log('');
+                console.log('🔧 QUICK FIX FOR PERMISSION DENIED:');
+                console.log('   Go to: https://console.firebase.google.com/');
+                console.log('   Project: aviator-pr01');
+                console.log('   Realtime Database > Rules > Edit > Save:');
+                console.log('   { "rules": { ".read": true, ".write": true } }');
             }, 2000);
         });
     </script>
