@@ -1,36 +1,48 @@
 {
-  "name": "mines-casino-game",
+  "name": "quickcash-loan-app",
   "version": "1.0.0",
-  "description": "A complete Mines casino game with Firebase authentication and real-time multiplayer support",
-  "main": "mines-game.html",
+  "description": "Complete QuickCash loan application with Firebase integration and auto-save to GitHub",
+  "main": "quickcash-complete-app.html",
   "scripts": {
     "start": "npx http-server . -p 3000 -c-1",
+    "dev": "npx http-server . -p 3000 -c-1 -o",
     "deploy": "firebase deploy",
     "init-firebase": "firebase init",
-    "serve": "firebase serve"
+    "serve": "firebase serve",
+    "save": "./auto-save-github.sh now",
+    "save:watch": "./auto-save-github.sh watch",
+    "save:status": "./auto-save-github.sh status",
+    "save:custom": "./auto-save-github.sh save",
+    "github:push": "git add . && git commit -m 'QuickCash update' && git push",
+    "github:setup": "./auto-save-github.sh setup",
+    "auto-save": "echo 'Starting QuickCash Auto-Save to GitHub...' && ./auto-save-github.sh"
   },
   "keywords": [
-    "casino",
-    "mines",
-    "game",
-    "gambling",
-    "firebase",
+    "loan",
+    "finance",
+    "banking",
+    "calculator",
+    "application",
     "html5",
     "javascript",
     "responsive",
-    "multiplayer",
-    "betting"
+    "web-app",
+    "lending",
+    "quickcash",
+    "firebase",
+    "auto-save",
+    "github"
   ],
-  "author": "Mines Casino Game",
+  "author": "QuickCash Team",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/mines-casino-game.git"
+    "url": "https://github.com/SmartMaan/Html.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/mines-casino-game/issues"
+    "url": "https://github.com/SmartMaan/Html/issues"
   },
-  "homepage": "https://github.com/yourusername/mines-casino-game#readme",
+  "homepage": "https://github.com/SmartMaan/Html#readme",
   "devDependencies": {
     "firebase-tools": "^12.9.1",
     "http-server": "^14.1.1"
