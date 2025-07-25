@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickCash - Complete Loan Application</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <style>
+        :root {
+            --primary: #6c63ff;
+            --secondary: #4a42e8;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: linear-gradient(135deg, #6e8efb, #a777e3); min-height: 100vh; transition: all 0.8s ease; }
+        body.dashboard-mode { background: #f5f7fa; }
+        
+        /* Loading Screen */
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; }
+        .loading-spinner { width: 60px; height: 60px; border: 4px solid rgba(255, 255, 255, 0.3); border-top: 4px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+        
+        /* Auth Container */
+        .login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .auth-card { width: 100%; max-width: 420px; background: rgba(255, 255, 255, 0.95); border-radius: 24px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); overflow: hidden; }
+        .auth-header { background: linear-gradient(135deg, #4a6cf7, #8a3ffb); color: white; padding: 30px 20px; text-align: center; }
+        .auth-logo { font-size: 2rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
+        .auth-logo i { margin-right: 12px; font-size: 2.2rem; }
+        .auth-tabs { display: flex; background: #f8f9fa; }
+        .auth-tab { flex: 1; text-align: center; padding: 18px; cursor: pointer; font-weight: 600; color: #6c757d; transition: all 0.3s ease; }
+        .auth-tab.active { color: var(--primary); background: white; border-bottom: 3px solid var(--primary); }
+        .auth-content { padding: 30px; }
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
+        .form-group { margin-bottom: 24px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 600; color: #374151; }
+        .form-input { width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 16px; transition: all 0.3s ease; }
+        .form-input:focus { border-color: var(--primary); outline: none; }
+        .auth-button { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .field-error { color: var(--danger); font-size: 0.85rem; margin-top: 6px; display: none; }
+        .message { padding: 14px 16px; border-radius: 10px; margin-bottom: 12px; font-weight: 500; display: none; }
+        .message.error { background: #fef2f2; color: #dc2626; }
+        .message.success { background: #f0fdf4; color: #16a34a; }
+        
+        /* Common Header */
+        .app-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 20px; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(108, 99, 255, 0.3); }
+        .app-logo { font-size: 1.8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+        .app-logo i { margin-right: 10px; font-size: 28px; }
+        .back-btn, .profile-btn { position: absolute; top: 20px; background: rgba(255, 255, 255, 0.2); border: none; border-radius: 50%; width: 45px; height: 45px; color: white; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+        .back-btn { left: 20px; }
+        .profile-btn { right: 20px; }
+        .back-btn:hover, .profile-btn:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.1); }
+        
+        /* Dashboard */
+        .dashboard-container { display: none; min-height: 100vh; padding-bottom: 80px; }
+        .dashboard-content { padding: 20px; }
+        .welcome-section { text-align: center; margin-bottom: 30px; }
+        .welcome-title { font-size: 24px; font-weight: 600; color: #333; margin-bottom: 10px; }
+        .welcome-subtitle { color: #666; margin-bottom: 20px; }
+        .quick-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+        .action-card { background: white; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); cursor: pointer; transition: all 0.3s ease; }
+        .action-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); }
+        .action-icon { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 15px; }
+        .action-title { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 5px; }
+        .action-desc { font-size: 12px; color: #666; }
+        
+        /* Profile Section */
+        .profile-section { display: none; padding: 20px; padding-bottom: 100px; }
+        .profile-card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); text-align: center; }
+        .user-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 600; margin: 0 auto 15px; }
+        .user-name { font-size: 22px; font-weight: 600; margin-bottom: 5px; color: #333; }
+        .user-mobile { font-size: 16px; color: #666; margin-bottom: 15px; }
+        .user-role { display: inline-block; padding: 6px 12px; background: var(--primary); color: white; border-radius: 15px; font-size: 12px; font-weight: 500; text-transform: uppercase; }
+        .menu-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
+        .menu-item { background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); text-align: center; cursor: pointer; transition: all 0.3s ease; }
+        .menu-item:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); }
+        .menu-icon { width: 50px; height: 50px; border-radius: 50%; background: #f8f9ff; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; color: var(--primary); font-size: 20px; }
+        .menu-text { font-size: 14px; font-weight: 500; color: #333; }
+        .logout-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #ff4757, #ff6b81); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .logout-btn:hover { background: linear-gradient(135deg, #e84118, #ff4757); transform: translateY(-2px); }
+        
+        /* Repay Section */
+        .repay-section { display: none; padding: 20px; padding-bottom: 100px; }
+        .repay-container { background: white; border-radius: 15px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+        .section-title { color: var(--primary); margin-bottom: 20px; text-align: center; font-size: 22px; font-weight: 600; }
+        .loan-details { background: #f8f9ff; padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #e0e5ff; }
+        .detail-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+        .detail-label { color: #555; font-weight: 500; }
+        .detail-value { font-weight: 600; color: #333; }
+        .total-row { border-top: 1px solid #e0e5ff; margin-top: 15px; padding-top: 15px; font-size: 16px; font-weight: 700; color: var(--primary); }
+        .payment-methods { text-align: center; margin: 25px 0; }
+        .qr-container { background: white; border: 2px dashed #e0e5ff; border-radius: 15px; padding: 20px; margin-bottom: 20px; max-width: 280px; margin-left: auto; margin-right: auto; }
+        .qr-code { width: 200px; height: 200px; border: 1px solid #eee; border-radius: 10px; }
+        .upi-container { margin: 20px 0; }
+        .upi-id { font-size: 16px; font-weight: 600; color: #333; padding: 15px; background: #f8f9ff; border-radius: 10px; margin: 15px 0; word-break: break-all; border: 1px solid #e0e5ff; }
+        .copy-btn { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .copy-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3); }
+        .copy-btn i { margin-right: 8px; }
+        .repay-form { margin-top: 25px; }
+        .input-group { margin-bottom: 20px; }
+        .input-label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
+        .input-field { width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 16px; transition: all 0.3s ease; }
+        .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1); outline: none; }
+        .submit-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--success), #20c997); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3); }
+        .payment-guide { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        .guide-title { color: var(--primary); margin-bottom: 15px; font-size: 16px; font-weight: 600; }
+        .guide-list { padding-left: 20px; }
+        .guide-list li { margin-bottom: 8px; font-size: 14px; color: #666; line-height: 1.5; }
+        
+        /* Loan Status Cards */
+        .loan-status-cards { display: grid; gap: 15px; margin-bottom: 30px; }
+        .status-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+        .status-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .loan-id { font-size: 14px; color: #666; }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; }
+        .status-active { background: #e3f2fd; color: #1976d2; }
+        .status-pending { background: #fff3e0; color: #f57c00; }
+        .status-completed { background: #e8f5e9; color: #388e3c; }
+        .loan-amount { font-size: 24px; font-weight: 700; color: #333; margin-bottom: 10px; }
+        .loan-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; }
+        .info-item { display: flex; flex-direction: column; }
+        .info-label { color: #666; font-size: 12px; margin-bottom: 2px; }
+        .info-value { font-weight: 600; color: #333; }
+        
+        /* Bottom Navigation */
+        .bottom-navigation { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1); z-index: 1000; }
+        .nav-item { text-align: center; color: #9ca3af; cursor: pointer; padding: 8px 16px; border-radius: 12px; transition: all 0.3s ease; }
+        .nav-item.active { color: var(--primary); background: rgba(108, 99, 255, 0.1); }
+        .nav-item:hover { color: var(--primary); transform: translateY(-2px); }
+        .nav-item i { font-size: 1.3rem; display: block; margin-bottom: 4px; }
+        .nav-item span { font-size: 0.8rem; font-weight: 500; }
+        
+        /* Popups */
+        .popup-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s; }
+        .popup-overlay.active { opacity: 1; visibility: visible; }
+        .popup-content { background: white; border-radius: 15px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; padding: 25px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); }
+        .popup-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .popup-title { font-size: 20px; font-weight: 600; color: var(--primary); }
+        .popup-close { background: none; border: none; font-size: 24px; color: #666; cursor: pointer; }
+        .popup-btn { padding: 12px 30px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        
+        /* Notification Toast */
+        .notification { position: fixed; top: 20px; right: 20px; padding: 16px 20px; border-radius: 12px; color: white; font-weight: 500; z-index: 10000; transform: translateX(400px); transition: transform 0.4s; }
+        .notification.show { transform: translateX(0); }
+        .notification.success { background: linear-gradient(135deg, var(--success), #10b981); }
+        .notification.error { background: linear-gradient(135deg, var(--danger), #ef4444); }
+        .notification.info { background: linear-gradient(135deg, var(--info), #3b82f6); }
+        
+        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 1000; display: none; animation: fadeInOut 2s ease-in-out; }
+        @keyframes fadeInOut { 0% { opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .quick-actions { grid-template-columns: 1fr; }
+            .menu-container { grid-template-columns: 1fr; }
+            .loan-info { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div style="font-size: 1.5rem; font-weight: 600; margin-bottom: 10px;">QuickCash</div>
+        <div style="font-size: 1rem; opacity: 0.8;">Loading your application...</div>
+    </div>
+
+    <!-- Login System -->
+    <div class="login-container" id="loginContainer">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fas fa-money-bill-wave"></i> Quick Cash
+                </div>
+                <div>Get instant loans with minimal documentation</div>
+            </div>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="switchAuthTab('login')">Login</div>
+                <div class="auth-tab" onclick="switchAuthTab('register')">Register</div>
+            </div>
+            
+            <div class="auth-content">
+                <div id="authMessages"></div>
+                
+                <form class="auth-form active" id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label">Mobile Number</label>
+                        <input type="text" id="loginMobile" class="form-input" placeholder="Enter mobile number" maxlength="10" required>
+                        <div class="field-error" id="loginMobileError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter password" required>
+                        <div class="field-error" id="loginPasswordError"></div>
+                    </div>
+                    <button type="submit" class="auth-button">Sign In</button>
+                </form>
+                
+                <form class="auth-form" id="registerForm">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" id="registerName" class="form-input" placeholder="Enter full name" required>
+                        <div class="field-error" id="registerNameError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mobile Number</label>
+                        <input type="text" id="registerMobile" class="form-input" placeholder="Enter mobile number" maxlength="10" required>
+                        <div class="field-error" id="registerMobileError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email (Optional)</label>
+                        <input type="email" id="registerEmail" class="form-input" placeholder="Enter email">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="registerPassword" class="form-input" placeholder="Create password" required>
+                        <div class="field-error" id="registerPasswordError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm password" required>
+                        <div class="field-error" id="confirmPasswordError"></div>
+                    </div>
+                    <button type="submit" class="auth-button">Create Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard-container" id="dashboardContainer">
+        <div class="app-header">
+            <div class="app-logo">
+                <i class="fas fa-money-bill-wave"></i> QuickCash
+            </div>
+            <button class="profile-btn" onclick="showSection('profile')">
+                <i class="fas fa-user"></i>
+            </button>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="welcome-section">
+                <h1 class="welcome-title" id="welcomeTitle">Welcome to QuickCash!</h1>
+                <p class="welcome-subtitle">Your complete loan management solution</p>
+            </div>
+            
+            <div class="quick-actions">
+                <div class="action-card" onclick="showLoanApplicationForm()">
+                    <div class="action-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="action-title">Apply for Loan</div>
+                    <div class="action-desc">Quick loan application</div>
+                </div>
+                
+                <div class="action-card" onclick="showSection('repay')">
+                    <div class="action-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="action-title">Repay Loan</div>
+                    <div class="action-desc">Make loan payments</div>
+                </div>
+                
+                <div class="action-card" onclick="showNotification('Loan history coming soon!', 'info')">
+                    <div class="action-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div class="action-title">Loan History</div>
+                    <div class="action-desc">View past loans</div>
+                </div>
+                
+                <div class="action-card" onclick="showNotification('EMI calculator coming soon!', 'info')">
+                    <div class="action-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <div class="action-title">EMI Calculator</div>
+                    <div class="action-desc">Calculate payments</div>
+                </div>
+            </div>
+            
+            <!-- Active Loans Section -->
+            <div class="loan-status-cards" id="activeLoansSection">
+                <h3 style="color: #333; margin-bottom: 15px; font-size: 18px;">Your Active Loans</h3>
+                <div id="activeLoansContainer">
+                    <!-- Active loans will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Section -->
+    <div class="profile-section" id="profileSection">
+        <div class="app-header">
+            <button class="back-btn" onclick="showSection('dashboard')">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="app-logo">
+                <i class="fas fa-money-bill-wave"></i> Quick Cash
+            </div>
+        </div>
+        
+        <div class="profile-card">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <h2 class="user-name" id="userName">User Name</h2>
+            <div class="user-mobile" id="userMobile">+91 0000000000</div>
+            <div class="user-role" id="userRole">User</div>
+        </div>
+        
+        <div class="menu-container">
+            <div class="menu-item" onclick="showNotification('Settings coming soon!', 'info')">
+                <div class="menu-icon"><i class="fas fa-cog"></i></div>
+                <div class="menu-text">Settings</div>
+            </div>
+            <div class="menu-item" onclick="loadMyLoans()">
+                <div class="menu-icon"><i class="fas fa-rupee-sign"></i></div>
+                <div class="menu-text">My Loans</div>
+            </div>
+            <div class="menu-item" onclick="showNotification('History coming soon!', 'info')">
+                <div class="menu-icon"><i class="fas fa-history"></i></div>
+                <div class="menu-text">History</div>
+            </div>
+            <div class="menu-item" onclick="showContactPopup()">
+                <div class="menu-icon"><i class="fas fa-headset"></i></div>
+                <div class="menu-text">Contact Us</div>
+            </div>
+            <div class="menu-item" onclick="showTermsPopup()">
+                <div class="menu-icon"><i class="fas fa-file-contract"></i></div>
+                <div class="menu-text">Terms</div>
+            </div>
+            <div class="menu-item" onclick="showPrivacyPopup()">
+                <div class="menu-icon"><i class="fas fa-shield-alt"></i></div>
+                <div class="menu-text">Privacy</div>
+            </div>
+        </div>
+        
+        <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+
+    <!-- Repay Section -->
+    <div class="repay-section" id="repaySection">
+        <div class="app-header">
+            <button class="back-btn" onclick="showSection('dashboard')">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="app-logo">
+                <i class="fas fa-money-bill-wave"></i> Quick Cash
+            </div>
+        </div>
+        
+        <div class="repay-container">
+            <h2 class="section-title">Repay Loan</h2>
+            
+            <!-- Loan Selection -->
+            <div class="form-group">
+                <label class="form-label">Select Loan to Repay</label>
+                <select id="loanSelect" class="form-input" onchange="loadLoanDetails()">
+                    <option value="">Select a loan...</option>
+                </select>
+            </div>
+            
+            <!-- Loan Details -->
+            <div class="loan-details" id="loanDetailsSection" style="display: none;">
+                <div class="detail-row">
+                    <span class="detail-label">Loan Amount:</span>
+                    <span class="detail-value" id="loanAmount">₹0</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Interest Rate:</span>
+                    <span class="detail-value" id="interestRate">0%</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Interest Amount:</span>
+                    <span class="detail-value" id="interestAmount">₹0</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Due Date:</span>
+                    <span class="detail-value" id="dueDate">-</span>
+                </div>
+                <div class="detail-row total-row">
+                    <span class="detail-label">Total Repayment Amount:</span>
+                    <span class="detail-value" id="totalAmount">₹0</span>
+                </div>
+            </div>
+            
+            <!-- Payment Methods -->
+            <div class="payment-methods" id="paymentMethodsSection" style="display: none;">
+                <div class="qr-container">
+                    <p style="margin-bottom: 15px; font-weight: 600;">Scan QR Code to Pay</p>
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y5ZjlmOSIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5RUiBDb2RlPC90ZXh0Pgo8L3N2Zz4K" alt="UPI QR Code" class="qr-code">
+                </div>
+                
+                <div class="upi-container">
+                    <p style="margin-bottom: 10px; font-weight: 600;">Or pay directly to our UPI ID:</p>
+                    <div class="upi-id">BHARATPE09908182022@yesbankltd</div>
+                    <button class="copy-btn" onclick="copyUpiId()">
+                        <i class="fas fa-copy"></i> Copy UPI ID
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Payment Form -->
+            <form class="repay-form" id="repayForm" style="display: none;">
+                <div class="input-group">
+                    <label class="input-label">Enter UTR/Transaction ID</label>
+                    <input type="text" id="utrInput" class="input-field" placeholder="Enter UTR or Transaction ID from your payment" required>
+                </div>
+                
+                <button type="submit" class="submit-btn">Submit Payment Details</button>
+            </form>
+            
+            <!-- Payment Guide -->
+            <div class="payment-guide">
+                <h3 class="guide-title">Payment Instructions:</h3>
+                <ol class="guide-list">
+                    <li><strong>Only UPI payments are accepted</strong> (Google Pay, PhonePe, PayTM, BHIM, etc.)</li>
+                    <li>Select your loan from the dropdown above</li>
+                    <li>Pay the exact total amount shown</li>
+                    <li>Use either the QR code or UPI ID to make payment</li>
+                    <li>After successful payment, enter the UTR/Transaction ID</li>
+                    <li>Your repayment will be verified within 24 hours</li>
+                    <li>For any issues, contact our support team</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-navigation">
+        <div class="nav-item active" onclick="showSection('dashboard')">
+            <i class="fas fa-home"></i><span>Home</span>
+        </div>
+        <div class="nav-item" onclick="showSection('repay')">
+            <i class="fas fa-hand-holding-usd"></i><span>Repay</span>
+        </div>
+        <div class="nav-item" onclick="showNotification('History coming soon!', 'info')">
+            <i class="fas fa-history"></i><span>History</span>
+        </div>
+        <div class="nav-item" onclick="showSection('profile')">
+            <i class="fas fa-user"></i><span>Profile</span>
+        </div>
+    </div>
+
+    <!-- Popups -->
+    <div class="popup-overlay" id="termsPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 class="popup-title">Terms & Conditions</h3>
+                <button class="popup-close" onclick="hidePopup('termsPopup')">&times;</button>
+            </div>
+            <div>
+                <h4>1. Loan Agreement</h4>
+                <p>By applying for a loan through Quick Cash, you agree to be bound by these terms.</p>
+                <h4>2. Interest Rates</h4>
+                <p>Interest rates vary based on loan amount and creditworthiness.</p>
+                <h4>3. Repayment</h4>
+                <p>You agree to repay the loan amount plus interest by the due date.</p>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button class="popup-btn" onclick="hidePopup('termsPopup')">Got It</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="privacyPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 class="popup-title">Privacy Policy</h3>
+                <button class="popup-close" onclick="hidePopup('privacyPopup')">&times;</button>
+            </div>
+            <div>
+                <h4>1. Information Collection</h4>
+                <p>We collect personal information to process your loan application.</p>
+                <h4>2. Data Protection</h4>
+                <p>We implement security measures to protect your data.</p>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button class="popup-btn" onclick="hidePopup('privacyPopup')">Got It</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="contactPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 class="popup-title">Contact Us</h3>
+                <button class="popup-close" onclick="hidePopup('contactPopup')">&times;</button>
+            </div>
+            <div>
+                <p><strong>Email:</strong> support@quickcash.com</p>
+                <p><strong>WhatsApp:</strong> +91 98765 43210</p>
+                <p><strong>Telegram:</strong> @quickcashsupport</p>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button class="popup-btn" onclick="hidePopup('contactPopup')">Got It</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loan Application Popup -->
+    <div class="popup-overlay" id="loanApplicationPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 class="popup-title">Apply for Loan</h3>
+                <button class="popup-close" onclick="hidePopup('loanApplicationPopup')">&times;</button>
+            </div>
+            <form id="loanApplicationForm">
+                <div class="form-group">
+                    <label class="form-label">Loan Amount (₹)</label>
+                    <input type="number" id="loanAmountInput" class="form-input" placeholder="Enter amount" min="1000" max="500000" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Loan Purpose</label>
+                    <select id="loanPurpose" class="form-input" required>
+                        <option value="">Select purpose</option>
+                        <option value="personal">Personal</option>
+                        <option value="business">Business</option>
+                        <option value="education">Education</option>
+                        <option value="medical">Medical</option>
+                        <option value="emergency">Emergency</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Monthly Income (₹)</label>
+                    <input type="number" id="monthlyIncome" class="form-input" placeholder="Enter monthly income" required>
+                </div>
+                <button type="submit" class="popup-btn" style="width: 100%; margin-top: 15px;">Submit Application</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast">UPI ID copied to clipboard!</div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAL5e-5eQfgf1nI6hWTnhwLFgK0Cp89aa0",
+            authDomain: "aviator-pr01.firebaseapp.com",
+            databaseURL: "https://aviator-pr01-default-rtdb.firebaseio.com",
+            projectId: "aviator-pr01",
+            storageBucket: "aviator-pr01.firebasestorage.app",
+            messagingSenderId: "290788041297",
+            appId: "1:290788041297:web:168f99d1532997fb778e70",
+            measurementId: "G-ENCBTT4BL8"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const rtdb = firebase.database();
+        
+        let currentUser = null;
+        let userData = null;
+        let userLoans = [];
+        let selectedLoan = null;
+        
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            showLoading();
+            
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    loadUserData().then(() => {
+                        loadUserLoans().then(() => {
+                            showSection('dashboard');
+                            hideLoading();
+                        });
+                    });
+                } else {
+                    showSection('login');
+                    hideLoading();
+                }
+            });
+            
+            setupEventListeners();
+        });
+        
+        function setupEventListeners() {
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('registerForm').addEventListener('submit', handleRegister);
+            document.getElementById('loanApplicationForm').addEventListener('submit', handleLoanApplication);
+            document.getElementById('repayForm').addEventListener('submit', handleRepayment);
+        }
+        
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
+        
+        function hideLoading() {
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 1500);
+        }
+        
+        function showSection(sectionName) {
+            // Hide all sections
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('dashboardContainer').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+            document.getElementById('repaySection').style.display = 'none';
+            
+            // Show requested section
+            switch(sectionName) {
+                case 'login':
+                    document.getElementById('loginContainer').style.display = 'flex';
+                    document.body.classList.remove('dashboard-mode');
+                    break;
+                case 'dashboard':
+                    document.getElementById('dashboardContainer').style.display = 'block';
+                    document.body.classList.add('dashboard-mode');
+                    updateNavigation('dashboard');
+                    break;
+                case 'profile':
+                    document.getElementById('profileSection').style.display = 'block';
+                    document.body.classList.add('dashboard-mode');
+                    updateNavigation('profile');
+                    break;
+                case 'repay':
+                    document.getElementById('repaySection').style.display = 'block';
+                    document.body.classList.add('dashboard-mode');
+                    updateNavigation('repay');
+                    loadLoansForRepayment();
+                    break;
+            }
+        }
+        
+        function updateNavigation(activeSection) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            const navItems = document.querySelectorAll('.nav-item');
+            switch(activeSection) {
+                case 'dashboard':
+                    navItems[0].classList.add('active');
+                    break;
+                case 'repay':
+                    navItems[1].classList.add('active');
+                    break;
+                case 'profile':
+                    navItems[3].classList.add('active');
+                    break;
+            }
+        }
+        
+        function switchAuthTab(tabName) {
+            document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+            document.getElementById(tabName + 'Form').classList.add('active');
+            
+            clearMessages();
+        }
+        
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const mobile = document.getElementById('loginMobile').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!validateLoginForm(mobile, password)) return;
+            
+            try {
+                const email = `${mobile}@quickcash.com`;
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                const userDoc = await db.collection('loanuser').doc(user.uid).get();
+                if (userDoc.exists) {
+                    userData = userDoc.data();
+                    showMessage(`Welcome back, ${userData.name}!`, 'success');
+                    
+                    await db.collection('loanuser').doc(user.uid).update({
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                        loginCount: firebase.firestore.FieldValue.increment(1)
+                    });
+                } else {
+                    throw new Error('User data not found');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                handleAuthError(error);
+            }
+        }
+        
+        async function handleRegister(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('registerName').value.trim();
+            const mobile = document.getElementById('registerMobile').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!validateRegisterForm(name, mobile, password, confirmPassword)) return;
+            
+            try {
+                const existingUser = await db.collection('loanuser').where('mobile', '==', mobile).get();
+                if (!existingUser.empty) {
+                    throw new Error('Mobile number already registered');
+                }
+                
+                const authEmail = `${mobile}@quickcash.com`;
+                const userCredential = await auth.createUserWithEmailAndPassword(authEmail, password);
+                const user = userCredential.user;
+                
+                await user.updateProfile({ displayName: name });
+                
+                const newUserData = {
+                    uid: user.uid,
+                    name: name,
+                    mobile: mobile,
+                    email: email || authEmail,
+                    password: password,
+                    role: 'user',
+                    authEmail: authEmail,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                    loginCount: 1,
+                    totalLoans: 0,
+                    totalBorrowed: 0,
+                    activeLoans: 0,
+                    creditScore: 750,
+                    isVerified: false,
+                    isActive: true,
+                    status: 'active',
+                    profileComplete: true
+                };
+                
+                await db.collection('loanuser').doc(user.uid).set(newUserData);
+                
+                await rtdb.ref('loanusers/' + user.uid).set({
+                    name: name,
+                    mobile: mobile,
+                    email: email || authEmail,
+                    role: 'user',
+                    createdAt: firebase.database.ServerValue.TIMESTAMP,
+                    status: 'active'
+                });
+                
+                userData = newUserData;
+                showMessage(`Welcome ${name}! Registration successful.`, 'success');
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                handleAuthError(error);
+            }
+        }
+        
+        async function loadUserData() {
+            try {
+                if (!currentUser) return;
+                
+                const userDoc = await db.collection('loanuser').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    userData = userDoc.data();
+                    updateUserProfile();
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showNotification('Error loading user data', 'error');
+            }
+        }
+        
+        function updateUserProfile() {
+            if (!userData) return;
+            
+            document.getElementById('welcomeTitle').textContent = `Welcome, ${userData.name}!`;
+            document.getElementById('userAvatar').textContent = userData.name.charAt(0).toUpperCase();
+            document.getElementById('userName').textContent = userData.name;
+            document.getElementById('userMobile').textContent = `+91 ${userData.mobile}`;
+            document.getElementById('userRole').textContent = userData.role.toUpperCase();
+            
+            const roleElement = document.getElementById('userRole');
+            if (userData.role === 'admin') {
+                roleElement.style.background = '#ff6584';
+            } else {
+                roleElement.style.background = 'var(--primary)';
+            }
+        }
+        
+        async function loadUserLoans() {
+            try {
+                if (!currentUser) return;
+                
+                const loansQuery = await db.collection('loans')
+                    .where('userId', '==', currentUser.uid)
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                
+                userLoans = [];
+                loansQuery.forEach(doc => {
+                    userLoans.push({ id: doc.id, ...doc.data() });
+                });
+                
+                displayActiveLoans();
+            } catch (error) {
+                console.error('Error loading loans:', error);
+                showNotification('Error loading loans', 'error');
+            }
+        }
+        
+        function displayActiveLoans() {
+            const container = document.getElementById('activeLoansContainer');
+            
+            if (userLoans.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No active loans found. Apply for your first loan!</p>';
+                return;
+            }
+            
+            container.innerHTML = userLoans.map(loan => {
+                const statusClass = `status-${loan.status}`;
+                const totalAmount = loan.amount + (loan.amount * loan.interestRate / 100);
+                
+                return `
+                    <div class="status-card">
+                        <div class="status-header">
+                            <span class="loan-id">Loan #${loan.id.substring(0, 8)}</span>
+                            <span class="status-badge ${statusClass}">${loan.status}</span>
+                        </div>
+                        <div class="loan-amount">₹${loan.amount.toLocaleString()}</div>
+                        <div class="loan-info">
+                            <div class="info-item">
+                                <span class="info-label">Interest Rate</span>
+                                <span class="info-value">${loan.interestRate}%</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Total Amount</span>
+                                <span class="info-value">₹${totalAmount.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function loadLoansForRepayment() {
+            const loanSelect = document.getElementById('loanSelect');
+            loanSelect.innerHTML = '<option value="">Select a loan...</option>';
+            
+            const activeLoans = userLoans.filter(loan => loan.status === 'active' || loan.status === 'approved');
+            
+            activeLoans.forEach(loan => {
+                const option = document.createElement('option');
+                option.value = loan.id;
+                option.textContent = `Loan #${loan.id.substring(0, 8)} - ₹${loan.amount.toLocaleString()}`;
+                loanSelect.appendChild(option);
+            });
+        }
+        
+        function loadLoanDetails() {
+            const loanId = document.getElementById('loanSelect').value;
+            if (!loanId) {
+                document.getElementById('loanDetailsSection').style.display = 'none';
+                document.getElementById('paymentMethodsSection').style.display = 'none';
+                document.getElementById('repayForm').style.display = 'none';
+                return;
+            }
+            
+            selectedLoan = userLoans.find(loan => loan.id === loanId);
+            if (!selectedLoan) return;
+            
+            const interestAmount = selectedLoan.amount * selectedLoan.interestRate / 100;
+            const totalAmount = selectedLoan.amount + interestAmount;
+            const dueDate = selectedLoan.dueDate ? new Date(selectedLoan.dueDate.seconds * 1000).toLocaleDateString() : 'Not set';
+            
+            document.getElementById('loanAmount').textContent = `₹${selectedLoan.amount.toLocaleString()}`;
+            document.getElementById('interestRate').textContent = `${selectedLoan.interestRate}%`;
+            document.getElementById('interestAmount').textContent = `₹${interestAmount.toLocaleString()}`;
+            document.getElementById('totalAmount').textContent = `₹${totalAmount.toLocaleString()}`;
+            document.getElementById('dueDate').textContent = dueDate;
+            
+            document.getElementById('loanDetailsSection').style.display = 'block';
+            document.getElementById('paymentMethodsSection').style.display = 'block';
+            document.getElementById('repayForm').style.display = 'block';
+        }
+        
+        async function handleLoanApplication(e) {
+            e.preventDefault();
+            
+            const amount = parseInt(document.getElementById('loanAmountInput').value);
+            const purpose = document.getElementById('loanPurpose').value;
+            const monthlyIncome = parseInt(document.getElementById('monthlyIncome').value);
+            
+            if (!amount || !purpose || !monthlyIncome) {
+                showNotification('Please fill all fields', 'error');
+                return;
+            }
+            
+            try {
+                const loanData = {
+                    userId: currentUser.uid,
+                    userName: userData.name,
+                    userMobile: userData.mobile,
+                    amount: amount,
+                    purpose: purpose,
+                    monthlyIncome: monthlyIncome,
+                    interestRate: 12,
+                    tenure: 12,
+                    status: 'pending',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                await db.collection('loans').add(loanData);
+                
+                await db.collection('loanuser').doc(currentUser.uid).update({
+                    totalLoans: firebase.firestore.FieldValue.increment(1),
+                    totalBorrowed: firebase.firestore.FieldValue.increment(amount)
+                });
+                
+                hidePopup('loanApplicationPopup');
+                showNotification('Loan application submitted successfully!', 'success');
+                
+                // Reload loans
+                await loadUserLoans();
+                
+            } catch (error) {
+                console.error('Error applying for loan:', error);
+                showNotification('Error submitting loan application', 'error');
+            }
+        }
+        
+        async function handleRepayment(e) {
+            e.preventDefault();
+            
+            const utr = document.getElementById('utrInput').value.trim();
+            if (!utr || !selectedLoan) {
+                showNotification('Please enter UTR and select a loan', 'error');
+                return;
+            }
+            
+            try {
+                const repaymentData = {
+                    loanId: selectedLoan.id,
+                    userId: currentUser.uid,
+                    userName: userData.name,
+                    userMobile: userData.mobile,
+                    utr: utr,
+                    amount: selectedLoan.amount + (selectedLoan.amount * selectedLoan.interestRate / 100),
+                    status: 'pending',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                await db.collection('repayments').add(repaymentData);
+                
+                // Update loan status to 'repayment_pending'
+                await db.collection('loans').doc(selectedLoan.id).update({
+                    status: 'repayment_pending',
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showNotification('Payment details submitted successfully! We will verify within 24 hours.', 'success');
+                
+                // Reset form
+                document.getElementById('repayForm').reset();
+                document.getElementById('loanSelect').value = '';
+                loadLoanDetails();
+                
+                // Reload loans
+                await loadUserLoans();
+                
+            } catch (error) {
+                console.error('Error submitting repayment:', error);
+                showNotification('Error submitting payment details', 'error');
+            }
+        }
+        
+        function showLoanApplicationForm() {
+            document.getElementById('loanApplicationPopup').classList.add('active');
+        }
+        
+        function copyUpiId() {
+            const upiId = 'BHARATPE09908182022@yesbankltd';
+            navigator.clipboard.writeText(upiId).then(() => {
+                const toast = document.getElementById('toast');
+                toast.style.display = 'block';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy UPI ID: ', err);
+                showNotification('Failed to copy UPI ID', 'error');
+            });
+        }
+        
+        function loadMyLoans() {
+            if (userLoans.length === 0) {
+                showNotification('No loans found', 'info');
+                return;
+            }
+            
+            let loansInfo = `You have ${userLoans.length} loan(s):\n\n`;
+            userLoans.forEach((loan, index) => {
+                loansInfo += `${index + 1}. ₹${loan.amount.toLocaleString()} - ${loan.status}\n`;
+            });
+            
+            alert(loansInfo);
+        }
+        
+        // Validation Functions
+        function validateLoginForm(mobile, password) {
+            let isValid = true;
+            clearFieldErrors();
+            
+            if (!mobile || !isValidMobile(mobile)) {
+                showFieldError('loginMobileError', 'Please enter a valid 10-digit mobile number');
+                isValid = false;
+            }
+            
+            if (!password || password.length < 6) {
+                showFieldError('loginPasswordError', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+        
+        function validateRegisterForm(name, mobile, password, confirmPassword) {
+            let isValid = true;
+            clearFieldErrors();
+            
+            if (!name || name.length < 2) {
+                showFieldError('registerNameError', 'Name must be at least 2 characters');
+                isValid = false;
+            }
+            
+            if (!mobile || !isValidMobile(mobile)) {
+                showFieldError('registerMobileError', 'Please enter a valid 10-digit mobile number');
+                isValid = false;
+            }
+            
+            if (!password || password.length < 6) {
+                showFieldError('registerPasswordError', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+            
+            if (password !== confirmPassword) {
+                showFieldError('confirmPasswordError', 'Passwords do not match');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+        
+        function isValidMobile(mobile) {
+            return /^[6-9]\d{9}$/.test(mobile);
+        }
+        
+        function showFieldError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+        
+        function clearFieldErrors() {
+            document.querySelectorAll('.field-error').forEach(error => {
+                error.style.display = 'none';
+            });
+        }
+        
+        function showMessage(message, type) {
+            const messagesContainer = document.getElementById('authMessages');
+            messagesContainer.innerHTML = `<div class="message ${type}">${message}</div>`;
+            messagesContainer.querySelector('.message').style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => clearMessages(), 3000);
+            }
+        }
+        
+        function clearMessages() {
+            document.getElementById('authMessages').innerHTML = '';
+        }
+        
+        function showNotification(message, type = 'info') {
+            document.querySelectorAll('.notification').forEach(notification => notification.remove());
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 400);
+            }, 4000);
+        }
+        
+        function handleAuthError(error) {
+            let message = 'An error occurred. Please try again.';
+            
+            switch (error.code) {
+                case 'auth/user-not-found':
+                    message = 'No account found with this mobile number.';
+                    break;
+                case 'auth/wrong-password':
+                    message = 'Incorrect password. Please try again.';
+                    break;
+                case 'auth/email-already-in-use':
+                    message = 'Mobile number already registered. Please login instead.';
+                    break;
+                default:
+                    if (error.message.includes('Mobile number already registered')) {
+                        message = 'Mobile number already registered. Please login instead.';
+                    }
+            }
+            
+            showMessage(message, 'error');
+        }
+        
+        // Popup Functions
+        function showTermsPopup() {
+            document.getElementById('termsPopup').classList.add('active');
+        }
+        
+        function showPrivacyPopup() {
+            document.getElementById('privacyPopup').classList.add('active');
+        }
+        
+        function showContactPopup() {
+            document.getElementById('contactPopup').classList.add('active');
+        }
+        
+        function hidePopup(popupId) {
+            document.getElementById(popupId).classList.remove('active');
+        }
+        
+        // Close popup when clicking outside
+        document.querySelectorAll('.popup-overlay').forEach(popup => {
+            popup.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+        
+        async function logout() {
+            try {
+                await auth.signOut();
+                showNotification('Logged out successfully', 'success');
+            } catch (error) {
+                showNotification('Error logging out', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
