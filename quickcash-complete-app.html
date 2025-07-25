@@ -1361,12 +1361,15 @@
         const db = firebase.firestore();
         const rtdb = firebase.database();
         
-        // Monitor Realtime Database connection
+        // Monitor Realtime Database connection with detailed logging
         rtdb.ref('.info/connected').on('value', function(snapshot) {
             if (snapshot.val() === true) {
                 console.log('✅ Connected to Firebase Realtime Database');
+                console.log('🔗 Database URL:', firebaseConfig.databaseURL);
+                console.log('🎯 Ready to save user data to loanusers collection');
             } else {
                 console.log('❌ Disconnected from Firebase Realtime Database');
+                console.log('⚠️ User data may not save properly');
             }
         });
         
@@ -2104,24 +2107,55 @@
                 console.log('🔥 RTDB Path: loanusers/' + user.uid);
                 console.log('🔥 RTDB User Data:', rtdbUserData);
                 
-                // Save user data to Firebase Realtime Database
-                console.log('🔥 Saving user data to Firebase Realtime Database...');
-                const rtdbRef = rtdb.ref('loanusers/' + user.uid);
-                await rtdbRef.set(rtdbUserData);
-                console.log('✅ User data saved to loanusers database successfully!');
+                // Save user data to Firebase Realtime Database with detailed logging
+                console.log('🔥 SAVING USER DATA TO FIREBASE REALTIME DATABASE...');
+                console.log('🔥 Database URL:', firebaseConfig.databaseURL);
+                console.log('🔥 User UID:', user.uid);
+                console.log('🔥 Complete User Data to Save:', JSON.stringify(rtdbUserData, null, 2));
                 
-                // Verify data was saved
-                const verifySnapshot = await rtdbRef.once('value');
-                const savedData = verifySnapshot.val();
-                
-                if (savedData) {
-                    console.log('✅ User data verified in Firebase:');
-                    console.log('- Name:', savedData.name);
-                    console.log('- Mobile:', savedData.mobile);
-                    console.log('- Role:', savedData.role);
-                    console.log('- Status:', savedData.status);
-                } else {
-                    throw new Error('Failed to save user data to Firebase');
+                try {
+                    const rtdbRef = rtdb.ref('loanusers/' + user.uid);
+                    
+                    // First check if we can write to Firebase
+                    await rtdbRef.set(rtdbUserData);
+                    console.log('✅ User data SET operation completed');
+                    
+                    // Wait a moment for Firebase to process
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Verify data was saved by reading it back
+                    const verifySnapshot = await rtdbRef.once('value');
+                    const savedData = verifySnapshot.val();
+                    
+                    console.log('🔍 VERIFYING SAVED DATA...');
+                    console.log('📊 Data read from Firebase:', JSON.stringify(savedData, null, 2));
+                    
+                    if (savedData && savedData.name && savedData.mobile) {
+                        console.log('✅ SUCCESS! All user data verified in Firebase:');
+                        console.log('- Name:', savedData.name);
+                        console.log('- Mobile:', savedData.mobile);
+                        console.log('- Email:', savedData.email);
+                        console.log('- Role:', savedData.role);
+                        console.log('- Status:', savedData.status);
+                        console.log('- KYC Status:', savedData.kycStatus);
+                        console.log('- Total fields saved:', Object.keys(savedData).length);
+                    } else {
+                        console.error('❌ ERROR: User data not properly saved!');
+                        console.error('❌ Saved data:', savedData);
+                        throw new Error('User data not properly saved to Firebase');
+                    }
+                    
+                } catch (rtdbError) {
+                    console.error('❌ FIREBASE REALTIME DATABASE ERROR:', rtdbError);
+                    console.error('❌ Error message:', rtdbError.message);
+                    console.error('❌ Error code:', rtdbError.code);
+                    
+                    // Check if it's a permission issue
+                    if (rtdbError.code === 'PERMISSION_DENIED') {
+                        console.error('❌ PERMISSION DENIED - Check Firebase Realtime Database rules');
+                    }
+                    
+                    throw new Error(`Failed to save user data: ${rtdbError.message}`);
                 }
                 
                 // Also verify Firestore data
@@ -2847,27 +2881,86 @@
             return code;
         }
         
-                // Simple Firebase Utilities
+                // Firebase Utilities for debugging
         window.firebaseUtils = {
             // Get all users from RTDB
             getAllUsers: async () => {
                 try {
+                    console.log('🔍 Fetching all users from Firebase...');
                     const snapshot = await rtdb.ref('loanusers').once('value');
                     const users = snapshot.val();
                     console.log('👥 All Users in Firebase Realtime Database:');
-                    console.table(users);
+                    if (users) {
+                        console.table(users);
+                        console.log('📊 Total users found:', Object.keys(users).length);
+                    } else {
+                        console.log('❌ No users found in Firebase Realtime Database');
+                    }
                     return users;
                 } catch (error) {
                     console.error('❌ Error fetching users:', error);
+                    console.error('❌ Error details:', error.message);
                 }
             },
             
             // Check database connection
             checkConnection: () => {
+                console.log('🔍 Checking Firebase Realtime Database connection...');
                 rtdb.ref('.info/connected').once('value', (snapshot) => {
                     const connected = snapshot.val();
                     console.log(`🔗 Firebase Connection: ${connected ? '✅ Connected' : '❌ Disconnected'}`);
+                    if (connected) {
+                        console.log('✅ Firebase Realtime Database is accessible');
+                    } else {
+                        console.log('❌ Firebase Realtime Database connection issue');
+                    }
                 });
+            },
+            
+            // Test write operation
+            testWrite: async () => {
+                try {
+                    console.log('🧪 Testing Firebase write operation...');
+                    const testRef = rtdb.ref('test_write');
+                    const testData = {
+                        message: 'Test write from QuickCash',
+                        timestamp: Date.now()
+                    };
+                    
+                    await testRef.set(testData);
+                    console.log('✅ Test write successful');
+                    
+                    // Verify the write
+                    const readData = await testRef.once('value');
+                    console.log('✅ Test read successful:', readData.val());
+                    
+                    // Clean up
+                    await testRef.remove();
+                    console.log('✅ Test data cleaned up');
+                    
+                    return true;
+                } catch (error) {
+                    console.error('❌ Test write failed:', error);
+                    return false;
+                }
+            },
+            
+            // Check specific user data
+            getUser: async (userId) => {
+                try {
+                    console.log('🔍 Fetching user data for:', userId);
+                    const snapshot = await rtdb.ref('loanusers/' + userId).once('value');
+                    const userData = snapshot.val();
+                    if (userData) {
+                        console.log('✅ User data found:');
+                        console.log(JSON.stringify(userData, null, 2));
+                    } else {
+                        console.log('❌ No data found for user:', userId);
+                    }
+                    return userData;
+                } catch (error) {
+                    console.error('❌ Error fetching user:', error);
+                }
             }
         };
         
@@ -2884,18 +2977,19 @@
                 console.log('├── user_activity/      (Login & activity logs)');
                 console.log('└── statistics/         (System statistics)');
                 console.log('');
-                console.log('💡 Use window.firebaseUtils to monitor database:');
-                console.log('   • firebaseUtils.checkConnection()');
-                console.log('   • firebaseUtils.getAllUsers()');
-                console.log('   • firebaseUtils.getStatistics()');
-                console.log('   • firebaseUtils.monitorChanges()');
-                console.log('   • firebaseUtils.getUserData(userId)');
-                console.log('   • firebaseUtils.exportUsersCSV()');
-                console.log('   • firebaseUtils.validateUserData(userId)');
-                console.log('   • firebaseUtils.stopMonitoring()');
+                console.log('💡 Use window.firebaseUtils to debug database:');
+                console.log('   • firebaseUtils.checkConnection() - Check Firebase connection');
+                console.log('   • firebaseUtils.getAllUsers() - View all users');
+                console.log('   • firebaseUtils.testWrite() - Test Firebase write permissions');
+                console.log('   • firebaseUtils.getUser(userId) - Get specific user data');
                 console.log('');
-                console.log('🎯 COMPREHENSIVE user data now saves to Firebase Realtime Database!');
-                console.log('📊 Includes: Basic info, financial data, device info, security, preferences, and more!');
+                console.log('🎯 User registration saves to Firebase Realtime Database!');
+                console.log('📊 Database Path: loanusers/{userId}');
+                console.log('');
+                console.log('🔧 DEBUGGING TIPS:');
+                console.log('   1. Register a new user and check browser console');
+                console.log('   2. Run firebaseUtils.getAllUsers() to see saved data');
+                console.log('   3. Check Firebase Realtime Database rules if data not saving');
             }, 2000);
         });
     </script>
