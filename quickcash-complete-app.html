@@ -821,7 +821,12 @@
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
         <div style="font-size: 1.5rem; font-weight: 600; margin-bottom: 10px;">QuickCash</div>
-        <div style="font-size: 1rem; opacity: 0.8;">Loading your application...</div>
+        <div style="font-size: 1rem; opacity: 0.8; margin-bottom: 20px;">Loading your application...</div>
+        
+        <!-- Emergency skip button (appears after 8 seconds) -->
+        <button id="skipLoadingBtn" style="display: none; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px;" onclick="forceSkipLoading()">
+            Skip Loading
+        </button>
     </div>
 
     <!-- Login System -->
@@ -1546,6 +1551,49 @@
     <div class="toast" id="toast">UPI ID copied to clipboard!</div>
 
     <script>
+        // Emergency loading fix and skip button
+        window.addEventListener('load', () => {
+            // Show skip button after 8 seconds
+            setTimeout(() => {
+                const skipBtn = document.getElementById('skipLoadingBtn');
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                if (skipBtn && loadingOverlay && !loadingOverlay.classList.contains('hidden')) {
+                    skipBtn.style.display = 'block';
+                    console.log('⏰ Showing skip loading button');
+                }
+            }, 8000);
+            
+            // Force hide loading after 15 seconds
+            setTimeout(() => {
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                if (loadingOverlay && !loadingOverlay.classList.contains('hidden')) {
+                    console.log('🚨 Emergency loading fix - hiding stuck loading screen');
+                    forceSkipLoading();
+                }
+            }, 15000);
+        });
+        
+        // Force skip loading function
+        function forceSkipLoading() {
+            console.log('🚀 Force skipping loading screen');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.classList.add('hidden');
+            }
+            
+            // Determine what to show
+            if (currentUser && userData) {
+                console.log('👤 User data available - showing dashboard');
+                showSection('dashboard');
+            } else if (currentUser) {
+                console.log('👤 User authenticated but no data - showing dashboard anyway');
+                showSection('dashboard');
+            } else {
+                console.log('👤 No user - showing login');
+                showSection('login');
+            }
+        }
+
         // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAL5e-5eQfgf1nI6hWTnhwLFgK0Cp89aa0",
@@ -2480,17 +2528,46 @@
          document.addEventListener('DOMContentLoaded', function() {
              initializeKYCForm();
              showLoading();
+             
+             // Add timeout fallback to prevent infinite loading
+             setTimeout(() => {
+                 if (!document.getElementById('loadingOverlay').classList.contains('hidden')) {
+                     console.log('⏰ Loading timeout - forcing hide loading screen');
+                     hideLoading();
+                     if (!currentUser) {
+                         showSection('login');
+                     }
+                 }
+             }, 10000); // 10 second timeout
             
             auth.onAuthStateChanged(user => {
                 if (user) {
                     currentUser = user;
-                    loadUserData().then(() => {
-                        loadUserLoans().then(() => {
+                    console.log('👤 User authenticated:', user.uid);
+                    
+                    // Load user data with proper error handling
+                    loadUserData()
+                        .then(() => {
+                            console.log('✅ User data loaded successfully');
+                            return loadUserLoans();
+                        })
+                        .then(() => {
+                            console.log('✅ User loans loaded successfully');
                             showSection('dashboard');
                             hideLoading();
+                        })
+                        .catch((error) => {
+                            console.error('❌ Error in user data loading chain:', error);
+                            // Still show dashboard even if there are errors
+                            showSection('dashboard');
+                            hideLoading();
+                            showNotification('Some data could not be loaded. Please refresh the page.', 'warning');
                         });
-                    });
                 } else {
+                    console.log('👤 No user authenticated - showing login');
+                    currentUser = null;
+                    userData = null;
+                    userLoans = [];
                     showSection('login');
                     hideLoading();
                 }
@@ -2508,12 +2585,20 @@
         }
         
         function showLoading() {
-            document.getElementById('loadingOverlay').classList.remove('hidden');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.classList.remove('hidden');
+                console.log('🔄 Loading screen shown');
+            }
         }
         
         function hideLoading() {
             setTimeout(() => {
-                document.getElementById('loadingOverlay').classList.add('hidden');
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                if (loadingOverlay) {
+                    loadingOverlay.classList.add('hidden');
+                    console.log('✅ Loading screen hidden');
+                }
             }, 1500);
         }
         
@@ -3011,9 +3096,22 @@
         
         async function loadUserData() {
             try {
-                if (!currentUser) return;
+                if (!currentUser) {
+                    console.log('⚠️ No current user - skipping data load');
+                    return;
+                }
                 
                 console.log('📖 Loading user data from Firebase Realtime Database...');
+                
+                // Check Firebase connection first
+                const connRef = rtdb.ref('.info/connected');
+                const connSnapshot = await connRef.once('value');
+                const isConnected = connSnapshot.val();
+                
+                if (!isConnected) {
+                    console.log('⚠️ Firebase RTDB not connected, trying Firestore...');
+                    throw new Error('RTDB not connected');
+                }
                 
                 // Load from Realtime Database first
                 const rtdbSnapshot = await rtdb.ref('loanusers/' + currentUser.uid).once('value');
@@ -3032,20 +3130,56 @@
                     });
                     updateUserProfile();
                 } else {
+                    console.log('⚠️ No user data in RTDB, trying Firestore...');
                     // Fallback to Firestore
                     const userDoc = await db.collection('loanuser').doc(currentUser.uid).get();
                     if (userDoc.exists) {
                         userData = userDoc.data();
-                        console.log('⚠️ Using Firestore data (RTDB not available)');
+                        console.log('✅ User data loaded from Firestore');
                         updateUserProfile();
                     } else {
-                        throw new Error('User data not found');
+                        console.log('❌ No user data found in either database');
+                        // Create minimal user data to prevent crashes
+                        userData = {
+                            uid: currentUser.uid,
+                            name: 'User',
+                            mobile: '0000000000',
+                            email: currentUser.email || 'user@quickcash.com',
+                            role: 'user',
+                            status: 'active',
+                            isVerified: false,
+                            kycVerified: false,
+                            kycStatus: 'pending'
+                        };
+                        console.log('✅ Created minimal user data to prevent crashes');
+                        updateUserProfile();
                     }
                 }
                 
             } catch (error) {
                 console.error('❌ Error loading user data:', error);
-                showNotification('Error loading user data', 'error');
+                
+                // Create minimal user data as fallback
+                if (currentUser) {
+                    userData = {
+                        uid: currentUser.uid,
+                        name: 'User',
+                        mobile: '0000000000',
+                        email: currentUser.email || 'user@quickcash.com',
+                        role: 'user',
+                        status: 'active',
+                        isVerified: false,
+                        kycVerified: false,
+                        kycStatus: 'pending'
+                    };
+                    console.log('✅ Created fallback user data');
+                    updateUserProfile();
+                }
+                
+                // Don't show error notification immediately, let the app load
+                setTimeout(() => {
+                    showNotification('Could not load user data. Please check your connection.', 'warning');
+                }, 3000);
             }
         }
         
@@ -3409,7 +3543,13 @@
         
         async function loadUserLoans() {
             try {
-                if (!currentUser) return;
+                if (!currentUser) {
+                    console.log('⚠️ No current user - skipping loans load');
+                    userLoans = [];
+                    return;
+                }
+                
+                console.log('📖 Loading user loans from Firestore...');
                 
                 const loansQuery = await db.collection('loans')
                     .where('userId', '==', currentUser.uid)
@@ -3421,20 +3561,43 @@
                     userLoans.push({ id: doc.id, ...doc.data() });
                 });
                 
-                displayActiveLoans();
+                console.log(`✅ Loaded ${userLoans.length} loans for user`);
+                
+                // Try to display loans, but don't fail if container doesn't exist
+                try {
+                    displayActiveLoans();
+                } catch (displayError) {
+                    console.log('⚠️ Could not display loans (container not ready):', displayError.message);
+                }
+                
             } catch (error) {
-                console.error('Error loading loans:', error);
-                showNotification('Error loading loans', 'error');
+                console.error('❌ Error loading loans:', error);
+                userLoans = []; // Initialize empty array to prevent crashes
+                
+                // Don't show error notification immediately
+                setTimeout(() => {
+                    if (error.code === 'permission-denied') {
+                        console.log('⚠️ Firestore permission denied - user may not have loans collection access');
+                    } else {
+                        showNotification('Could not load loan history. Please check your connection.', 'warning');
+                    }
+                }, 3000);
             }
         }
         
-        function displayActiveLoans() {
-            const container = document.getElementById('activeLoansContainer');
-            
-            if (userLoans.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No active loans found. Apply for your first loan!</p>';
-                return;
-            }
+                 function displayActiveLoans() {
+             const container = document.getElementById('activeLoansContainer');
+             
+             // Safety check - container might not exist yet
+             if (!container) {
+                 console.log('⚠️ activeLoansContainer not found - skipping display');
+                 return;
+             }
+             
+             if (!userLoans || userLoans.length === 0) {
+                 container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No active loans found. Apply for your first loan!</p>';
+                 return;
+             }
             
             container.innerHTML = userLoans.map(loan => {
                 const statusClass = `status-${loan.status}`;
