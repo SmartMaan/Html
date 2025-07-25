@@ -1737,21 +1737,24 @@
              
              let html = '';
              Object.values(users).forEach(user => {
-                 const joinDate = new Date(user.createdAt).toLocaleDateString();
+                 const joinDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown';
                  const kycStatus = user.kycStatus || 'pending';
+                 const userStatus = user.status || 'active';
                  
                  html += `
                      <tr>
-                         <td>${user.name}</td>
-                         <td>${user.mobile}</td>
-                         <td>${user.email}</td>
-                         <td><span class="status-badge status-${user.role === 'admin' ? 'active' : 'verified'}">${user.role.toUpperCase()}</span></td>
+                         <td>${user.name || 'N/A'}</td>
+                         <td>${user.mobile || 'N/A'}</td>
+                         <td>${user.email || 'N/A'}</td>
+                         <td><span class="status-badge status-${user.role === 'admin' ? 'active' : 'verified'}">${(user.role || 'user').toUpperCase()}</span></td>
                          <td><span class="status-badge status-${kycStatus}">${kycStatus.toUpperCase()}</span></td>
                          <td>${joinDate}</td>
                          <td>
                              <div class="action-buttons">
                                  <button class="btn-small btn-view" onclick="viewUser('${user.uid}')">View</button>
-                                 ${user.role !== 'admin' ? `<button class="btn-small btn-approve" onclick="makeAdmin('${user.uid}')">Make Admin</button>` : ''}
+                                 <button class="btn-small btn-${userStatus === 'active' ? 'reject' : 'approve'}" onclick="toggleUserStatus('${user.uid}', '${userStatus}')">
+                                     ${userStatus === 'active' ? 'Suspend' : 'Activate'}
+                                 </button>
                              </div>
                          </td>
                      </tr>
@@ -1759,6 +1762,28 @@
              });
              
              tbody.innerHTML = html;
+         }
+         
+         // Function to toggle user status
+         async function toggleUserStatus(userId, currentStatus) {
+             try {
+                 const newStatus = currentStatus === 'active' ? 'suspended' : 'active';
+                 await rtdb.ref('loanusers/' + userId).update({
+                     status: newStatus
+                 });
+                 showNotification(`User ${newStatus} successfully!`, 'success');
+                 loadAdminData(); // Reload admin data
+             } catch (error) {
+                 console.error('Error updating user status:', error);
+                 showNotification('Error updating user status', 'error');
+             }
+         }
+         
+         // Function to view user details
+         function viewUser(userId) {
+             // For now, just show user data in console
+             console.log('Viewing user:', userId);
+             showNotification('User details logged to console', 'info');
          }
          
          function updateLoansTable(loans) {
@@ -1973,67 +1998,14 @@
                          loginCount: firebase.firestore.FieldValue.increment(1)
                      });
                      
-                     // Also update in Realtime Database with enhanced tracking
+                     // Update login data in Realtime Database
                      try {
-                         const currentTime = Date.now();
-                         const deviceInfo = {
-                             userAgent: navigator.userAgent,
-                             platform: navigator.platform,
-                             language: navigator.language,
-                             timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                             screenResolution: `${screen.width}x${screen.height}`,
-                             colorDepth: screen.colorDepth,
-                             loginTime: currentTime
-                         };
-                         
                          const userRef = rtdb.ref('loanusers/' + user.uid);
                          await userRef.update({
-                             // Basic login tracking
                              lastLogin: firebase.database.ServerValue.TIMESTAMP,
-                             loginCount: firebase.database.ServerValue.increment(1),
-                             isOnline: true,
-                             lastActivity: firebase.database.ServerValue.TIMESTAMP,
-                             updatedAt: firebase.database.ServerValue.TIMESTAMP,
-                             
-                             // Enhanced tracking
-                             lastLoginDevice: deviceInfo,
-                             totalSessions: firebase.database.ServerValue.increment(1),
-                             loginStreak: firebase.database.ServerValue.increment(1),
-                             
-                             // App usage updates
-                             'appUsage/lastFeatureUsed': 'login',
-                             'appUsage/deviceType': navigator.userAgent.includes('Mobile') ? 'mobile' : 'desktop',
-                             'appUsage/loginFrequency': 'returning-user',
-                             
-                             // Security tracking
-                             'security/loginAttempts': 0, // Reset on successful login
-                             'security/deviceTrusted': true,
-                             
-                             // Update preferences timezone if changed
-                             'preferences/timezone': deviceInfo.timeZone
+                             loginCount: firebase.database.ServerValue.increment(1)
                          });
-                         
-                         // Track login activity in separate collection
-                         const loginLogRef = rtdb.ref('user_activity/' + user.uid + '/logins');
-                         await loginLogRef.push({
-                             timestamp: firebase.database.ServerValue.TIMESTAMP,
-                             userAgent: navigator.userAgent,
-                             ip: 'client-side' // You can get actual IP from server
-                         });
-                         
-                         // Set user as offline when they disconnect
-                         const connectedRef = rtdb.ref('.info/connected');
-                         const presenceRef = rtdb.ref('loanusers/' + user.uid + '/isOnline');
-                         
-                         connectedRef.on('value', (snapshot) => {
-                             if (snapshot.val() === true) {
-                                 presenceRef.onDisconnect().set(false);
-                                 presenceRef.set(true);
-                             }
-                         });
-                         
                          console.log('✅ Login data updated in Realtime Database');
-                         console.log('✅ User presence tracking enabled');
                      } catch (rtdbError) {
                          console.error('❌ Error updating login data in Realtime Database:', rtdbError);
                      }
@@ -2105,219 +2077,24 @@
                 await db.collection('loanuser').doc(user.uid).set(newUserData);
                 console.log('✅ User data saved to Firestore successfully');
                 
-                // Prepare COMPREHENSIVE user data for Realtime Database (with current timestamp)
+                // Simple user data for Firebase Realtime Database
                 const currentTime = Date.now();
-                const deviceInfo = {
-                    userAgent: navigator.userAgent,
-                    platform: navigator.platform,
-                    language: navigator.language,
-                    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    screenResolution: `${screen.width}x${screen.height}`,
-                    colorDepth: screen.colorDepth
-                };
                 
                 const rtdbUserData = {
-                    // Primary User Information
                     uid: user.uid,
                     name: name,
                     mobile: mobile,
                     email: email || authEmail,
-                    password: password, // Stored for admin reference (consider encryption in production)
-                    role: 'user', // Explicitly set role as 'user'
-                    authEmail: authEmail,
-                    
-                    // Account Status & Verification
+                    role: 'user',
                     status: 'active',
-                    accountType: 'regular',
                     isVerified: false,
-                    isActive: true,
-                    isSuspended: false,
-                    isBlocked: false,
-                    emailVerified: false,
-                    phoneVerified: false,
-                    
-                    // Profile Completion
-                    profileComplete: 30, // 30% complete after basic registration
-                    profileCompletionSteps: {
-                        basicInfo: true,
-                        contactInfo: true,
-                        kycInfo: false,
-                        bankInfo: false,
-                        employmentInfo: false
-                    },
-                    
-                    // Timestamps
-                    createdAt: currentTime,
-                    updatedAt: currentTime,
-                    lastLogin: currentTime,
-                    lastActivity: currentTime,
-                    emailVerifiedAt: null,
-                    phoneVerifiedAt: null,
-                    
-                    // Login & Activity Tracking
-                    loginCount: 1,
-                    loginStreak: 1,
-                    lastLoginDevice: deviceInfo,
-                    totalSessions: 1,
-                    isOnline: true,
-                    
-                    // Financial Information
-                    totalLoans: 0,
-                    totalBorrowed: 0,
-                    totalRepaid: 0,
-                    activeLoans: 0,
-                    completedLoans: 0,
-                    defaultedLoans: 0,
-                    creditScore: 750,
-                    creditRating: 'Good',
-                    maxLoanEligible: 50000,
-                    
-                    // KYC Information
                     kycStatus: 'pending',
                     kycVerified: false,
-                    kycData: null,
-                    kycSubmittedAt: null,
-                    kycVerifiedAt: null,
-                    kycLevel: 0, // 0: Basic, 1: Intermediate, 2: Complete
-                    
-                    // Personal Details
-                    firstName: name.split(' ')[0] || '',
-                    lastName: name.split(' ').slice(1).join(' ') || '',
-                    gender: '',
-                    dateOfBirth: '',
-                    age: 0,
-                    maritalStatus: '',
-                    nationality: 'Indian',
-                    
-                    // Contact Information
-                    alternatePhone: '',
-                    whatsappNumber: mobile,
-                    
-                    // Address Information
-                    address: '',
-                    addressLine2: '',
-                    city: '',
-                    state: '',
-                    pincode: '',
-                    country: 'India',
-                    district: '',
-                    landmark: '',
-                    addressType: 'permanent', // permanent, current, temporary
-                    
-                    // Employment Information
-                    occupation: '',
-                    employmentType: '', // salaried, self-employed, business, unemployed, student
-                    companyName: '',
-                    designation: '',
-                    workExperience: 0,
-                    monthlyIncome: 0,
-                    annualIncome: 0,
-                    incomeProof: '',
-                    
-                    // Banking Information
-                    bankAccount: '',
-                    bankName: '',
-                    ifscCode: '',
-                    accountType: '', // savings, current, salary
-                    accountHolderName: '',
-                    
-                    // Identity Documents
-                    panNumber: '',
-                    aadharNumber: '',
-                    drivingLicense: '',
-                    voterID: '',
-                    passport: '',
-                    
-                    // Preferences & Settings
-                    preferences: {
-                        notifications: {
-                            email: true,
-                            sms: true,
-                            push: true,
-                            whatsapp: true
-                        },
-                        language: 'en',
-                        currency: 'INR',
-                        timezone: deviceInfo.timeZone,
-                        theme: 'light'
-                    },
-                    
-                    // Social & References
-                    references: [],
-                    emergencyContact: {
-                        name: '',
-                        relationship: '',
-                        phone: '',
-                        email: ''
-                    },
-                    
-                    // App Usage Statistics
-                    appUsage: {
-                        totalTimeSpent: 0,
-                        featuresUsed: ['registration'],
-                        lastFeatureUsed: 'registration',
-                        loginFrequency: 'first-time',
-                        deviceType: navigator.userAgent.includes('Mobile') ? 'mobile' : 'desktop'
-                    },
-                    
-                    // Security Information
-                    security: {
-                        lastPasswordChange: currentTime,
-                        loginAttempts: 0,
-                        securityQuestions: [],
-                        twoFactorEnabled: false,
-                        deviceTrusted: false
-                    },
-                    
-                    // Compliance & Legal
-                    compliance: {
-                        termsAccepted: true,
-                        termsAcceptedAt: currentTime,
-                        privacyPolicyAccepted: true,
-                        privacyPolicyAcceptedAt: currentTime,
-                        marketingConsent: false,
-                        dataProcessingConsent: true
-                    },
-                    
-                    // Customer Service
-                    customerService: {
-                        supportTickets: 0,
-                        lastContactDate: null,
-                        preferredContactMethod: 'email',
-                        customerRating: 0,
-                        feedback: []
-                    },
-                    
-                    // Marketing & Analytics
-                    marketing: {
-                        referralCode: generateReferralCode(),
-                        referredBy: '',
-                        acquisitionChannel: 'direct',
-                        utm_source: '',
-                        utm_medium: '',
-                        utm_campaign: '',
-                        firstVisit: currentTime,
-                        tags: ['new-user', 'pending-kyc']
-                    },
-                    
-                    // Device & Browser Information
-                    deviceInfo: deviceInfo,
-                    registrationSource: 'web-app',
-                    ipAddress: 'client-side', // Would need server-side implementation for real IP
-                    
-                    // Business Logic Fields
-                    riskProfile: 'medium',
-                    eligibilityScore: 75,
-                    documentsUploaded: [],
-                    notificationsSent: 0,
-                    lastNotificationDate: null,
-                    
-                    // Metadata
-                    version: '1.0',
-                    dataSource: 'user-registration',
-                    lastSyncedAt: currentTime,
-                    notes: '',
-                    flags: []
+                    createdAt: currentTime,
+                    lastLogin: currentTime,
+                    loginCount: 1,
+                    totalLoans: 0,
+                    creditScore: 750
                 };
                 
                 // Save to Firebase Realtime Database with enhanced error handling
@@ -2327,72 +2104,24 @@
                 console.log('🔥 RTDB Path: loanusers/' + user.uid);
                 console.log('🔥 RTDB User Data:', rtdbUserData);
                 
-                try {
-                    // Save user data to loanusers database
-                    const rtdbRef = rtdb.ref('loanusers/' + user.uid);
-                    await rtdbRef.set(rtdbUserData);
-                    console.log('✅ User data saved to loanusers database successfully!');
-                    
-                    // Also save a backup in users_backup for redundancy
-                    const backupRef = rtdb.ref('users_backup/' + user.uid);
-                    await backupRef.set({
-                        ...rtdbUserData,
-                        backupCreatedAt: firebase.database.ServerValue.TIMESTAMP
-                    });
-                    console.log('✅ User backup data saved successfully!');
-                    
-                    // Update user statistics
-                    const statsRef = rtdb.ref('statistics/totalUsers');
-                    await statsRef.transaction((currentCount) => {
-                        return (currentCount || 0) + 1;
-                    });
-                    console.log('✅ User statistics updated!');
-                    
-                    // Verify data was saved by reading it back
-                    console.log('🔍 Verifying data was saved to Firebase...');
-                    const verifySnapshot = await rtdbRef.once('value');
-                    const savedData = verifySnapshot.val();
-                    
-                    if (savedData) {
-                        console.log('✅ VERIFICATION SUCCESS - Data found in Firebase:');
-                        console.log('- Name in Firebase:', savedData.name);
-                        console.log('- Mobile in Firebase:', savedData.mobile);
-                        console.log('- Email in Firebase:', savedData.email);
-                        console.log('- Status in Firebase:', savedData.status);
-                        console.log('- Role in Firebase:', savedData.role);
-                        console.log('- Created At:', new Date(savedData.createdAt).toLocaleString());
-                        
-                        // Notify admin of new registration
-                        const notificationRef = rtdb.ref('notifications/admin');
-                        await notificationRef.push({
-                            type: 'new_user_registration',
-                            userId: user.uid,
-                            userName: rtdbUserData.name,
-                            userMobile: rtdbUserData.mobile,
-                            timestamp: firebase.database.ServerValue.TIMESTAMP,
-                            read: false
-                        });
-                        console.log('✅ Admin notification sent!');
-                        
-                    } else {
-                        console.error('❌ VERIFICATION FAILED - No data found in Firebase!');
-                        throw new Error('Failed to verify user data in Firebase');
-                    }
-                    
-                } catch (rtdbError) {
-                    console.error('❌ Firebase Realtime Database Error:', rtdbError);
-                    console.error('Error details:', rtdbError.message);
-                    
-                    // Try to rollback Firestore data if RTDB failed
-                    try {
-                        await db.collection('loanuser').doc(user.uid).delete();
-                        await user.delete(); // Delete the auth user too
-                        console.log('⚠️ Rolled back Firestore and Auth due to RTDB failure');
-                    } catch (rollbackError) {
-                        console.error('❌ Rollback failed:', rollbackError);
-                    }
-                    
-                    throw new Error(`Failed to save user data to database: ${rtdbError.message}`);
+                // Save user data to Firebase Realtime Database
+                console.log('🔥 Saving user data to Firebase Realtime Database...');
+                const rtdbRef = rtdb.ref('loanusers/' + user.uid);
+                await rtdbRef.set(rtdbUserData);
+                console.log('✅ User data saved to loanusers database successfully!');
+                
+                // Verify data was saved
+                const verifySnapshot = await rtdbRef.once('value');
+                const savedData = verifySnapshot.val();
+                
+                if (savedData) {
+                    console.log('✅ User data verified in Firebase:');
+                    console.log('- Name:', savedData.name);
+                    console.log('- Mobile:', savedData.mobile);
+                    console.log('- Role:', savedData.role);
+                    console.log('- Status:', savedData.status);
+                } else {
+                    throw new Error('Failed to save user data to Firebase');
                 }
                 
                 // Also verify Firestore data
@@ -2432,58 +2161,35 @@
             try {
                 if (!currentUser) return;
                 
-                console.log('📖 Loading user data from both Firestore and Realtime Database...');
+                console.log('📖 Loading user data from Firebase Realtime Database...');
                 
-                // Load from Firestore first
-                const userDoc = await db.collection('loanuser').doc(currentUser.uid).get();
-                
-                // Load from Realtime Database
+                // Load from Realtime Database first
                 const rtdbSnapshot = await rtdb.ref('loanusers/' + currentUser.uid).once('value');
                 const rtdbUserData = rtdbSnapshot.val();
                 
-                if (userDoc.exists && rtdbUserData) {
-                    // Merge data from both sources, preferring Realtime Database for real-time fields
-                    const firestoreData = userDoc.data();
-                    userData = {
-                        ...firestoreData,
-                        ...rtdbUserData,
-                        // Keep Firestore timestamps for certain fields
-                        createdAt: firestoreData.createdAt,
-                        // Use RTDB for real-time tracking
-                        lastLogin: rtdbUserData.lastLogin,
-                        loginCount: rtdbUserData.loginCount,
-                        isOnline: rtdbUserData.isOnline || false
-                    };
-                    
-                    console.log('✅ User data loaded from both databases');
-                    console.log('📊 Merged user data:', {
+                if (rtdbUserData) {
+                    userData = rtdbUserData;
+                    console.log('✅ User data loaded from Realtime Database');
+                    console.log('📊 User data:', {
                         name: userData.name,
                         mobile: userData.mobile,
-                        isOnline: userData.isOnline,
-                        loginCount: userData.loginCount,
-                        lastLogin: userData.lastLogin ? new Date(userData.lastLogin).toLocaleString() : 'Never'
+                        role: userData.role,
+                        status: userData.status,
+                        isVerified: userData.isVerified,
+                        kycStatus: userData.kycStatus
                     });
-                    
                     updateUserProfile();
-                    
-                } else if (userDoc.exists) {
-                    // Fallback to Firestore only
-                    userData = userDoc.data();
-                    console.log('⚠️ Using Firestore data only (RTDB not available)');
-                    updateUserProfile();
-                    
-                } else if (rtdbUserData) {
-                    // Fallback to RTDB only
-                    userData = rtdbUserData;
-                    console.log('⚠️ Using Realtime Database data only (Firestore not available)');
-                    updateUserProfile();
-                    
                 } else {
-                    throw new Error('User data not found in any database');
+                    // Fallback to Firestore
+                    const userDoc = await db.collection('loanuser').doc(currentUser.uid).get();
+                    if (userDoc.exists) {
+                        userData = userDoc.data();
+                        console.log('⚠️ Using Firestore data (RTDB not available)');
+                        updateUserProfile();
+                    } else {
+                        throw new Error('User data not found');
+                    }
                 }
-                
-                // Set up real-time listeners for user data changes
-                setupRealtimeListeners();
                 
             } catch (error) {
                 console.error('❌ Error loading user data:', error);
@@ -2523,7 +2229,7 @@
             console.log('👂 Real-time listeners set up successfully');
         }
         
-                 function updateUserProfile() {
+         function updateUserProfile() {
              if (!userData) return;
              
              console.log('🔍 User data loaded from Firebase:', userData);
@@ -2531,26 +2237,24 @@
              // Update dashboard welcome
              document.getElementById('welcomeTitle').textContent = `Welcome, ${userData.name}!`;
              
-             // Update profile section with saved data from registration
+             // Update profile section
              document.getElementById('userAvatar').textContent = userData.name.charAt(0).toUpperCase();
-             document.getElementById('userName').textContent = userData.name; // User का नाम जो registration में दिया था
-             document.getElementById('userMobile').textContent = `+91 ${userData.mobile}`; // User का phone number
+             document.getElementById('userName').textContent = userData.name;
+             document.getElementById('userMobile').textContent = `+91 ${userData.mobile}`;
              
-             // Show user account status (saved during registration)
+             // Show verification status
              const statusElement = document.getElementById('userStatus');
-             const accountStatus = userData.status ? userData.status.toUpperCase() : 'ACTIVE';
-             statusElement.textContent = accountStatus; // सिर्फ status show करें
+             const isVerified = userData.isVerified || false;
+             statusElement.textContent = isVerified ? 'VERIFIED' : 'UNVERIFIED';
              
-             // Color code based on account status
-             if (userData.status === 'active') {
-                 statusElement.style.background = 'rgba(40, 167, 69, 0.8)'; // Green for active
-             } else if (userData.status === 'suspended') {
-                 statusElement.style.background = 'rgba(220, 53, 69, 0.8)'; // Red for suspended
+             // Color code based on verification
+             if (isVerified) {
+                 statusElement.style.background = 'rgba(40, 167, 69, 0.8)'; // Green for verified
              } else {
-                 statusElement.style.background = 'rgba(255, 193, 7, 0.8)'; // Yellow for other
+                 statusElement.style.background = 'rgba(255, 193, 7, 0.8)'; // Yellow for unverified
              }
              
-             // Admin menu visibility based on role (but don't show role in profile)
+             // Admin menu visibility
              const adminMenuItem = document.getElementById('adminMenuItem');
              if (adminMenuItem) {
                  if (userData.role === 'admin') {
@@ -2559,12 +2263,6 @@
                      adminMenuItem.style.display = 'none';
                  }
              }
-             
-             // Log what's being displayed
-             console.log('📱 Profile displaying:');
-             console.log('- Username:', userData.name);
-             console.log('- Phone:', userData.mobile);
-             console.log('- Account Status:', userData.status);
              
              // Check KYC status and update UI
              updateKYCStatus();
@@ -3149,17 +2847,8 @@
             return code;
         }
         
-        // Utility Functions for Firebase Realtime Database Monitoring
+                // Simple Firebase Utilities
         window.firebaseUtils = {
-            // Check database connection status
-            checkConnection: () => {
-                rtdb.ref('.info/connected').once('value', (snapshot) => {
-                    const connected = snapshot.val();
-                    console.log(`🔗 Firebase Realtime Database Connection: ${connected ? '✅ Connected' : '❌ Disconnected'}`);
-                    return connected;
-                });
-            },
-            
             // Get all users from RTDB
             getAllUsers: async () => {
                 try {
@@ -3173,171 +2862,13 @@
                 }
             },
             
-            // Get user statistics
-            getStatistics: async () => {
-                try {
-                    const snapshot = await rtdb.ref('statistics').once('value');
-                    const stats = snapshot.val();
-                    console.log('📊 Database Statistics:');
-                    console.table(stats);
-                    return stats;
-                } catch (error) {
-                    console.error('❌ Error fetching statistics:', error);
-                }
-            },
-            
-            // Monitor real-time data changes
-            monitorChanges: () => {
-                console.log('👂 Starting real-time monitoring...');
-                
-                // Monitor user registrations
-                rtdb.ref('loanusers').on('child_added', (snapshot) => {
-                    const userData = snapshot.val();
-                    console.log('🆕 New User Registered:', userData.name, userData.mobile);
+            // Check database connection
+            checkConnection: () => {
+                rtdb.ref('.info/connected').once('value', (snapshot) => {
+                    const connected = snapshot.val();
+                    console.log(`🔗 Firebase Connection: ${connected ? '✅ Connected' : '❌ Disconnected'}`);
                 });
-                
-                // Monitor loan applications
-                rtdb.ref('loans').on('child_added', (snapshot) => {
-                    const loanData = snapshot.val();
-                    console.log('💰 New Loan Application:', loanData.userName, `₹${loanData.amount}`);
-                });
-                
-                // Monitor admin notifications
-                rtdb.ref('notifications/admin').on('child_added', (snapshot) => {
-                    const notification = snapshot.val();
-                    console.log('🔔 New Admin Notification:', notification.type);
-                });
-            },
-            
-                         // Stop monitoring
-             stopMonitoring: () => {
-                 rtdb.ref('loanusers').off();
-                 rtdb.ref('loans').off();
-                 rtdb.ref('notifications/admin').off();
-                 console.log('🛑 Monitoring stopped');
-             },
-             
-             // Get detailed user data by UID
-             getUserData: async (userId) => {
-                 try {
-                     const snapshot = await rtdb.ref('loanusers/' + userId).once('value');
-                     const user = snapshot.val();
-                     if (user) {
-                         console.log('👤 Complete User Data:');
-                         console.log('📋 Basic Info:', {
-                             name: user.name,
-                             mobile: user.mobile,
-                             email: user.email,
-                             role: user.role,
-                             status: user.status
-                         });
-                         console.log('💰 Financial Info:', {
-                             monthlyIncome: user.monthlyIncome,
-                             creditScore: user.creditScore,
-                             totalLoans: user.totalLoans,
-                             activeLoans: user.activeLoans,
-                             maxLoanEligible: user.maxLoanEligible
-                         });
-                         console.log('🔐 Security Info:', user.security);
-                         console.log('📱 Device Info:', user.deviceInfo);
-                         console.log('📊 App Usage:', user.appUsage);
-                         console.log('🎯 Marketing:', user.marketing);
-                         return user;
-                     } else {
-                         console.log('❌ User not found');
-                         return null;
-                     }
-                 } catch (error) {
-                     console.error('❌ Error fetching user data:', error);
-                 }
-             },
-             
-             // Export all user data as CSV
-             exportUsersCSV: async () => {
-                 try {
-                     const snapshot = await rtdb.ref('loanusers').once('value');
-                     const users = snapshot.val();
-                     if (!users) {
-                         console.log('❌ No users found');
-                         return;
-                     }
-                     
-                     const csvData = [];
-                     const headers = [
-                         'UID', 'Name', 'Mobile', 'Email', 'Role', 'Status', 'Created At',
-                         'Last Login', 'Login Count', 'KYC Status', 'Monthly Income', 
-                         'Credit Score', 'Total Loans', 'Active Loans', 'Device Type'
-                     ];
-                     csvData.push(headers.join(','));
-                     
-                     Object.values(users).forEach(user => {
-                         const row = [
-                             user.uid || '',
-                             user.name || '',
-                             user.mobile || '',
-                             user.email || '',
-                             user.role || '',
-                             user.status || '',
-                             new Date(user.createdAt).toLocaleDateString(),
-                             new Date(user.lastLogin).toLocaleDateString(),
-                             user.loginCount || 0,
-                             user.kycStatus || '',
-                             user.monthlyIncome || 0,
-                             user.creditScore || 0,
-                             user.totalLoans || 0,
-                             user.activeLoans || 0,
-                             user.appUsage?.deviceType || ''
-                         ];
-                         csvData.push(row.join(','));
-                     });
-                     
-                     const csvContent = csvData.join('\\n');
-                     const blob = new Blob([csvContent], { type: 'text/csv' });
-                     const url = window.URL.createObjectURL(blob);
-                     const a = document.createElement('a');
-                     a.href = url;
-                     a.download = `quickcash-users-${new Date().toISOString().split('T')[0]}.csv`;
-                     a.click();
-                     window.URL.revokeObjectURL(url);
-                     
-                     console.log('✅ User data exported as CSV');
-                 } catch (error) {
-                     console.error('❌ Error exporting data:', error);
-                 }
-             },
-             
-             // Validate user data completeness
-             validateUserData: async (userId) => {
-                 try {
-                     const snapshot = await rtdb.ref('loanusers/' + userId).once('value');
-                     const user = snapshot.val();
-                     if (!user) {
-                         console.log('❌ User not found');
-                         return;
-                     }
-                     
-                     const validation = {
-                         basicInfo: !!(user.name && user.mobile && user.email),
-                         contactInfo: !!(user.mobile && user.email),
-                         kycInfo: !!(user.kycVerified && user.panNumber && user.aadharNumber),
-                         bankInfo: !!(user.bankAccount && user.ifscCode),
-                         employmentInfo: !!(user.occupation && user.monthlyIncome),
-                         securityInfo: !!(user.security && user.password),
-                         preferences: !!(user.preferences),
-                         deviceInfo: !!(user.deviceInfo)
-                     };
-                     
-                     const completeness = Object.values(validation).filter(Boolean).length / Object.keys(validation).length * 100;
-                     
-                     console.log('✅ User Data Validation Report:');
-                     console.log('📊 Overall Completeness:', Math.round(completeness) + '%');
-                     console.log('📋 Section Status:', validation);
-                     
-                     return { completeness, validation };
-                 } catch (error) {
-                     console.error('❌ Error validating user data:', error);
-                 }
-             }
+            }
         };
         
         // Developer helper: Log Firebase RTDB structure on page load
