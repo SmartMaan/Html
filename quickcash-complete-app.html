@@ -311,27 +311,33 @@
              animation: slideIn 0.6s ease-out;
          }
          
-         /* KYC Warning */
-         .kyc-warning {
-             background: #ff4757;
-             color: white;
-             padding: 10px;
-             border-radius: 8px;
-             margin-top: 10px;
-             text-align: center;
-             font-weight: 500;
-             animation: pulse 1.5s infinite;
-         }
-         
-         .kyc-warning i {
-             margin-right: 8px;
-         }
-         
-         @keyframes pulse {
-             0% { opacity: 1; }
-             50% { opacity: 0.7; }
-             100% { opacity: 1; }
-         }
+                 /* Account Verification Warning */
+        .account-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .account-warning i {
+            margin-right: 8px;
+            color: #f39c12;
+        }
+        
+        .account-warning a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .account-warning a:hover {
+            text-decoration: underline;
+        }
          
          .apply-btn.locked {
              background: #ccc;
@@ -345,8 +351,123 @@
              box-shadow: none;
          }
          
-         /* KYC Section Styles */
-         .kyc-section { display: none; padding: 20px; padding-bottom: 100px; background-color: #f5f7fa; }
+                 /* KYC Section Styles */
+        .kyc-section { display: none; padding: 20px; padding-bottom: 100px; background-color: #f5f7fa; }
+        
+        /* Progress Wizard Styles */
+        .progress-wizard {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .progress-step {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            margin-right: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-step.active .step-number {
+            background: #4a6cf7;
+            color: white;
+        }
+        
+        .progress-step.completed .step-number {
+            background: #28a745;
+            color: white;
+        }
+        
+        .step-info {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .step-desc {
+            font-size: 13px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+        
+        .progress-step.active .step-title {
+            color: #4a6cf7;
+        }
+        
+        .progress-step.completed .step-title {
+            color: #28a745;
+        }
+        
+        .step-status {
+            font-size: 18px;
+            margin-left: 10px;
+        }
+        
+        .progress-step .step-status i {
+            color: #6c757d;
+        }
+        
+        .progress-step.active .step-status i {
+            color: #4a6cf7;
+            animation: pulse 2s infinite;
+        }
+        
+        .progress-step.completed .step-status i:before {
+            content: '\f00c';
+            color: #28a745;
+        }
+        
+        .progress-line {
+            width: 2px;
+            height: 20px;
+            background: #e9ecef;
+            margin-left: 34px;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-line.completed {
+            background: #28a745;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Wizard Animation */
+        .step-completing {
+            animation: stepComplete 1s ease-in-out;
+        }
+        
+        @keyframes stepComplete {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); background-color: #d4edda; }
+            100% { transform: scale(1); }
+        }
          
          .form-container {
              background-color: white;
@@ -829,9 +950,11 @@
                 </div>
             </div>
                          <button class="apply-btn" id="applyBtn" onclick="checkKYCAndApply()">Apply Now</button>
-             <div id="kycWarning" class="kyc-warning" style="display: none;">
-                 <i class="fas fa-exclamation-triangle"></i>
-                 <span>Verify your account first</span>
+             
+             <!-- Simple Account Verification Warning -->
+             <div id="accountWarning" class="account-warning" style="display: none;">
+                 <i class="fas fa-info-circle"></i>
+                 <span>आपका खाता अभी तक verify नहीं है। KYC करने के लिए <a href="#" onclick="showSection('kyc')">यहाँ क्लिक करें</a></span>
              </div>
         </div>
             
@@ -1067,7 +1190,47 @@
         </div>
         
         <div class="form-container">
-            <h2 class="form-title">Complete Your KYC</h2>
+            <h2 class="form-title">Account Verification Process</h2>
+            
+            <!-- Progress Wizard -->
+            <div class="progress-wizard">
+                <div class="progress-step active" id="step1">
+                    <div class="step-number">1</div>
+                    <div class="step-info">
+                        <div class="step-title">KYC Verification</div>
+                        <div class="step-desc">Complete your identity verification</div>
+                    </div>
+                    <div class="step-status">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                
+                <div class="progress-line" id="line1"></div>
+                
+                <div class="progress-step" id="step2">
+                    <div class="step-number">2</div>
+                    <div class="step-info">
+                        <div class="step-title">Bank Account</div>
+                        <div class="step-desc">Add your bank account details</div>
+                    </div>
+                    <div class="step-status">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                </div>
+                
+                <div class="progress-line" id="line2"></div>
+                
+                <div class="progress-step" id="step3">
+                    <div class="step-number">3</div>
+                    <div class="step-info">
+                        <div class="step-title">First Loan</div>
+                        <div class="step-desc">Apply for your first loan</div>
+                    </div>
+                    <div class="step-status">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                </div>
+            </div>
             
             <div id="kycError" class="error" style="display: none;">
                 <i class="fas fa-exclamation-circle"></i>
@@ -1145,6 +1308,45 @@
                 
                 <button type="submit" class="next-btn">Complete Verification <i class="fas fa-check-circle"></i></button>
             </form>
+            
+            <!-- Bank Account Form (Step 2) -->
+            <div id="bankAccountSection" style="display: none;">
+                <h3 style="color: #4a6cf7; margin-bottom: 20px; text-align: center;">Add Bank Account Details</h3>
+                
+                <form id="bankAccountForm">
+                    <div class="form-group">
+                        <label>Account Holder Name</label>
+                        <input type="text" id="accountHolderName" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Account Number</label>
+                        <input type="text" id="accountNumber" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Confirm Account Number</label>
+                        <input type="text" id="confirmAccountNumber" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>IFSC Code</label>
+                        <input type="text" id="ifscCode" class="form-control" required style="text-transform: uppercase;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Bank Name</label>
+                        <input type="text" id="bankName" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Branch Name</label>
+                        <input type="text" id="branchName" class="form-control" required>
+                    </div>
+                    
+                    <button type="submit" class="next-btn">Save Bank Details <i class="fas fa-arrow-right"></i></button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -1623,13 +1825,19 @@
                 
                 showMessage('KYC verification completed successfully!', 'success');
                 
+                // Complete Step 1 and activate Step 2
+                completeStep('step1', 'line1');
+                activateStep('step2');
+                
                 // Update UI
                 updateKYCStatus();
                 
-                // Go back to dashboard
+                // Show success message and auto-move to next step
                 setTimeout(() => {
-                    showSection('dashboard');
-                }, 2000);
+                    showNotification('🎉 KYC Completed! Now add your bank account details.', 'success');
+                    // Automatically show bank account form
+                    showBankAccountForm();
+                }, 1500);
                 
             } catch (error) {
                 console.error('KYC submission error:', error);
@@ -1925,6 +2133,7 @@
             document.getElementById('registerForm').addEventListener('submit', handleRegister);
             document.getElementById('loanApplicationForm').addEventListener('submit', handleLoanApplication);
             document.getElementById('repayForm').addEventListener('submit', handleRepayment);
+            document.getElementById('bankAccountForm').addEventListener('submit', handleBankAccountSubmission);
         }
         
         function showLoading() {
@@ -1965,6 +2174,7 @@
                     document.getElementById('kycSection').style.display = 'block';
                     document.body.classList.add('dashboard-mode');
                     updateNavigation('dashboard');
+                    initializeWizard();
                     break;
                 case 'profile':
                     document.getElementById('profileSection').style.display = 'block';
@@ -2542,28 +2752,176 @@
              initializeToggleActions();
          }
          
-         function updateKYCStatus() {
-             const applyBtn = document.getElementById('applyBtn');
-             const kycWarning = document.getElementById('kycWarning');
-             
-             if (!userData.kycVerified) {
-                 // Lock the apply button
-                 applyBtn.classList.add('locked');
-                 applyBtn.textContent = 'Verify Account First';
-                 applyBtn.onclick = function() { showSection('kyc'); };
-                 
-                 // Show warning
-                 kycWarning.style.display = 'block';
-             } else {
-                 // Enable the apply button
-                 applyBtn.classList.remove('locked');
-                 applyBtn.textContent = 'Apply Now';
-                 applyBtn.onclick = function() { showLoanApplicationForm(); };
-                 
-                 // Hide warning
-                 kycWarning.style.display = 'none';
-             }
-         }
+                 function updateKYCStatus() {
+            const applyBtn = document.getElementById('applyBtn');
+            const accountWarning = document.getElementById('accountWarning');
+            
+            if (!userData.kycVerified) {
+                // Lock the apply button
+                applyBtn.classList.add('locked');
+                applyBtn.textContent = 'Complete Verification';
+                applyBtn.onclick = function() { showSection('kyc'); };
+                
+                // Show simple warning
+                accountWarning.style.display = 'block';
+            } else {
+                // Enable the apply button
+                applyBtn.classList.remove('locked');
+                applyBtn.textContent = 'Apply Now';
+                applyBtn.onclick = function() { showLoanApplicationForm(); };
+                
+                // Hide warning
+                accountWarning.style.display = 'none';
+            }
+        }
+        
+        // Wizard Progress Functions
+        function updateWizardProgress() {
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            const line1 = document.getElementById('line1');
+            const line2 = document.getElementById('line2');
+            
+            if (!userData) return;
+            
+            // Step 1: KYC Verification
+            if (userData.kycDocuments && userData.kycDocuments.status === 'verified') {
+                completeStep('step1', 'line1');
+                activateStep('step2');
+            } else {
+                activateStep('step1');
+            }
+            
+            // Step 2: Bank Account (check if financial details added)
+            if (userData.financialDetails && userData.financialDetails.bankAccount && userData.financialDetails.bankAccount.accountNumber) {
+                completeStep('step2', 'line2');
+                activateStep('step3');
+            }
+            
+            // Step 3: First Loan (check if any loan applied)
+            if (userData.loanDetails && userData.loanDetails.totalApplications > 0) {
+                completeStep('step3', null);
+            }
+        }
+        
+        function completeStep(stepId, lineId) {
+            const step = document.getElementById(stepId);
+            const line = lineId ? document.getElementById(lineId) : null;
+            
+            if (step && !step.classList.contains('completed')) {
+                // Add completing animation
+                step.classList.add('step-completing');
+                
+                setTimeout(() => {
+                    step.classList.remove('active', 'step-completing');
+                    step.classList.add('completed');
+                    
+                    if (line) {
+                        line.classList.add('completed');
+                    }
+                    
+                    // Success sound effect (optional)
+                    console.log(`✅ Step ${stepId} completed!`);
+                }, 500);
+            }
+        }
+        
+        function activateStep(stepId) {
+            const step = document.getElementById(stepId);
+            if (step && !step.classList.contains('completed')) {
+                // Remove active from all steps
+                document.querySelectorAll('.progress-step').forEach(s => s.classList.remove('active'));
+                // Add active to current step
+                step.classList.add('active');
+            }
+        }
+        
+        // Initialize wizard when KYC section is shown
+        function initializeWizard() {
+            updateWizardProgress();
+            
+            // Add click handlers for completed steps
+            document.getElementById('step2').addEventListener('click', function() {
+                if (this.classList.contains('active')) {
+                    showBankAccountForm();
+                }
+            });
+            
+            document.getElementById('step3').addEventListener('click', function() {
+                if (this.classList.contains('active')) {
+                    showLoanApplicationForm();
+                    showSection('dashboard');
+                }
+            });
+        }
+        
+        function showBankAccountForm() {
+            // Hide KYC form and show bank account form
+            document.getElementById('kycForm').style.display = 'none';
+            document.getElementById('bankAccountSection').style.display = 'block';
+        }
+        
+        // Bank Account Form Handler
+        async function handleBankAccountSubmission(e) {
+            e.preventDefault();
+            
+            const accountHolderName = document.getElementById('accountHolderName').value.trim();
+            const accountNumber = document.getElementById('accountNumber').value.trim();
+            const confirmAccountNumber = document.getElementById('confirmAccountNumber').value.trim();
+            const ifscCode = document.getElementById('ifscCode').value.trim().toUpperCase();
+            const bankName = document.getElementById('bankName').value.trim();
+            const branchName = document.getElementById('branchName').value.trim();
+            
+            // Validation
+            if (accountNumber !== confirmAccountNumber) {
+                showNotification('Account numbers do not match!', 'error');
+                return;
+            }
+            
+            if (ifscCode.length !== 11) {
+                showNotification('IFSC code must be 11 characters!', 'error');
+                return;
+            }
+            
+            try {
+                // Save bank details to Firebase
+                const bankData = {
+                    accountHolderName: accountHolderName,
+                    accountNumber: accountNumber,
+                    ifscCode: ifscCode,
+                    bankName: bankName,
+                    branchName: branchName,
+                    accountType: 'Savings',
+                    addedAt: Date.now()
+                };
+                
+                // Update user data in Firebase
+                await rtdb.ref('loanusers/' + currentUser.uid + '/financialDetails/bankAccount').set(bankData);
+                
+                // Update local user data
+                if (!userData.financialDetails) userData.financialDetails = {};
+                userData.financialDetails.bankAccount = bankData;
+                
+                // Complete Step 2 and activate Step 3
+                completeStep('step2', 'line2');
+                activateStep('step3');
+                
+                showNotification('🎉 Bank account added successfully! You can now apply for your first loan.', 'success');
+                
+                // Hide bank form
+                document.getElementById('bankAccountSection').style.display = 'none';
+                
+                // Show completion message
+                setTimeout(() => {
+                    showNotification('All steps completed! Click on "First Loan" to apply.', 'info');
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Bank account save error:', error);
+                showNotification('Error saving bank details. Please try again.', 'error');
+            }
+        }
          
          function checkKYCAndApply() {
              if (!userData.kycVerified) {
@@ -2870,6 +3228,9 @@
                 
                 hidePopup('loanApplicationPopup');
                 showNotification('Loan application submitted successfully!', 'success');
+                
+                // Complete Step 3 (First Loan)
+                completeStep('step3', null);
                 
                 // Reload loans
                 await loadUserLoans();
