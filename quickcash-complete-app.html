@@ -23,15 +23,14 @@
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: #f5f7fa; min-height: 100vh; transition: all 0.8s ease; }
-        body.login-mode { background: linear-gradient(135deg, #6e8efb, #a777e3); }
+        body { background: linear-gradient(135deg, #6e8efb, #a777e3); min-height: 100vh; transition: all 0.8s ease; }
         body.dashboard-mode { background: #f5f7fa; }
         
-        /* Loading Screen - REMOVED */
-        /* .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; }
+        /* Loading Screen */
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; }
         .loading-spinner { width: 60px; height: 60px; border: 4px solid rgba(255, 255, 255, 0.3); border-top: 4px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading-overlay.hidden { opacity: 0; pointer-events: none; } */
+        .loading-overlay.hidden { opacity: 0; pointer-events: none; }
         
         /* Auth Container */
         .login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
@@ -64,672 +63,26 @@
         .profile-btn { right: 20px; }
         .back-btn:hover, .profile-btn:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.1); }
         
-                 /* Dashboard */
-         .dashboard-container { display: none; min-height: 100vh; padding-bottom: 80px; background-color: #f5f7fa; }
-         
-         /* Welcome Banner */
-         .welcome-banner {
-             background: linear-gradient(135deg, var(--primary), var(--secondary));
-             color: white;
-             padding: 20px;
-             border-radius: 12px;
-             margin: 20px;
-             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-             text-align: center;
-         }
-         
-         .welcome-banner h1 {
-             font-size: 1.5rem;
-             font-weight: 600;
-             margin-bottom: 5px;
-         }
-         
-         .welcome-banner p {
-             font-size: 0.9rem;
-             opacity: 0.9;
-         }
-         
-         /* Mobile Features Container */
-         .mobile-features-container {
-             display: flex;
-             justify-content: space-between;
-             align-items: center;
-             padding: 15px;
-             background: #ffffff;
-             overflow-x: auto;
-             white-space: nowrap;
-             -webkit-overflow-scrolling: touch;
-             gap: 10px;
-         }
-
-         .feature-card {
-             display: inline-flex;
-             flex-direction: column;
-             align-items: center;
-             text-align: center;
-             background: #f8f9fa;
-             border-radius: 10px;
-             padding: 15px;
-             min-width: 120px;
-             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-             flex-shrink: 0;
-         }
-
-         .feature-icon {
-             font-size: 24px;
-             color: #007bff;
-             margin-bottom: 8px;
-         }
-
-         .feature-title {
-             font-size: 14px;
-             font-weight: 600;
-             color: #2d3748;
-             margin-bottom: 4px;
-             white-space: normal;
-         }
-
-         .feature-desc {
-             font-size: 12px;
-             color: #718096;
-             white-space: normal;
-         }
-
-         /* Hide scrollbar */
-         .mobile-features-container::-webkit-scrollbar {
-             display: none;
-         }
-
-         /* Amazon note */
-         .amazon-note {
-             text-align: center;
-             padding: 10px;
-             font-size: 12px;
-             color: #666;
-             margin-top: 5px;
-         }
-         
-         /* Loan Banner - Compact Layout */
-         .loan-banner {
-             background: linear-gradient(135deg, #6a11cb, #2575fc);
-             color: white;
-             border-radius: 12px;
-             padding: 20px;
-             margin: 0 20px 20px;
-             text-align: center;
-             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-         }
-         
-         .loan-title {
-             font-size: 1.3rem;
-             font-weight: 600;
-             margin-bottom: 5px;
-         }
-         
-         .loan-amount {
-             font-size: 2rem;
-             font-weight: 700;
-             margin: 10px 0;
-         }
-         
-         .loan-details {
-             display: flex;
-             justify-content: space-between;
-             margin: 15px 0;
-             flex-wrap: wrap;
-         }
-         
-         .loan-detail {
-             flex: 1;
-             min-width: 30%;
-             margin-bottom: 10px;
-         }
-         
-         .detail-value {
-             font-weight: 600;
-             font-size: 1.1rem;
-         }
-         
-         .detail-label {
-             font-size: 0.8rem;
-             opacity: 0.9;
-         }
-         
-         .apply-btn {
-             background: white;
-             color: var(--primary);
-             border: none;
-             padding: 12px;
-             border-radius: 8px;
-             font-weight: 600;
-             width: 100%;
-             margin-top: 10px;
-             cursor: pointer;
-             transition: all 0.3s;
-         }
-         
-         .apply-btn:hover {
-             transform: translateY(-2px);
-             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-         }
-         
-         /* Quick Actions - 2x2 Grid */
-         .quick-actions {
-             margin: 20px;
-         }
-         
-         .quick-actions-title {
-             font-size: 1.2rem;
-             font-weight: 600;
-             margin-bottom: 15px;
-             display: flex;
-             justify-content: space-between;
-             align-items: center;
-         }
-         
-         .toggle-btn {
-             background: none;
-             border: none;
-             color: var(--primary);
-             font-weight: 500;
-             cursor: pointer;
-             display: flex;
-             align-items: center;
-             gap: 5px;
-         }
-         
-         .toggle-btn i {
-             transition: transform 0.3s;
-         }
-         
-         .actions-grid {
-             display: grid;
-             grid-template-columns: 1fr 1fr;
-             gap: 15px;
-             transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-         }
-         
-         .actions-grid.collapsed {
-             height: 0;
-             overflow: hidden;
-             opacity: 0;
-             transform: translateY(-20px);
-         }
-         
-         .action-btn {
-             background: white;
-             border-radius: 10px;
-             padding: 15px;
-             text-align: center;
-             box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-             display: flex;
-             flex-direction: column;
-             align-items: center;
-             text-decoration: none;
-             color: var(--dark);
-             transition: all 0.3s;
-             cursor: pointer;
-         }
-         
-         .action-btn:hover {
-             transform: translateY(-3px);
-             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-         }
-         
-         .action-icon {
-             width: 40px;
-             height: 40px;
-             background: rgba(108, 99, 255, 0.1);
-             border-radius: 50%;
-             display: flex;
-             align-items: center;
-             justify-content: center;
-             margin-bottom: 10px;
-             color: var(--primary);
-         }
-         
-         .action-label {
-             font-weight: 500;
-             font-size: 0.9rem;
-         }
-         
-         /* Animations */
-         @keyframes fadeIn {
-             from { opacity: 0; transform: translateY(20px); }
-             to { opacity: 1; transform: translateY(0); }
-         }
-         
-         @keyframes slideIn {
-             from { opacity: 0; transform: translateY(30px); }
-             to { opacity: 1; transform: translateY(0); }
-         }
-         
-         .fade-in {
-             animation: fadeIn 0.5s ease-out;
-         }
-         
-         .slide-in {
-             animation: slideIn 0.6s ease-out;
-         }
-         
-                 /* Account Verification Warning */
-        .account-warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 15px;
-            text-align: center;
-            font-weight: 500;
-            font-size: 14px;
-        }
+        /* Dashboard */
+        .dashboard-container { display: none; min-height: 100vh; padding-bottom: 80px; }
+        .dashboard-content { padding: 20px; }
+        .welcome-section { text-align: center; margin-bottom: 30px; }
+        .welcome-title { font-size: 24px; font-weight: 600; color: #333; margin-bottom: 10px; }
+        .welcome-subtitle { color: #666; margin-bottom: 20px; }
+        .quick-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+        .action-card { background: white; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); cursor: pointer; transition: all 0.3s ease; }
+        .action-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); }
+        .action-icon { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 15px; }
+        .action-title { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 5px; }
+        .action-desc { font-size: 12px; color: #666; }
         
-        .account-warning i {
-            margin-right: 8px;
-            color: #f39c12;
-        }
-        
-        .account-warning a {
-            color: #3498db;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .account-warning a:hover {
-            text-decoration: underline;
-        }
-         
-         .apply-btn.locked {
-             background: #ccc;
-             color: #666;
-             cursor: not-allowed;
-             opacity: 0.6;
-         }
-         
-         .apply-btn.locked:hover {
-             transform: none;
-             box-shadow: none;
-         }
-         
-                 /* KYC Section Styles */
-        .kyc-section { display: none; padding: 20px; padding-bottom: 100px; background-color: #f5f7fa; }
-        
-        /* Progress Wizard Styles */
-        .progress-wizard {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-        }
-        
-        .progress-step {
-            display: flex;
-            align-items: center;
-            padding: 15px 0;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-        
-        .step-number {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #e9ecef;
-            color: #6c757d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 16px;
-            margin-right: 15px;
-            transition: all 0.3s ease;
-        }
-        
-        .progress-step.active .step-number {
-            background: #4a6cf7;
-            color: white;
-        }
-        
-        .progress-step.completed .step-number {
-            background: #28a745;
-            color: white;
-        }
-        
-        .step-info {
-            flex: 1;
-        }
-        
-        .step-title {
-            font-weight: 600;
-            font-size: 16px;
-            color: #333;
-            margin-bottom: 3px;
-        }
-        
-        .step-desc {
-            font-size: 13px;
-            color: #6c757d;
-            line-height: 1.4;
-        }
-        
-        .progress-step.active .step-title {
-            color: #4a6cf7;
-        }
-        
-        .progress-step.completed .step-title {
-            color: #28a745;
-        }
-        
-        .step-status {
-            font-size: 18px;
-            margin-left: 10px;
-        }
-        
-        .progress-step .step-status i {
-            color: #6c757d;
-        }
-        
-        .progress-step.active .step-status i {
-            color: #4a6cf7;
-            animation: pulse 2s infinite;
-        }
-        
-        .progress-step.completed .step-status i:before {
-            content: '\f00c';
-            color: #28a745;
-        }
-        
-        .progress-line {
-            width: 2px;
-            height: 20px;
-            background: #e9ecef;
-            margin-left: 34px;
-            transition: all 0.3s ease;
-        }
-        
-        .progress-line.completed {
-            background: #28a745;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        /* Wizard Animation */
-        .step-completing {
-            animation: stepComplete 1s ease-in-out;
-        }
-        
-        @keyframes stepComplete {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); background-color: #d4edda; }
-            100% { transform: scale(1); }
-        }
-         
-         .form-container {
-             background-color: white;
-             border-radius: 15px;
-             padding: 30px;
-             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-             max-width: 600px;
-             margin: 20px auto;
-             animation: fadeIn 0.5s ease-out;
-         }
-         
-         .form-title {
-             font-size: 1.8rem;
-             color: #4a6cf7;
-             margin-bottom: 25px;
-             text-align: center;
-             font-weight: 600;
-         }
-         
-         .error {
-             color: #ff4757;
-             background-color: rgba(255, 71, 87, 0.1);
-             padding: 12px 15px;
-             border-radius: 8px;
-             margin-bottom: 20px;
-             font-size: 0.9rem;
-             display: flex;
-             align-items: center;
-             animation: shake 0.5s;
-         }
-         
-         @keyframes shake {
-             0%, 100% { transform: translateX(0); }
-             20%, 60% { transform: translateX(-5px); }
-             40%, 80% { transform: translateX(5px); }
-         }
-         
-         .error i {
-             margin-right: 10px;
-         }
-         
-         .form-group {
-             margin-bottom: 20px;
-             position: relative;
-         }
-         
-         .form-group label {
-             display: block;
-             margin-bottom: 8px;
-             font-weight: 500;
-             color: #555;
-         }
-         
-         .form-control {
-             width: 100%;
-             padding: 12px 15px;
-             border: 1px solid #ddd;
-             border-radius: 8px;
-             font-size: 1rem;
-             transition: all 0.3s;
-             background-color: #f9f9f9;
-         }
-         
-         .form-control:focus {
-             border-color: #4a6cf7;
-             outline: none;
-             background-color: white;
-             box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
-         }
-         
-         .form-control.error-field {
-             border-color: #ff4757;
-             animation: shake 0.5s;
-         }
-         
-         .error-message {
-             color: #ff4757;
-             font-size: 0.8rem;
-             margin-top: 5px;
-             display: none;
-         }
-         
-         .word-count {
-             position: absolute;
-             right: 15px;
-             bottom: 15px;
-             font-size: 0.8rem;
-             color: #ff4757;
-         }
-         
-         .word-count.valid {
-             color: #28a745;
-         }
-         
-         .next-btn {
-             width: 100%;
-             padding: 15px;
-             background: linear-gradient(135deg, #4a6cf7, #8a3ffb);
-             color: white;
-             border: none;
-             border-radius: 10px;
-             font-size: 1.1rem;
-             font-weight: 600;
-             cursor: pointer;
-             transition: all 0.3s;
-             margin-top: 10px;
-             box-shadow: 0 5px 15px rgba(74, 108, 247, 0.3);
-         }
-         
-         .next-btn:hover {
-             background: linear-gradient(135deg, #3a5ce4, #7a2ffa);
-             transform: translateY(-3px);
-             box-shadow: 0 8px 20px rgba(74, 108, 247, 0.4);
-         }
-         
-         .next-btn i {
-             margin-left: 8px;
-             transition: transform 0.3s;
-         }
-         
-         .next-btn:hover i {
-             transform: translateX(5px);
-         }
-         
-         select.form-control {
-             appearance: none;
-             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-             background-repeat: no-repeat;
-             background-position: right 15px center;
-             background-size: 15px;
-         }
-        
-        /* Admin Panel Styles */
-        .admin-section { display: none; padding: 20px; padding-bottom: 100px; background-color: #f5f7fa; }
-        
-        .admin-header {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .admin-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        
-        .admin-tabs {
-            display: flex;
-            background: white;
-            border-radius: 12px;
-            padding: 5px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .admin-tab {
-            flex: 1;
-            padding: 12px 20px;
-            text-align: center;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-        
-        .admin-tab.active {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .admin-content {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        .users-table, .loans-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        
-        .users-table th, .users-table td,
-        .loans-table th, .loans-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-            font-size: 0.9rem;
-        }
-        
-        .users-table th, .loans-table th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        
-        .status-verified { background: #d4edda; color: #155724; }
-        .status-pending { background: #fff3cd; color: #856404; }
-        .status-rejected { background: #f8d7da; color: #721c24; }
-        .status-active { background: #d1ecf1; color: #0c5460; }
-        
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .btn-small {
-            padding: 4px 8px;
-            font-size: 0.8rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-approve { background: #28a745; color: white; }
-        .btn-reject { background: #dc3545; color: white; }
-        .btn-view { background: #17a2b8; color: white; }
-        
-        .btn-small:hover { transform: translateY(-1px); }
-
         /* Profile Section */
-        .profile-section { display: none; padding: 20px; padding-bottom: 100px; background-color: #f5f7fa; }
-        .profile-card { background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 20px; padding: 30px; margin-bottom: 25px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); text-align: center; color: white; }
-        .user-avatar { width: 100px; height: 100px; border-radius: 50%; background: rgba(255, 255, 255, 0.2); color: white; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 700; margin: 0 auto 20px; border: 3px solid rgba(255, 255, 255, 0.3); }
-        .user-name { font-size: 26px; font-weight: 700; margin-bottom: 10px; color: white; }
-        .user-mobile { font-size: 18px; color: rgba(255, 255, 255, 0.9); margin-bottom: 15px; }
-        .user-status { display: inline-block; padding: 10px 20px; background: rgba(255, 255, 255, 0.2); color: white; border-radius: 25px; font-size: 16px; font-weight: 600; text-transform: uppercase; }
+        .profile-section { display: none; padding: 20px; padding-bottom: 100px; }
+        .profile-card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); text-align: center; }
+        .user-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 600; margin: 0 auto 15px; }
+        .user-name { font-size: 22px; font-weight: 600; margin-bottom: 5px; color: #333; }
+        .user-mobile { font-size: 16px; color: #666; margin-bottom: 15px; }
+        .user-role { display: inline-block; padding: 6px 12px; background: var(--primary); color: white; border-radius: 15px; font-size: 12px; font-weight: 500; text-transform: uppercase; }
         .menu-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
         .menu-item { background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); text-align: center; cursor: pointer; transition: all 0.3s ease; }
         .menu-item:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); }
@@ -818,16 +171,12 @@
     </style>
 </head>
 <body>
-    <!-- Loading Overlay - REMOVED -->
-    <!-- <div class="loading-overlay" id="loadingOverlay">
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
         <div style="font-size: 1.5rem; font-weight: 600; margin-bottom: 10px;">QuickCash</div>
-        <div style="font-size: 1rem; opacity: 0.8; margin-bottom: 20px;">Loading your application...</div>
-        
-        <button id="skipLoadingBtn" style="display: none; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px;" onclick="forceSkipLoading()">
-            Skip Loading
-        </button>
-    </div> -->
+        <div style="font-size: 1rem; opacity: 0.8;">Loading your application...</div>
+    </div>
 
     <!-- Login System -->
     <div class="login-container" id="loginContainer">
@@ -903,227 +252,51 @@
             </button>
         </div>
         
-        <!-- Welcome Banner -->
-        <div class="welcome-banner slide-in">
-            <h1 id="welcomeTitle">Welcome, User!</h1>
-            <p>We're here to help you with your financial needs</p>
-        </div>
-        
-        <div class="mobile-features-container">
-            <!-- Feature 1 -->
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-bolt"></i></div>
-                <div class="feature-title">Fast Approval</div>
-                <div class="feature-desc">Within Minutes</div>
+        <div class="dashboard-content">
+            <div class="welcome-section">
+                <h1 class="welcome-title" id="welcomeTitle">Welcome to QuickCash!</h1>
+                <p class="welcome-subtitle">Your complete loan management solution</p>
             </div>
             
-            <!-- Feature 2 -->
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-money-bill-wave"></i></div>
-                <div class="feature-title">Instant Loan</div>
-                <div class="feature-desc">Direct to Account</div>
-            </div>
-            
-            <!-- Feature 3 -->
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
-                <div class="feature-title">Secure Process</div>
-                <div class="feature-desc">256-bit Encryption</div>
-            </div>
-        </div>
-
-        <div class="amazon-note">
-            <i class="fab fa-amazon" style="color: #FF9900;"></i> Trusted by amazon - Safe & Secure - 24/7 support
-        </div>
-            
-        <!-- Default Loan Banner - Compact Layout -->
-        <div class="loan-banner slide-in">
-            <div class="loan-title">Fast And Secure Loan</div>
-            <div class="loan-amount">₹500,000</div>
-            <div class="loan-details">
-                <div class="loan-detail">
-                    <div class="detail-value">3 Years</div>
-                    <div class="detail-label">Tenure</div>
-                </div>
-                <div class="loan-detail">
-                    <div class="detail-value">0.05%</div>
-                    <div class="detail-label">Interest Rate</div>
-                </div>
-                <div class="loan-detail">
-                    <div class="detail-value">Fast</div>
-                    <div class="detail-label">Approval</div>
-                </div>
-            </div>
-                         <button class="apply-btn" id="applyBtn" onclick="checkKYCAndApply()">Apply Now</button>
-             
-             <!-- Simple Account Verification Warning -->
-             <div id="accountWarning" class="account-warning" style="display: none;">
-                 <i class="fas fa-info-circle"></i>
-                 <span>Your account is not verified yet. Please <a href="#" onclick="showSection('kyc')">click here to complete KYC verification</a></span>
-             </div>
-        </div>
-            
-        <!-- Quick Actions - 2x2 Grid -->
-        <div class="quick-actions">
-            <div class="quick-actions-title">
-                Quick Actions
-                <button class="toggle-btn" id="toggleActions">
-                    <span id="toggleText">Hide</span>
-                    <i class="fas fa-chevron-up" id="toggleIcon"></i>
-                </button>
-            </div>
-            
-            <div class="actions-grid" id="actionsGrid">
-                <div class="action-btn" onclick="showSection('profile')">
+            <div class="quick-actions">
+                <div class="action-card" onclick="showLoanApplicationForm()">
                     <div class="action-icon">
-                        <i class="fas fa-user"></i>
+                        <i class="fas fa-plus"></i>
                     </div>
-                    <div class="action-label">Profile</div>
+                    <div class="action-title">Apply for Loan</div>
+                    <div class="action-desc">Quick loan application</div>
                 </div>
                 
-                <div class="action-btn" onclick="loadMyLoans()">
+                <div class="action-card" onclick="showSection('repay')">
                     <div class="action-icon">
-                        <i class="fas fa-file-invoice-dollar"></i>
+                        <i class="fas fa-credit-card"></i>
                     </div>
-                    <div class="action-label">My Loans</div>
+                    <div class="action-title">Repay Loan</div>
+                    <div class="action-desc">Make loan payments</div>
                 </div>
                 
-                <div class="action-btn" onclick="showNotification('History coming soon!', 'info')">
+                <div class="action-card" onclick="showNotification('Loan history coming soon!', 'info')">
                     <div class="action-icon">
                         <i class="fas fa-history"></i>
                     </div>
-                    <div class="action-label">History</div>
+                    <div class="action-title">Loan History</div>
+                    <div class="action-desc">View past loans</div>
                 </div>
                 
-                <div class="action-btn" onclick="showSection('repay')">
+                <div class="action-card" onclick="showNotification('EMI calculator coming soon!', 'info')">
                     <div class="action-icon">
-                        <i class="fas fa-rupee-sign"></i>
+                        <i class="fas fa-calculator"></i>
                     </div>
-                    <div class="action-label">Repay</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Admin Panel Section -->
-    <div class="admin-section" id="adminSection">
-        <div class="app-header">
-            <button class="back-btn" onclick="showSection('dashboard')">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <div class="app-logo">
-                <i class="fas fa-shield-alt"></i> Admin Panel
-            </div>
-        </div>
-        
-        <div class="admin-header">
-            <h1>QuickCash Admin Dashboard</h1>
-            <p>Manage users, loans, and system overview</p>
-        </div>
-        
-        <div class="admin-stats">
-            <div class="stat-card">
-                <div class="stat-number" id="totalUsers">0</div>
-                <div class="stat-label">Total Users</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="pendingKyc">0</div>
-                <div class="stat-label">Pending KYC</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="totalLoans">0</div>
-                <div class="stat-label">Total Loans</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="pendingLoans">0</div>
-                <div class="stat-label">Pending Loans</div>
-            </div>
-        </div>
-        
-        <div class="admin-tabs">
-            <div class="admin-tab active" onclick="switchAdminTab('users')">
-                <i class="fas fa-users"></i> Users
-            </div>
-            <div class="admin-tab" onclick="switchAdminTab('loans')">
-                <i class="fas fa-money-bill"></i> Loans
-            </div>
-            <div class="admin-tab" onclick="switchAdminTab('kyc')">
-                <i class="fas fa-id-card"></i> KYC Requests
-            </div>
-        </div>
-        
-        <div class="admin-content">
-            <!-- Users Tab -->
-            <div id="usersTab" class="admin-tab-content">
-                <h3>All Users</h3>
-                <div style="overflow-x: auto;">
-                    <table class="users-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Mobile</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>KYC Status</th>
-                                <th>Joined</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="usersTableBody">
-                            <tr>
-                                <td colspan="7" style="text-align: center; padding: 20px;">Loading users...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="action-title">EMI Calculator</div>
+                    <div class="action-desc">Calculate payments</div>
                 </div>
             </div>
             
-            <!-- Loans Tab -->
-            <div id="loansTab" class="admin-tab-content" style="display: none;">
-                <h3>All Loans</h3>
-                <div style="overflow-x: auto;">
-                    <table class="loans-table">
-                        <thead>
-                            <tr>
-                                <th>User</th>
-                                <th>Amount</th>
-                                <th>Purpose</th>
-                                <th>Status</th>
-                                <th>Applied Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="loansTableBody">
-                            <tr>
-                                <td colspan="6" style="text-align: center; padding: 20px;">Loading loans...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- KYC Tab -->
-            <div id="kycTab" class="admin-tab-content" style="display: none;">
-                <h3>KYC Verification Requests</h3>
-                <div style="overflow-x: auto;">
-                    <table class="loans-table">
-                        <thead>
-                            <tr>
-                                <th>User</th>
-                                <th>PAN</th>
-                                <th>Aadhar</th>
-                                <th>Income</th>
-                                <th>Status</th>
-                                <th>Submitted</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="kycTableBody">
-                            <tr>
-                                <td colspan="7" style="text-align: center; padding: 20px;">Loading KYC requests...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- Active Loans Section -->
+            <div class="loan-status-cards" id="activeLoansSection">
+                <h3 style="color: #333; margin-bottom: 15px; font-size: 18px;">Your Active Loans</h3>
+                <div id="activeLoansContainer">
+                    <!-- Active loans will be loaded here -->
                 </div>
             </div>
         </div>
@@ -1144,7 +317,7 @@
             <div class="user-avatar" id="userAvatar">U</div>
             <h2 class="user-name" id="userName">User Name</h2>
             <div class="user-mobile" id="userMobile">+91 0000000000</div>
-            <div class="user-status" id="userStatus">Account Status</div>
+            <div class="user-role" id="userRole">User</div>
         </div>
         
         <div class="menu-container">
@@ -1172,187 +345,11 @@
                 <div class="menu-icon"><i class="fas fa-shield-alt"></i></div>
                 <div class="menu-text">Privacy</div>
             </div>
-            <div class="menu-item" id="adminMenuItem" onclick="showSection('admin')" style="display: none;">
-                <div class="menu-icon"><i class="fas fa-cogs"></i></div>
-                <div class="menu-text">Admin Panel</div>
-            </div>
         </div>
         
         <button class="logout-btn" onclick="logout()">
             <i class="fas fa-sign-out-alt"></i> Logout
         </button>
-    </div>
-
-    <!-- KYC Verification Section -->
-    <div class="kyc-section" id="kycSection" style="display: none;">
-        <div class="app-header">
-            <button class="back-btn" onclick="showSection('dashboard')">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <div class="app-logo">
-                <i class="fas fa-money-bill-wave"></i> Quick Cash
-            </div>
-        </div>
-        
-        <div class="form-container">
-            <h2 class="form-title">Account Verification Process</h2>
-            
-            <!-- Progress Wizard -->
-            <div class="progress-wizard">
-                <div class="progress-step active" id="step1">
-                    <div class="step-number">1</div>
-                    <div class="step-info">
-                        <div class="step-title">KYC Verification</div>
-                        <div class="step-desc">Complete your identity verification</div>
-                    </div>
-                    <div class="step-status">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                </div>
-                
-                <div class="progress-line" id="line1"></div>
-                
-                <div class="progress-step" id="step2">
-                    <div class="step-number">2</div>
-                    <div class="step-info">
-                        <div class="step-title">Bank Account</div>
-                        <div class="step-desc">Add your bank account details</div>
-                    </div>
-                    <div class="step-status">
-                        <i class="fas fa-lock"></i>
-                    </div>
-                </div>
-                
-                <div class="progress-line" id="line2"></div>
-                
-                <div class="progress-step" id="step3">
-                    <div class="step-number">3</div>
-                    <div class="step-info">
-                        <div class="step-title">First Loan</div>
-                        <div class="step-desc">Apply for your first loan</div>
-                    </div>
-                    <div class="step-status">
-                        <i class="fas fa-lock"></i>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="kycError" class="error" style="display: none;">
-                <i class="fas fa-exclamation-circle"></i>
-                <span id="kycErrorText"></span>
-            </div>
-            
-            <form id="kycForm">
-                <div class="form-group">
-                    <label for="kycName">Name (as per PAN)</label>
-                    <input type="text" id="kycName" name="name" class="form-control" required>
-                    <div class="error-message" id="kycNameError">Please Enter Your Name</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="kycDob">Date of Birth</label>
-                    <input type="date" id="kycDob" name="dob" class="form-control" required>
-                    <div class="error-message" id="kycDobError">Please Select Your Date Of Birth (as per PAN)</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="kycAadhar">Aadhar Number</label>
-                    <input type="text" id="kycAadhar" name="aadhar" class="form-control" required pattern="[0-9]{12}" maxlength="12">
-                    <div class="error-message" id="kycAadharError">Please Enter 12 digit Aadhar Number</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="kycPan">PAN Number</label>
-                    <input type="text" id="kycPan" name="pan" class="form-control" required pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10" style="text-transform: uppercase;">
-                    <div class="error-message" id="kycPanError">Please Enter 10 Digit PAN Number (Format: ABCDE1234F)</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="kycOccupation">Occupation</label>
-                    <select id="kycOccupation" name="occupation" class="form-control" required>
-                        <option value="">Select Occupation</option>
-                        <option value="Salaried">Salaried</option>
-                        <option value="Self Employed">Self Employed</option>
-                        <option value="Business">Business</option>
-                        <option value="Student">Student</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <div class="error-message" id="kycOccupationError">Please Select Your Occupation</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="kycMarital">Marital Status</label>
-                    <select id="kycMarital" name="marital" class="form-control" required>
-                        <option value="">Select Marital Status</option>
-                        <option value="Single">Single</option>
-                        <option value="Married">Married</option>
-                        <option value="Divorced">Divorced</option>
-                        <option value="Widowed">Widowed</option>
-                    </select>
-                    <div class="error-message" id="kycMaritalError">Please Select Your Marital Status</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="kycPurpose">Purpose of Loan (min 10 words)</label>
-                    <textarea id="kycPurpose" name="purpose" class="form-control" required rows="4"></textarea>
-                    <div class="word-count" id="kycWordCount">0/10 words</div>
-                    <div class="error-message" id="kycPurposeError">Please Enter At Least 10 Words</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="kycIncome">Monthly Income (₹)</label>
-                    <input type="number" id="kycIncome" name="income" class="form-control" min="12000" required>
-                    <div class="error-message" id="kycIncomeError">Minimum Required Income ₹12,000</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="kycLoanAmount">Loan Amount Needed (₹)</label>
-                    <input type="number" id="kycLoanAmount" name="loan_amount" class="form-control" min="1000" required>
-                    <div class="error-message" id="kycLoanAmountError">Please Enter Loan Amount</div>
-                </div>
-                
-                <button type="submit" class="next-btn">Complete Verification <i class="fas fa-check-circle"></i></button>
-            </form>
-            
-            <!-- Bank Account Form (Step 2) -->
-            <div id="bankAccountSection" style="display: none;">
-                <h3 style="color: #4a6cf7; margin-bottom: 20px; text-align: center;">Add Bank Account Details</h3>
-                
-                <form id="bankAccountForm">
-                    <div class="form-group">
-                        <label>Account Holder Name</label>
-                        <input type="text" id="accountHolderName" class="form-control" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Account Number</label>
-                        <input type="text" id="accountNumber" class="form-control" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Confirm Account Number</label>
-                        <input type="text" id="confirmAccountNumber" class="form-control" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>IFSC Code</label>
-                        <input type="text" id="ifscCode" class="form-control" required style="text-transform: uppercase;">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Bank Name</label>
-                        <input type="text" id="bankName" class="form-control" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Branch Name</label>
-                        <input type="text" id="branchName" class="form-control" required>
-                    </div>
-                    
-                    <button type="submit" class="next-btn">Save Bank Details <i class="fas fa-arrow-right"></i></button>
-                </form>
-            </div>
-        </div>
     </div>
 
     <!-- Repay Section -->
@@ -1551,9 +548,6 @@
     <div class="toast" id="toast">UPI ID copied to clipboard!</div>
 
     <script>
-        // Loading screen completely removed - no emergency fixes needed
-        console.log('✅ Loading screen disabled - app starts instantly');
-
         // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAL5e-5eQfgf1nI6hWTnhwLFgK0Cp89aa0",
@@ -1571,952 +565,27 @@
         const db = firebase.firestore();
         const rtdb = firebase.database();
         
-        // Force enable Firebase offline persistence for better reliability
-        try {
-            rtdb.goOnline();
-            console.log('🔥 Firebase Realtime Database forced online');
-        } catch (e) {
-            console.log('⚠️ Firebase already online');
-        }
-        
-        // Monitor Realtime Database connection with detailed logging
-        rtdb.ref('.info/connected').on('value', function(snapshot) {
-            if (snapshot.val() === true) {
-                console.log('✅ Connected to Firebase Realtime Database');
-                console.log('🔗 Database URL:', firebaseConfig.databaseURL);
-                console.log('🎯 Ready to save user data to loanusers collection');
-            } else {
-                console.log('❌ Disconnected from Firebase Realtime Database');
-                console.log('⚠️ User data may not save properly');
-            }
-        });
-        
         let currentUser = null;
         let userData = null;
         let userLoans = [];
         let selectedLoan = null;
         
-        // KYC Form Validation and Submission
-        function initializeKYCForm() {
-            const kycForm = document.getElementById('kycForm');
-            if (!kycForm) return;
-            
-            // Real-time validation and error messages
-            kycForm.addEventListener('input', function(e) {
-                const target = e.target;
-                
-                if (target.id === 'kycPurpose') {
-                    updateKYCWordCount();
-                }
-                
-                validateKYCField(target);
-            });
-            
-            // Validate on blur
-            kycForm.addEventListener('focusout', function(e) {
-                validateKYCField(e.target);
-            });
-            
-            // Form submission
-            kycForm.addEventListener('submit', handleKYCSubmission);
-        }
-        
-        // Word count for purpose textarea
-        function updateKYCWordCount() {
-            const purpose = document.getElementById('kycPurpose');
-            const wordCount = document.getElementById('kycWordCount');
-            const words = purpose.value.trim() === '' ? 0 : purpose.value.trim().split(/\s+/).length;
-            
-            wordCount.textContent = `${words}/10 words`;
-            
-            if (words >= 10) {
-                wordCount.classList.add('valid');
-                wordCount.classList.remove('error');
-            } else {
-                wordCount.classList.remove('valid');
-                wordCount.classList.add('error');
-            }
-        }
-        
-        // Field validation
-        function validateKYCField(field) {
-            const errorElement = document.getElementById(`${field.id}Error`);
-            if (!errorElement) return;
-            
-            if (field.validity.valid) {
-                field.classList.remove('error-field');
-                errorElement.style.display = 'none';
-            } else {
-                field.classList.add('error-field');
-                
-                if (field.validity.valueMissing) {
-                    switch(field.id) {
-                        case 'kycName': errorElement.textContent = 'Please Enter Your Name'; break;
-                        case 'kycDob': errorElement.textContent = 'Please Select Your Date Of Birth (as per PAN)'; break;
-                        case 'kycAadhar': errorElement.textContent = 'Please Enter 12 digit Aadhar Number'; break;
-                        case 'kycPan': errorElement.textContent = 'Please Enter 10 Digit PAN Number'; break;
-                        case 'kycOccupation': errorElement.textContent = 'Please Select Your Occupation'; break;
-                        case 'kycMarital': errorElement.textContent = 'Please Select Your Marital Status'; break;
-                        case 'kycPurpose': errorElement.textContent = 'Please Enter At Least 10 Words'; break;
-                        case 'kycIncome': errorElement.textContent = 'Please Enter Your Monthly Income'; break;
-                        case 'kycLoanAmount': errorElement.textContent = 'Please Enter Loan Amount'; break;
-                    }
-                } else if (field.validity.patternMismatch) {
-                    if (field.id === 'kycPan') {
-                        errorElement.textContent = 'Please Match The PAN Format (ABCDE1234F)';
-                    } else if (field.id === 'kycAadhar') {
-                        errorElement.textContent = 'Please Enter 12 Digit Aadhar Number';
-                    }
-                } else if (field.validity.rangeUnderflow && field.id === 'kycIncome') {
-                    errorElement.textContent = 'Minimum Required Income ₹12,000';
-                }
-                
-                errorElement.style.display = 'block';
-            }
-        }
-        
-        // KYC Form submission
-        async function handleKYCSubmission(e) {
-            e.preventDefault();
-            
-            const form = e.target;
-            let isValid = true;
-            const requiredFields = form.querySelectorAll('[required]');
-            
-            requiredFields.forEach(field => {
-                validateKYCField(field);
-                if (!field.validity.valid) {
-                    isValid = false;
-                }
-            });
-            
-            // Special validation for word count
-            const purpose = document.getElementById('kycPurpose');
-            const words = purpose.value.trim() === '' ? 0 : purpose.value.trim().split(/\s+/).length;
-            
-            if (words < 10) {
-                document.getElementById('kycPurposeError').style.display = 'block';
-                purpose.classList.add('error-field');
-                isValid = false;
-            }
-            
-            if (!isValid) {
-                // Scroll to first error
-                const firstError = document.querySelector('.error-field');
-                if (firstError) {
-                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-                return;
-            }
-            
-            try {
-                const kycData = {
-                    name: document.getElementById('kycName').value.trim(),
-                    dob: document.getElementById('kycDob').value,
-                    aadhar: document.getElementById('kycAadhar').value.trim(),
-                    pan: document.getElementById('kycPan').value.trim().toUpperCase(),
-                    occupation: document.getElementById('kycOccupation').value,
-                    marital: document.getElementById('kycMarital').value,
-                    purpose: document.getElementById('kycPurpose').value.trim(),
-                    income: parseInt(document.getElementById('kycIncome').value),
-                    loanAmount: parseInt(document.getElementById('kycLoanAmount').value),
-                    submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    status: 'pending' // Changed from 'verified' to 'pending' for admin approval
-                };
-                
-                // Update user document with KYC data in Firestore
-                await db.collection('loanuser').doc(currentUser.uid).update({
-                    kycData: kycData,
-                    kycStatus: 'pending', // Changed to pending
-                    kycVerified: false, // Changed to false until admin approves
-                    kycSubmittedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                // Update comprehensive user data structure in Realtime Database
-                await rtdb.ref('loanusers/' + currentUser.uid).update({
-                    // Update KYC section - set to pending for admin approval
-                    'kyc/status': 'pending',
-                    'kyc/verified': false,
-                    'kyc/level': 1, // Submitted but not verified
-                    'kyc/submittedAt': firebase.database.ServerValue.TIMESTAMP,
-                    'kyc/documents/pan': kycData.pan.toUpperCase(),
-                    'kyc/documents/aadhar': kycData.aadhar,
-                    'kyc/documents/income': kycData.income,
-                    
-                    // Update verification status - pending until admin approves
-                    'verification/identity': false,
-                    'verification/income': false,
-                    isVerified: false,
-                    
-                    // Update financial profile
-                    'financial/monthlyIncome': kycData.income,
-                    'financial/employmentType': kycData.occupation,
-                    'financial/creditScore': Math.min(750, 650 + (kycData.income / 10000)), // Lower initial score
-                    'financial/riskProfile': kycData.income >= 50000 ? 'low' : kycData.income >= 25000 ? 'medium' : 'high',
-                    'financial/eligibilityScore': Math.min(75, 30 + (kycData.income / 1000)), // Lower until verified
-                    
-                    // Update loan eligibility - limited until KYC approved
-                    'loans/maxLoanEligible': Math.min(kycData.income * 5, 100000), // Reduced until verified
-                    'loans/currentLoanLimit': Math.min(kycData.income * 5, 100000),
-                    
-                    // Update profile completion
-                    'profile/completionPercentage': 60, // Lower until verified
-                    'profile/steps/kycInfo': true,
-                    'profile/steps/employmentInfo': true,
-                    
-                    // Update demographics
-                    'demographics/age': kycData.dob ? new Date().getFullYear() - new Date(kycData.dob).getFullYear() : null,
-                    
-                    // Update timestamps
-                    'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
-                    'timestamps/lastActivity': firebase.database.ServerValue.TIMESTAMP,
-                    'timestamps/lastKycUpdate': firebase.database.ServerValue.TIMESTAMP,
-                    
-                    // Update activity
-                    'activity/lastFeatureUsed': 'kyc-submission',
-                    
-                    // Backward compatibility - keep old structure
-                    kycData: kycData,
-                    kycStatus: 'pending',
-                    kycVerified: false,
-                    kycSubmittedAt: firebase.database.ServerValue.TIMESTAMP,
-                    kycLevel: 1,
-                    profileComplete: 60,
-                    dateOfBirth: kycData.dob,
-                    occupation: kycData.occupation,
-                    maritalStatus: kycData.marital,
-                    monthlyIncome: kycData.income,
-                    panNumber: kycData.pan.toUpperCase(),
-                    aadharNumber: kycData.aadhar,
-                    eligibleForLoan: false, // Will be true after admin approval
-                    maxLoanEligible: Math.min(kycData.income * 5, 100000),
-                    riskProfile: kycData.income >= 50000 ? 'low' : kycData.income >= 25000 ? 'medium' : 'high',
-                    eligibilityScore: Math.min(75, 30 + (kycData.income / 1000)),
-                    phoneVerified: true,
-                    updatedAt: firebase.database.ServerValue.TIMESTAMP,
-                    lastActivity: firebase.database.ServerValue.TIMESTAMP
-                });
-                
-                // Save KYC submission to separate collection for admin review
-                await rtdb.ref('kyc_submissions/' + currentUser.uid).set({
-                    ...kycData,
-                    userId: currentUser.uid,
-                    userName: userData.name,
-                    userMobile: userData.mobile,
-                    submittedAt: firebase.database.ServerValue.TIMESTAMP,
-                    status: 'pending',
-                    reviewStatus: 'under_review'
-                });
-                
-                // Create admin notification for KYC review
-                await rtdb.ref('notifications/admin').push({
-                    type: 'kyc_submission_pending',
-                    userId: currentUser.uid,
-                    userName: userData.name,
-                    userMobile: userData.mobile,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP,
-                    read: false,
-                    priority: 'high',
-                    message: `New KYC submission from ${userData.name} (${userData.mobile}) - Amount: ₹${kycData.loanAmount.toLocaleString()}`
-                });
-                
-                // Update system statistics
-                const kycStatsRef = rtdb.ref('statistics/totalKycSubmissions');
-                await kycStatsRef.transaction((currentCount) => {
-                    return (currentCount || 0) + 1;
-                });
-                
-                // Update local userData
-                userData.kycData = kycData;
-                userData.kycStatus = 'pending';
-                userData.kycVerified = false;
-                
-                showMessage('KYC submitted successfully! Please wait for admin approval.', 'success');
-                
-                // Complete Step 1 but don't activate Step 2 until approved
-                completeStep('step1', null);
-                
-                // Update UI
-                updateKYCStatus();
-                
-                // Show success message
-                setTimeout(() => {
-                    showNotification('📋 KYC Submitted! Your application is under review. You will be notified once approved.', 'info');
-                    // Go back to dashboard
-                    showSection('dashboard');
-                }, 2000);
-                
-            } catch (error) {
-                console.error('KYC submission error:', error);
-                showKYCError(error.message || 'Failed to submit KYC. Please try again.');
-            }
-        }
-        
-        function showKYCError(message) {
-            const errorDiv = document.getElementById('kycError');
-            const errorText = document.getElementById('kycErrorText');
-            
-            errorText.textContent = message;
-            errorDiv.style.display = 'block';
-            
-            setTimeout(() => {
-                errorDiv.style.display = 'none';
-            }, 5000);
-        }
-         // Manual Firebase check function
-         window.checkFirebaseUsers = async function() {
-             try {
-                 console.log('🔍 Checking Firebase Realtime Database for users...');
-                 
-                 // Check loanusers path
-                 const usersSnapshot = await rtdb.ref('loanusers').once('value');
-                 const users = usersSnapshot.val();
-                 
-                 if (users) {
-                     console.log('✅ Users found in Firebase Realtime Database:');
-                     console.log('📊 Total users:', Object.keys(users).length);
-                     
-                     Object.entries(users).forEach(([uid, userData]) => {
-                         console.log(`👤 User ${uid}:`, {
-                             name: userData.name,
-                             mobile: userData.mobile,
-                             email: userData.email,
-                             status: userData.status,
-                             role: userData.role
-                         });
-                     });
-                 } else {
-                     console.log('❌ No users found in Firebase Realtime Database');
-                 }
-                 
-                 // Also check Firestore
-                 console.log('🔍 Checking Firestore for users...');
-                 const firestoreUsers = await db.collection('loanuser').get();
-                 
-                 if (!firestoreUsers.empty) {
-                     console.log('✅ Users found in Firestore:');
-                     console.log('📊 Total users:', firestoreUsers.size);
-                     
-                     firestoreUsers.forEach(doc => {
-                         const data = doc.data();
-                         console.log(`👤 User ${doc.id}:`, {
-                             name: data.name,
-                             mobile: data.mobile,
-                             email: data.email,
-                             status: data.status,
-                             role: data.role
-                         });
-                     });
-                 } else {
-                     console.log('❌ No users found in Firestore');
-                 }
-                 
-             } catch (error) {
-                 console.error('❌ Error checking Firebase:', error);
-             }
-         };
-         
-                  // Admin Panel Functions
-         function switchAdminTab(tabName) {
-             // Hide all tabs
-             document.querySelectorAll('.admin-tab-content').forEach(tab => {
-                 tab.style.display = 'none';
-             });
-             
-             // Remove active class from all tabs
-             document.querySelectorAll('.admin-tab').forEach(tab => {
-                 tab.classList.remove('active');
-             });
-             
-             // Show selected tab
-             document.getElementById(tabName + 'Tab').style.display = 'block';
-             
-             // Add active class to clicked tab
-             event.target.classList.add('active');
-         }
-         
-         async function loadAdminData() {
-             try {
-                 console.log('🔥 Loading admin data...');
-                 
-                 // Load all users from loanusers
-                 const usersSnapshot = await rtdb.ref('loanusers').once('value');
-                 const users = usersSnapshot.val();
-                 console.log('✅ Users loaded:', users);
-                 
-                 // Load all loans
-                 const loansSnapshot = await rtdb.ref('loans').once('value');
-                 const loans = loansSnapshot.val();
-                 console.log('✅ Loans loaded:', loans);
-                 
-                 // Update statistics
-                 updateAdminStats(users, loans);
-                 
-                 // Update tables
-                 updateUsersTable(users);
-                 updateLoansTable(loans);
-                 updateKYCTable(users);
-                 
-             } catch (error) {
-                 console.error('❌ Error loading admin data:', error);
-             }
-         }
-         
-         function updateAdminStats(users, loans) {
-             const userCount = users ? Object.keys(users).length : 0;
-             const pendingKyc = users ? Object.values(users).filter(user => user.kycStatus === 'pending').length : 0;
-             const loanCount = loans ? Object.keys(loans).length : 0;
-             const pendingLoans = loans ? Object.values(loans).filter(loan => loan.status === 'pending').length : 0;
-             
-             document.getElementById('totalUsers').textContent = userCount;
-             document.getElementById('pendingKyc').textContent = pendingKyc;
-             document.getElementById('totalLoans').textContent = loanCount;
-             document.getElementById('pendingLoans').textContent = pendingLoans;
-         }
-         
-         function updateUsersTable(users) {
-             const tbody = document.getElementById('usersTableBody');
-             
-             if (!users) {
-                 tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No users found</td></tr>';
-                 return;
-             }
-             
-             let html = '';
-             Object.values(users).forEach(user => {
-                 const joinDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown';
-                 const kycStatus = user.kycStatus || 'pending';
-                 const userStatus = user.status || 'active';
-                 
-                 html += `
-                     <tr>
-                         <td>${user.name || 'N/A'}</td>
-                         <td>${user.mobile || 'N/A'}</td>
-                         <td>${user.email || 'N/A'}</td>
-                         <td><span class="status-badge status-${user.role === 'admin' ? 'active' : 'verified'}">${(user.role || 'user').toUpperCase()}</span></td>
-                         <td><span class="status-badge status-${kycStatus}">${kycStatus.toUpperCase()}</span></td>
-                         <td>${joinDate}</td>
-                         <td>
-                             <div class="action-buttons">
-                                 <button class="btn-small btn-view" onclick="viewUser('${user.uid}')">View</button>
-                                 <button class="btn-small btn-${userStatus === 'active' ? 'reject' : 'approve'}" onclick="toggleUserStatus('${user.uid}', '${userStatus}')">
-                                     ${userStatus === 'active' ? 'Suspend' : 'Activate'}
-                                 </button>
-                             </div>
-                         </td>
-                     </tr>
-                 `;
-             });
-             
-             tbody.innerHTML = html;
-         }
-         
-         // Function to toggle user status
-         async function toggleUserStatus(userId, currentStatus) {
-             try {
-                 const newStatus = currentStatus === 'active' ? 'suspended' : 'active';
-                 await rtdb.ref('loanusers/' + userId).update({
-                     status: newStatus
-                 });
-                 showNotification(`User ${newStatus} successfully!`, 'success');
-                 loadAdminData(); // Reload admin data
-             } catch (error) {
-                 console.error('Error updating user status:', error);
-                 showNotification('Error updating user status', 'error');
-             }
-         }
-         
-         // Function to view user details
-         function viewUser(userId) {
-             // For now, just show user data in console
-             console.log('Viewing user:', userId);
-             showNotification('User details logged to console', 'info');
-         }
-         
-         // Admin Functions for KYC Management
-         async function approveKYC(userId) {
-             try {
-                 const reason = prompt('Enter approval reason (optional):') || 'KYC documents verified successfully';
-                 
-                 // Update user KYC status in Realtime Database
-                 await rtdb.ref('loanusers/' + userId).update({
-                     'kyc/status': 'verified',
-                     'kyc/verified': true,
-                     'kyc/level': 2,
-                     'kyc/verifiedAt': firebase.database.ServerValue.TIMESTAMP,
-                     'kyc/verifiedBy': 'admin',
-                     'kyc/approvalReason': reason,
-                     
-                     // Update verification status
-                     'verification/identity': true,
-                     'verification/income': true,
-                     isVerified: true,
-                     
-                     // Boost financial profile after verification
-                     'financial/creditScore': firebase.database.ServerValue.increment(100),
-                     'financial/eligibilityScore': firebase.database.ServerValue.increment(25),
-                     
-                     // Increase loan eligibility after verification
-                     'loans/maxLoanEligible': firebase.database.ServerValue.increment(400000), // Increase by 4L
-                     'loans/currentLoanLimit': firebase.database.ServerValue.increment(400000),
-                     
-                     // Update profile completion
-                     'profile/completionPercentage': 90,
-                     
-                     // Update timestamps
-                     'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
-                     'timestamps/lastKycUpdate': firebase.database.ServerValue.TIMESTAMP,
-                     
-                     // Backward compatibility
-                     kycStatus: 'verified',
-                     kycVerified: true,
-                     kycVerifiedAt: firebase.database.ServerValue.TIMESTAMP,
-                     kycLevel: 2,
-                     profileComplete: 90,
-                     eligibleForLoan: true,
-                     updatedAt: firebase.database.ServerValue.TIMESTAMP
-                 });
-                 
-                 // Update KYC submission status
-                 await rtdb.ref('kyc_submissions/' + userId).update({
-                     status: 'verified',
-                     reviewStatus: 'approved',
-                     verifiedAt: firebase.database.ServerValue.TIMESTAMP,
-                     verifiedBy: 'admin',
-                     approvalReason: reason
-                 });
-                 
-                 // Also update Firestore
-                 await db.collection('loanuser').doc(userId).update({
-                     kycStatus: 'verified',
-                     kycVerified: true,
-                     kycVerifiedAt: firebase.firestore.FieldValue.serverTimestamp()
-                 });
-                 
-                 // Create notification for user
-                 await rtdb.ref('notifications/users/' + userId).push({
-                     type: 'kyc_approved',
-                     title: 'KYC Verification Approved! 🎉',
-                     message: 'Your KYC has been verified successfully. You can now apply for loans up to ₹5,00,000.',
-                     timestamp: firebase.database.ServerValue.TIMESTAMP,
-                     read: false,
-                     priority: 'high'
-                 });
-                 
-                 // Update statistics
-                 await rtdb.ref('statistics/totalKycVerified').transaction((current) => (current || 0) + 1);
-                 await rtdb.ref('statistics/totalKycPending').transaction((current) => Math.max(0, (current || 1) - 1));
-                 
-                 showNotification('KYC approved successfully!', 'success');
-                 loadAdminData(); // Reload admin data
-                 
-             } catch (error) {
-                 console.error('Error approving KYC:', error);
-                 showNotification('Error approving KYC', 'error');
-             }
-         }
-         
-         async function rejectKYC(userId) {
-             try {
-                 const reason = prompt('Enter rejection reason (required):');
-                 if (!reason || reason.trim() === '') {
-                     showNotification('Rejection reason is required', 'error');
-                     return;
-                 }
-                 
-                 // Update user KYC status in Realtime Database
-                 await rtdb.ref('loanusers/' + userId).update({
-                     'kyc/status': 'rejected',
-                     'kyc/verified': false,
-                     'kyc/level': 0,
-                     'kyc/rejectedAt': firebase.database.ServerValue.TIMESTAMP,
-                     'kyc/rejectedBy': 'admin',
-                     'kyc/rejectionReason': reason,
-                     
-                     // Update verification status
-                     'verification/identity': false,
-                     'verification/income': false,
-                     isVerified: false,
-                     
-                     // Reset financial profile
-                     'profile/completionPercentage': 30,
-                     
-                     // Update timestamps
-                     'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
-                     'timestamps/lastKycUpdate': firebase.database.ServerValue.TIMESTAMP,
-                     
-                     // Backward compatibility
-                     kycStatus: 'rejected',
-                     kycVerified: false,
-                     kycRejectedAt: firebase.database.ServerValue.TIMESTAMP,
-                     kycLevel: 0,
-                     profileComplete: 30,
-                     eligibleForLoan: false,
-                     kycRejectionReason: reason,
-                     updatedAt: firebase.database.ServerValue.TIMESTAMP
-                 });
-                 
-                 // Update KYC submission status
-                 await rtdb.ref('kyc_submissions/' + userId).update({
-                     status: 'rejected',
-                     reviewStatus: 'rejected',
-                     rejectedAt: firebase.database.ServerValue.TIMESTAMP,
-                     rejectedBy: 'admin',
-                     rejectionReason: reason
-                 });
-                 
-                 // Also update Firestore
-                 await db.collection('loanuser').doc(userId).update({
-                     kycStatus: 'rejected',
-                     kycVerified: false,
-                     kycRejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                     kycRejectionReason: reason
-                 });
-                 
-                 // Create notification for user
-                 await rtdb.ref('notifications/users/' + userId).push({
-                     type: 'kyc_rejected',
-                     title: 'KYC Verification Rejected ❌',
-                     message: `Your KYC was rejected. Reason: ${reason}. Please resubmit with correct documents.`,
-                     timestamp: firebase.database.ServerValue.TIMESTAMP,
-                     read: false,
-                     priority: 'high',
-                     rejectionReason: reason
-                 });
-                 
-                 // Update statistics
-                 await rtdb.ref('statistics/totalKycRejected').transaction((current) => (current || 0) + 1);
-                 await rtdb.ref('statistics/totalKycPending').transaction((current) => Math.max(0, (current || 1) - 1));
-                 
-                 showNotification('KYC rejected successfully!', 'success');
-                 loadAdminData(); // Reload admin data
-                 
-             } catch (error) {
-                 console.error('Error rejecting KYC:', error);
-                 showNotification('Error rejecting KYC', 'error');
-             }
-         }
-         
-         async function viewKYC(userId) {
-             try {
-                 const kycSnapshot = await rtdb.ref('kyc_submissions/' + userId).once('value');
-                 const kycData = kycSnapshot.val();
-                 
-                 if (kycData) {
-                     const details = `
-         KYC Details for ${kycData.userName}:
-         
-         📱 Mobile: ${kycData.userMobile}
-         🆔 PAN: ${kycData.pan}
-         🔢 Aadhar: ${kycData.aadhar}
-         💰 Monthly Income: ₹${kycData.income.toLocaleString()}
-         💼 Occupation: ${kycData.occupation}
-         💍 Marital Status: ${kycData.marital}
-         📅 DOB: ${kycData.dob}
-         💵 Loan Amount Requested: ₹${kycData.loanAmount.toLocaleString()}
-         📝 Purpose: ${kycData.purpose}
-         📅 Submitted: ${new Date(kycData.submittedAt).toLocaleString()}
-         ⏰ Status: ${kycData.status.toUpperCase()}
-                     `;
-                     
-                     alert(details);
-                     console.log('KYC Data:', kycData);
-                 } else {
-                     showNotification('KYC data not found', 'error');
-                 }
-             } catch (error) {
-                 console.error('Error viewing KYC:', error);
-                 showNotification('Error loading KYC details', 'error');
-             }
-         }
-         
-         // Admin Functions for Loan Management
-         async function approveLoan(loanId) {
-             try {
-                 const reason = prompt('Enter approval reason (optional):') || 'Loan approved based on eligibility criteria';
-                 
-                 // Update loan status in Realtime Database
-                 await rtdb.ref('loans/' + loanId).update({
-                     status: 'approved',
-                     approvedAt: firebase.database.ServerValue.TIMESTAMP,
-                     approvedBy: 'admin',
-                     approvalReason: reason,
-                     updatedAt: firebase.database.ServerValue.TIMESTAMP
-                 });
-                 
-                 // Also update Firestore
-                 await db.collection('loans').doc(loanId).update({
-                     status: 'approved',
-                     approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                     approvedBy: 'admin',
-                     approvalReason: reason,
-                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                 });
-                 
-                 // Get loan data for notification
-                 const loanSnapshot = await rtdb.ref('loans/' + loanId).once('value');
-                 const loanData = loanSnapshot.val();
-                 
-                 if (loanData) {
-                     // Update user loan statistics
-                     await rtdb.ref('loanusers/' + loanData.userId).update({
-                         'loans/approvedLoans': firebase.database.ServerValue.increment(1),
-                         'loans/pendingLoans': firebase.database.ServerValue.increment(-1),
-                         'loans/activeLoans': firebase.database.ServerValue.increment(1),
-                         'financial/creditScore': firebase.database.ServerValue.increment(10),
-                         'timestamps/lastLoanApproval': firebase.database.ServerValue.TIMESTAMP,
-                         'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
-                         
-                         // Backward compatibility
-                         approvedLoans: firebase.database.ServerValue.increment(1),
-                         activeLoans: firebase.database.ServerValue.increment(1),
-                         lastLoanApproval: firebase.database.ServerValue.TIMESTAMP,
-                         updatedAt: firebase.database.ServerValue.TIMESTAMP
-                     });
-                     
-                     // Create notification for user
-                     await rtdb.ref('notifications/users/' + loanData.userId).push({
-                         type: 'loan_approved',
-                         title: 'Loan Approved! 🎉',
-                         message: `Your loan of ₹${loanData.amount.toLocaleString()} has been approved. Amount will be credited to your account within 24 hours.`,
-                         timestamp: firebase.database.ServerValue.TIMESTAMP,
-                         read: false,
-                         priority: 'high',
-                         loanId: loanId,
-                         amount: loanData.amount
-                     });
-                 }
-                 
-                 // Update statistics
-                 await rtdb.ref('statistics/totalLoansApproved').transaction((current) => (current || 0) + 1);
-                 await rtdb.ref('statistics/totalLoansPending').transaction((current) => Math.max(0, (current || 1) - 1));
-                 
-                 showNotification('Loan approved successfully!', 'success');
-                 loadAdminData(); // Reload admin data
-                 
-             } catch (error) {
-                 console.error('Error approving loan:', error);
-                 showNotification('Error approving loan', 'error');
-             }
-         }
-         
-         async function rejectLoan(loanId) {
-             try {
-                 const reason = prompt('Enter rejection reason (required):');
-                 if (!reason || reason.trim() === '') {
-                     showNotification('Rejection reason is required', 'error');
-                     return;
-                 }
-                 
-                 // Update loan status in Realtime Database
-                 await rtdb.ref('loans/' + loanId).update({
-                     status: 'rejected',
-                     rejectedAt: firebase.database.ServerValue.TIMESTAMP,
-                     rejectedBy: 'admin',
-                     rejectionReason: reason,
-                     updatedAt: firebase.database.ServerValue.TIMESTAMP
-                 });
-                 
-                 // Also update Firestore
-                 await db.collection('loans').doc(loanId).update({
-                     status: 'rejected',
-                     rejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                     rejectedBy: 'admin',
-                     rejectionReason: reason,
-                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                 });
-                 
-                 // Get loan data for notification
-                 const loanSnapshot = await rtdb.ref('loans/' + loanId).once('value');
-                 const loanData = loanSnapshot.val();
-                 
-                 if (loanData) {
-                     // Update user loan statistics
-                     await rtdb.ref('loanusers/' + loanData.userId).update({
-                         'loans/rejectedLoans': firebase.database.ServerValue.increment(1),
-                         'loans/pendingLoans': firebase.database.ServerValue.increment(-1),
-                         'timestamps/lastLoanRejection': firebase.database.ServerValue.TIMESTAMP,
-                         'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
-                         
-                         // Backward compatibility
-                         rejectedLoans: firebase.database.ServerValue.increment(1),
-                         lastLoanRejection: firebase.database.ServerValue.TIMESTAMP,
-                         updatedAt: firebase.database.ServerValue.TIMESTAMP
-                     });
-                     
-                     // Create notification for user
-                     await rtdb.ref('notifications/users/' + loanData.userId).push({
-                         type: 'loan_rejected',
-                         title: 'Loan Application Rejected ❌',
-                         message: `Your loan application for ₹${loanData.amount.toLocaleString()} was rejected. Reason: ${reason}`,
-                         timestamp: firebase.database.ServerValue.TIMESTAMP,
-                         read: false,
-                         priority: 'high',
-                         loanId: loanId,
-                         amount: loanData.amount,
-                         rejectionReason: reason
-                     });
-                 }
-                 
-                 // Update statistics
-                 await rtdb.ref('statistics/totalLoansRejected').transaction((current) => (current || 0) + 1);
-                 await rtdb.ref('statistics/totalLoansPending').transaction((current) => Math.max(0, (current || 1) - 1));
-                 
-                 showNotification('Loan rejected successfully!', 'success');
-                 loadAdminData(); // Reload admin data
-                 
-             } catch (error) {
-                 console.error('Error rejecting loan:', error);
-                 showNotification('Error rejecting loan', 'error');
-             }
-         }
-         
-         async function viewLoan(loanId) {
-             try {
-                 const loanSnapshot = await rtdb.ref('loans/' + loanId).once('value');
-                 const loanData = loanSnapshot.val();
-                 
-                 if (loanData) {
-                     const details = `
-         Loan Details:
-         
-         👤 User: ${loanData.userName}
-         📱 Mobile: ${loanData.userMobile}
-         💰 Amount: ₹${loanData.amount.toLocaleString()}
-         📝 Purpose: ${loanData.purpose}
-         💵 Monthly Income: ₹${loanData.monthlyIncome.toLocaleString()}
-         📊 Interest Rate: ${loanData.interestRate}%
-         📅 Tenure: ${loanData.tenure} months
-         ⏰ Status: ${loanData.status.toUpperCase()}
-         📅 Applied: ${new Date(loanData.createdAt).toLocaleString()}
-         ${loanData.approvedAt ? `✅ Approved: ${new Date(loanData.approvedAt).toLocaleString()}` : ''}
-         ${loanData.rejectedAt ? `❌ Rejected: ${new Date(loanData.rejectedAt).toLocaleString()}` : ''}
-         ${loanData.rejectionReason ? `📝 Rejection Reason: ${loanData.rejectionReason}` : ''}
-                     `;
-                     
-                     alert(details);
-                     console.log('Loan Data:', loanData);
-                 } else {
-                     showNotification('Loan data not found', 'error');
-                 }
-             } catch (error) {
-                 console.error('Error viewing loan:', error);
-                 showNotification('Error loading loan details', 'error');
-             }
-         }
-         
-         function updateLoansTable(loans) {
-             const tbody = document.getElementById('loansTableBody');
-             
-             if (!loans) {
-                 tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No loans found</td></tr>';
-                 return;
-             }
-             
-             let html = '';
-             Object.values(loans).forEach(loan => {
-                 const appliedDate = new Date(loan.appliedAt).toLocaleDateString();
-                 
-                 html += `
-                     <tr>
-                         <td>${loan.userName}</td>
-                         <td>₹${loan.amount.toLocaleString()}</td>
-                         <td>${loan.purpose.substring(0, 30)}...</td>
-                         <td><span class="status-badge status-${loan.status}">${loan.status.toUpperCase()}</span></td>
-                         <td>${appliedDate}</td>
-                         <td>
-                             <div class="action-buttons">
-                                 <button class="btn-small btn-view" onclick="viewLoan('${loan.id}')">View</button>
-                                 ${loan.status === 'pending' ? `
-                                     <button class="btn-small btn-approve" onclick="approveLoan('${loan.id}')">Approve</button>
-                                     <button class="btn-small btn-reject" onclick="rejectLoan('${loan.id}')">Reject</button>
-                                 ` : ''}
-                             </div>
-                         </td>
-                     </tr>
-                 `;
-             });
-             
-             tbody.innerHTML = html;
-         }
-         
-         function updateKYCTable(users) {
-             const tbody = document.getElementById('kycTableBody');
-             
-             if (!users) {
-                 tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No KYC requests found</td></tr>';
-                 return;
-             }
-             
-             const kycUsers = Object.values(users).filter(user => user.kycData);
-             
-             if (kycUsers.length === 0) {
-                 tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No KYC requests found</td></tr>';
-                 return;
-             }
-             
-             let html = '';
-             kycUsers.forEach(user => {
-                 const kycData = user.kycData;
-                 const submittedDate = new Date(user.kycSubmittedAt).toLocaleDateString();
-                 
-                 html += `
-                     <tr>
-                         <td>${user.name}</td>
-                         <td>${kycData.pan}</td>
-                         <td>${kycData.aadhar}</td>
-                         <td>₹${kycData.income.toLocaleString()}</td>
-                         <td><span class="status-badge status-${user.kycStatus}">${user.kycStatus.toUpperCase()}</span></td>
-                         <td>${submittedDate}</td>
-                         <td>
-                             <div class="action-buttons">
-                                 <button class="btn-small btn-view" onclick="viewKYC('${user.uid}')">View</button>
-                                 ${user.kycStatus === 'pending' ? `
-                                     <button class="btn-small btn-approve" onclick="approveKYC('${user.uid}')">Approve</button>
-                                     <button class="btn-small btn-reject" onclick="rejectKYC('${user.uid}')">Reject</button>
-                                 ` : ''}
-                             </div>
-                         </td>
-                     </tr>
-                 `;
-             });
-             
-             tbody.innerHTML = html;
-         }
-
-         // Initialize App
-         document.addEventListener('DOMContentLoaded', function() {
-             initializeKYCForm();
-             
-             console.log('🚀 QuickCash App Starting - No Loading Screen');
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            showLoading();
             
             auth.onAuthStateChanged(user => {
                 if (user) {
                     currentUser = user;
-                    console.log('👤 User authenticated:', user.uid);
-                    
-                    // Load user data with proper error handling
-                    loadUserData()
-                        .then(() => {
-                            console.log('✅ User data loaded successfully');
-                            return loadUserLoans();
-                        })
-                        .then(() => {
-                            console.log('✅ User loans loaded successfully');
+                    loadUserData().then(() => {
+                        loadUserLoans().then(() => {
                             showSection('dashboard');
-                        })
-                        .catch((error) => {
-                            console.error('❌ Error in user data loading chain:', error);
-                            // Still show dashboard even if there are errors
-                            showSection('dashboard');
-                            showNotification('Some data could not be loaded. Please refresh the page.', 'warning');
+                            hideLoading();
                         });
+                    });
                 } else {
-                    console.log('👤 No user authenticated - showing login');
-                    currentUser = null;
-                    userData = null;
-                    userLoans = [];
                     showSection('login');
+                    hideLoading();
                 }
             });
             
@@ -2528,16 +597,16 @@
             document.getElementById('registerForm').addEventListener('submit', handleRegister);
             document.getElementById('loanApplicationForm').addEventListener('submit', handleLoanApplication);
             document.getElementById('repayForm').addEventListener('submit', handleRepayment);
-            document.getElementById('bankAccountForm').addEventListener('submit', handleBankAccountSubmission);
         }
         
-        // Loading functions removed - no loading screen needed
         function showLoading() {
-            console.log('🔄 Loading function called (disabled)');
+            document.getElementById('loadingOverlay').classList.remove('hidden');
         }
         
         function hideLoading() {
-            console.log('✅ Hide loading function called (disabled)');
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 1500);
         }
         
         function showSection(sectionName) {
@@ -2545,8 +614,6 @@
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('dashboardContainer').style.display = 'none';
             document.getElementById('profileSection').style.display = 'none';
-            document.getElementById('adminSection').style.display = 'none';
-            document.getElementById('kycSection').style.display = 'none';
             document.getElementById('repaySection').style.display = 'none';
             
             // Show requested section
@@ -2554,35 +621,19 @@
                 case 'login':
                     document.getElementById('loginContainer').style.display = 'flex';
                     document.body.classList.remove('dashboard-mode');
-                    document.body.classList.add('login-mode');
                     break;
                 case 'dashboard':
                     document.getElementById('dashboardContainer').style.display = 'block';
-                    document.body.classList.remove('login-mode');
-                    document.body.classList.add('dashboard-mode');
-                    break;
-                case 'admin':
-                    document.getElementById('adminSection').style.display = 'block';
-                    document.body.classList.remove('login-mode');
-                    document.body.classList.add('dashboard-mode');
-                    loadAdminData();
-                    break;
-                case 'kyc':
-                    document.getElementById('kycSection').style.display = 'block';
-                    document.body.classList.remove('login-mode');
                     document.body.classList.add('dashboard-mode');
                     updateNavigation('dashboard');
-                    initializeWizard();
                     break;
                 case 'profile':
                     document.getElementById('profileSection').style.display = 'block';
-                    document.body.classList.remove('login-mode');
                     document.body.classList.add('dashboard-mode');
                     updateNavigation('profile');
                     break;
                 case 'repay':
                     document.getElementById('repaySection').style.display = 'block';
-                    document.body.classList.remove('login-mode');
                     document.body.classList.add('dashboard-mode');
                     updateNavigation('repay');
                     loadLoansForRepayment();
@@ -2635,58 +686,10 @@
                     userData = userDoc.data();
                     showMessage(`Welcome back, ${userData.name}!`, 'success');
                     
-                                                             await db.collection('loanuser').doc(user.uid).update({
+                    await db.collection('loanuser').doc(user.uid).update({
                         lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
                         loginCount: firebase.firestore.FieldValue.increment(1)
                     });
-                    
-                    // Update login data in Realtime Database with enhanced tracking
-                    try {
-                        const userRef = rtdb.ref('loanusers/' + user.uid);
-                        await userRef.update({
-                            // Update online status
-                            online: true,
-                            
-                            // Update timestamps
-                            'timestamps/lastLogin': firebase.database.ServerValue.TIMESTAMP,
-                            'timestamps/lastActivity': firebase.database.ServerValue.TIMESTAMP,
-                            'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
-                            
-                            // Update session data
-                            'session/loginCount': firebase.database.ServerValue.increment(1),
-                            'session/totalSessions': firebase.database.ServerValue.increment(1),
-                            
-                            // Update activity tracking
-                            'activity/lastFeatureUsed': 'login',
-                            'activity/pageViews': firebase.database.ServerValue.increment(1),
-                            
-                            // Backward compatibility (keep old structure too)
-                            lastLogin: firebase.database.ServerValue.TIMESTAMP,
-                            loginCount: firebase.database.ServerValue.increment(1),
-                            isOnline: true,
-                            lastActivity: firebase.database.ServerValue.TIMESTAMP
-                        });
-                        
-                        // Also update user activity log
-                        await rtdb.ref('user_activity/' + user.uid).push({
-                            action: 'login',
-                            timestamp: firebase.database.ServerValue.TIMESTAMP,
-                            deviceInfo: {
-                                userAgent: navigator.userAgent,
-                                platform: navigator.platform
-                            }
-                        });
-                        
-                        console.log('✅ Login data and activity tracking updated successfully');
-                        console.log('📊 User Login Details:');
-                        console.log('- 👤 User:', userData.name);
-                        console.log('- 📱 Phone:', userData.mobile);
-                        console.log('- 📧 Email:', userData.email);
-                        console.log('- 🕐 Login Time:', new Date().toLocaleString());
-                        
-                    } catch (rtdbError) {
-                        console.error('❌ Error updating login data in Realtime Database:', rtdbError);
-                    }
                 } else {
                     throw new Error('User data not found');
                 }
@@ -2708,792 +711,93 @@
             if (!validateRegisterForm(name, mobile, password, confirmPassword)) return;
             
             try {
-                console.log('🚀 Starting complete user registration process...');
+                const existingUser = await db.collection('loanuser').where('mobile', '==', mobile).get();
+                if (!existingUser.empty) {
+                    throw new Error('Mobile number already registered');
+                }
                 
-                // Create Firebase Auth user
                 const authEmail = `${mobile}@quickcash.com`;
-                console.log('Creating Firebase Auth user with email:', authEmail);
                 const userCredential = await auth.createUserWithEmailAndPassword(authEmail, password);
                 const user = userCredential.user;
-                console.log('✅ Firebase Auth user created successfully, UID:', user.uid);
                 
                 await user.updateProfile({ displayName: name });
                 
-                // Create COMPLETE user data structure
-                const currentTimestamp = Date.now();
-                const completeUserData = {
-                    // === BASIC USER INFORMATION ===
+                const newUserData = {
                     uid: user.uid,
                     name: name,
-                    email: email || authEmail,
-                    phone: mobile,
                     mobile: mobile,
+                    email: email || authEmail,
                     password: password,
-                    username: name.toLowerCase().replace(/\s+/g, '_') + '_' + mobile.substring(6),
-                    
-                    // === ACCOUNT DETAILS ===
-                    role: 'user', // user, admin
-                    status: 'active', // active, suspended, banned
-                    accountType: 'individual',
-                    isActive: true,
+                    role: 'user',
+                    authEmail: authEmail,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                    loginCount: 1,
+                    totalLoans: 0,
+                    totalBorrowed: 0,
+                    activeLoans: 0,
+                    creditScore: 750,
                     isVerified: false,
-                    emailVerified: false,
-                    phoneVerified: true,
-                    profileComplete: 30,
-                    
-                    // === PERSONAL DETAILS (for loan application) ===
-                    personalDetails: {
-                        fullName: name,
-                        fatherName: '',
-                        motherName: '',
-                        dateOfBirth: '',
-                        age: 0,
-                        gender: '',
-                        maritalStatus: '',
-                        nationality: 'Indian',
-                        religion: '',
-                        category: '',
-                        qualification: '',
-                        occupation: '',
-                        experience: 0
-                    },
-                    
-                    // === CONTACT INFORMATION ===
-                    contactInfo: {
-                        primaryPhone: mobile,
-                        secondaryPhone: '',
-                        email: email || authEmail,
-                        alternateEmail: '',
-                        whatsapp: mobile,
-                        telegram: ''
-                    },
-                    
-                    // === ADDRESS DETAILS ===
-                    addressDetails: {
-                        currentAddress: {
-                            street: '',
-                            city: '',
-                            district: '',
-                            state: '',
-                            pincode: '',
-                            landmark: '',
-                            residenceType: '', // Own, Rented, Family
-                            stayingFrom: ''
-                        },
-                        permanentAddress: {
-                            street: '',
-                            city: '',
-                            district: '',
-                            state: '',
-                            pincode: '',
-                            landmark: '',
-                            sameAsCurrent: false
-                        }
-                    },
-                    
-                    // === EMPLOYMENT DETAILS ===
-                    employmentDetails: {
-                        employmentType: '', // Salaried, Self-employed, Business, Student, Unemployed
-                        companyName: '',
-                        designation: '',
-                        workExperience: 0,
-                        monthlyIncome: 0,
-                        annualIncome: 0,
-                        salaryMode: '', // Cash, Bank Transfer, Cheque
-                        companyAddress: '',
-                        officePhone: '',
-                        workingYears: 0
-                    },
-                    
-                    // === FINANCIAL INFORMATION ===
-                    financialDetails: {
-                        bankAccount: {
-                            accountNumber: '',
-                            ifscCode: '',
-                            bankName: '',
-                            branchName: '',
-                            accountType: '', // Savings, Current
-                            accountHolderName: ''
-                        },
-                        monthlyExpenses: 0,
-                        monthlyEMI: 0,
-                        creditScore: 750,
-                        existingLoans: [],
-                        creditCards: [],
-                        investmentDetails: []
-                    },
-                    
-                    // === KYC DOCUMENTS ===
-                    kycDocuments: {
-                        status: 'pending', // pending, submitted, verified, rejected
-                        level: 0, // 0=No KYC, 1=Basic, 2=Complete
-                        aadharNumber: '',
-                        panNumber: '',
-                        voterIdNumber: '',
-                        drivingLicenseNumber: '',
-                        passportNumber: '',
-                        documentsUploaded: {
-                            aadharFront: false,
-                            aadharBack: false,
-                            panCard: false,
-                            bankStatement: false,
-                            salarySlip: false,
-                            photo: false,
-                            signature: false
-                        },
-                        verificationDate: null,
-                        verifiedBy: null
-                    },
-                    
-                    // === LOAN INFORMATION ===
-                    loanDetails: {
-                        totalApplications: 0,
-                        approvedLoans: 0,
-                        rejectedLoans: 0,
-                        activeLoans: 0,
-                        completedLoans: 0,
-                        defaultedLoans: 0,
-                        totalBorrowed: 0,
-                        totalRepaid: 0,
-                        outstandingAmount: 0,
-                        creditLimit: 50000,
-                        eligibleAmount: 25000,
-                        lastLoanDate: null,
-                        repaymentHistory: 'No History',
-                        riskCategory: 'Medium'
-                    },
-                    
-                    // === PREFERENCES ===
-                    preferences: {
-                        language: 'Hindi',
-                        currency: 'INR',
-                        communicationMode: 'WhatsApp', // SMS, Email, WhatsApp, Call
-                        notifications: {
-                            sms: true,
-                            email: true,
-                            whatsapp: true,
-                            push: true,
-                            marketing: false
-                        },
-                        loanPurposePreference: [], // Personal, Business, Education, Medical, Emergency
-                        repaymentPreference: 'Monthly' // Weekly, Bi-weekly, Monthly
-                    },
-                    
-                    // === TIMESTAMPS ===
-                    timestamps: {
-                        registeredAt: currentTimestamp,
-                        createdAt: currentTimestamp,
-                        lastLogin: currentTimestamp,
-                        lastUpdated: currentTimestamp,
-                        lastKycUpdate: null,
-                        lastLoanApplication: null,
-                        lastPayment: null,
-                        profileLastUpdated: currentTimestamp
-                    },
-                    
-                    // === SESSION & ACTIVITY ===
-                    sessionInfo: {
-                        loginCount: 1,
-                        totalSessions: 1,
-                        lastLoginIP: '',
-                        lastLoginDevice: navigator.userAgent,
-                        isOnline: true,
-                        deviceInfo: {
-                            browser: navigator.userAgent,
-                            platform: navigator.platform,
-                            language: navigator.language,
-                            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-                        }
-                    },
-                    
-                    // === REFERRAL SYSTEM ===
-                    referralInfo: {
-                        referralCode: 'QC' + mobile.substring(6) + Math.random().toString(36).substring(2, 6).toUpperCase(),
-                        referredBy: null,
-                        referralEarnings: 0,
-                        totalReferrals: 0,
-                        successfulReferrals: 0
-                    },
-                    
-                    // === ADMIN NOTES ===
-                    adminNotes: {
-                        notes: '',
-                        riskFlags: [],
-                        restrictions: [],
-                        supportTickets: 0,
-                        lastContactDate: null,
-                        internalRating: 'Good',
-                        specialInstructions: ''
-                    }
+                    isActive: true,
+                    status: 'active',
+                    profileComplete: true
                 };
                 
-                console.log('💾 SAVING COMPLETE USER DATA TO FIREBASE...');
-                console.log('📊 User UID:', user.uid);
-                console.log('📱 Phone:', mobile);
-                console.log('📧 Email:', email || authEmail);
-                console.log('👤 Name:', name);
+                await db.collection('loanuser').doc(user.uid).set(newUserData);
                 
-                // === STEP 1: SAVE TO FIREBASE REALTIME DATABASE ===
-                console.log('🔥 STEP 1: Saving to Firebase Realtime Database...');
+                await rtdb.ref('loanusers/' + user.uid).set({
+                    name: name,
+                    mobile: mobile,
+                    email: email || authEmail,
+                    role: 'user',
+                    createdAt: firebase.database.ServerValue.TIMESTAMP,
+                    status: 'active'
+                });
                 
-                try {
-                    // Direct save to Firebase RTDB without complex checks
-                    const userRef = rtdb.ref('loanusers/' + user.uid);
-                    await userRef.set(completeUserData);
-                    
-                    console.log('✅ FIREBASE REALTIME DATABASE SAVE SUCCESSFUL!');
-                    console.log('📂 Saved to path: loanusers/' + user.uid);
-                    console.log('📊 All user data saved including:');
-                    console.log('  ✓ Name:', name);
-                    console.log('  ✓ Email:', email || authEmail);
-                    console.log('  ✓ Phone:', mobile);
-                    console.log('  ✓ Password:', '[SAVED]');
-                    console.log('  ✓ Role:', completeUserData.role);
-                    console.log('  ✓ Status:', completeUserData.status);
-                    console.log('  ✓ Personal Details: Ready for loan application');
-                    console.log('  ✓ Contact Info: Complete');
-                    console.log('  ✓ Employment Details: Template ready');
-                    console.log('  ✓ Financial Info: Template ready');
-                    console.log('  ✓ KYC Documents: Template ready');
-                    console.log('  ✓ Loan Details: Initialized');
-                    
-                } catch (directSaveError) {
-                    console.error('❌ DIRECT SAVE FAILED:', directSaveError);
-                    
-                    // Fallback: Try with minimal data
-                    console.log('🔄 TRYING FALLBACK SAVE...');
-                    const minimalData = {
-                        uid: user.uid,
-                        name: name,
-                        email: email || authEmail,
-                        phone: mobile,
-                        mobile: mobile,
-                        password: password,
-                        role: 'user',
-                        status: 'active',
-                        isOnline: true,
-                        createdAt: Date.now(),
-                        registeredAt: Date.now()
-                    };
-                    
-                    await rtdb.ref('loanusers/' + user.uid).set(minimalData);
-                    console.log('✅ FALLBACK SAVE SUCCESSFUL with basic data');
-                }
-                
-                // === STEP 2: SAVE TO FIRESTORE (BACKUP) ===
-                console.log('🔥 STEP 2: Saving to Firestore as backup...');
-                try {
-                    await db.collection('loanuser').doc(user.uid).set(completeUserData);
-                    console.log('✅ FIRESTORE BACKUP SAVE SUCCESSFUL!');
-                } catch (firestoreError) {
-                    console.log('⚠️ Firestore backup failed (non-critical):', firestoreError.message);
-                }
-                
-                // === STEP 3: VERIFY DATA WAS SAVED ===
-                console.log('🔍 STEP 3: Verifying saved data...');
-                try {
-                    const verifyRef = rtdb.ref('loanusers/' + user.uid);
-                    const verifySnapshot = await verifyRef.once('value');
-                    const savedData = verifySnapshot.val();
-                    
-                    if (savedData && savedData.name && savedData.phone && savedData.email) {
-                        console.log('🎉 VERIFICATION SUCCESSFUL!');
-                        console.log('✅ Confirmed saved data:');
-                        console.log('  - Name:', savedData.name);
-                        console.log('  - Phone:', savedData.phone);
-                        console.log('  - Email:', savedData.email);
-                        console.log('  - Role:', savedData.role);
-                        console.log('  - Status:', savedData.status);
-                        console.log('  - Total fields saved:', Object.keys(savedData).length);
-                    } else {
-                        throw new Error('Data verification failed - incomplete data saved');
-                    }
-                } catch (verifyError) {
-                    console.error('❌ DATA VERIFICATION FAILED:', verifyError);
-                }
-                
-                // === STEP 4: SET USER DATA FOR APP ===
-                userData = completeUserData;
-                
-                // === STEP 5: SHOW SUCCESS MESSAGE ===
-                console.log('🎉 USER REGISTRATION COMPLETED SUCCESSFULLY!');
-                console.log('🎯 === COMPLETE USER DATA SAVED TO FIREBASE ===');
-                console.log('📱 यूजर की सभी details save हो गई हैं!');
-                
-                showMessage(`स्वागत ${name}! आपका खाता सफलतापूर्वक बन गया है। सभी details Firebase में save हो गई हैं।`, 'success');
-                
-                // Redirect to dashboard after short delay
-                setTimeout(() => {
-                    showSection('dashboard');
-                }, 2000);
+                userData = newUserData;
+                showMessage(`Welcome ${name}! Registration successful.`, 'success');
                 
             } catch (error) {
-                console.error('❌ REGISTRATION ERROR:', error);
-                console.error('Error details:', error.message);
-                showMessage('Registration failed: ' + error.message, 'error');
+                console.error('Registration error:', error);
+                handleAuthError(error);
             }
-        
         }
-        
-        
-        // === END OF REGISTRATION FUNCTION ===
         
         async function loadUserData() {
             try {
-                if (!currentUser) {
-                    console.log('⚠️ No current user - skipping data load');
-                    return;
-                }
+                if (!currentUser) return;
                 
-                console.log('📖 Loading user data from Firebase Realtime Database...');
-                
-                // Check Firebase connection first
-                const connRef = rtdb.ref('.info/connected');
-                const connSnapshot = await connRef.once('value');
-                const isConnected = connSnapshot.val();
-                
-                if (!isConnected) {
-                    console.log('⚠️ Firebase RTDB not connected, trying Firestore...');
-                    throw new Error('RTDB not connected');
-                }
-                
-                // Load from Realtime Database first
-                const rtdbSnapshot = await rtdb.ref('loanusers/' + currentUser.uid).once('value');
-                const rtdbUserData = rtdbSnapshot.val();
-                
-                if (rtdbUserData) {
-                    userData = rtdbUserData;
-                    console.log('✅ User data loaded from Realtime Database');
-                    console.log('📊 User data:', {
-                        name: userData.name,
-                        mobile: userData.mobile,
-                        role: userData.role,
-                        status: userData.status,
-                        isVerified: userData.isVerified,
-                        kycStatus: userData.kycStatus
-                    });
+                const userDoc = await db.collection('loanuser').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    userData = userDoc.data();
                     updateUserProfile();
-                } else {
-                    console.log('⚠️ No user data in RTDB, trying Firestore...');
-                    // Fallback to Firestore
-                    const userDoc = await db.collection('loanuser').doc(currentUser.uid).get();
-                    if (userDoc.exists) {
-                        userData = userDoc.data();
-                        console.log('✅ User data loaded from Firestore');
-                        updateUserProfile();
-                    } else {
-                        console.log('❌ No user data found in either database');
-                        // Create minimal user data to prevent crashes
-                        userData = {
-                            uid: currentUser.uid,
-                            name: 'User',
-                            mobile: '0000000000',
-                            email: currentUser.email || 'user@quickcash.com',
-                            role: 'user',
-                            status: 'active',
-                            isVerified: false,
-                            kycVerified: false,
-                            kycStatus: 'pending'
-                        };
-                        console.log('✅ Created minimal user data to prevent crashes');
-                        updateUserProfile();
-                    }
                 }
-                
             } catch (error) {
-                console.error('❌ Error loading user data:', error);
-                
-                // Create minimal user data as fallback
-                if (currentUser) {
-                    userData = {
-                        uid: currentUser.uid,
-                        name: 'User',
-                        mobile: '0000000000',
-                        email: currentUser.email || 'user@quickcash.com',
-                        role: 'user',
-                        status: 'active',
-                        isVerified: false,
-                        kycVerified: false,
-                        kycStatus: 'pending'
-                    };
-                    console.log('✅ Created fallback user data');
-                    updateUserProfile();
-                }
-                
-                // Don't show error notification immediately, let the app load
-                setTimeout(() => {
-                    showNotification('Could not load user data. Please check your connection.', 'warning');
-                }, 3000);
+                console.error('Error loading user data:', error);
+                showNotification('Error loading user data', 'error');
             }
         }
         
-        function setupRealtimeListeners() {
-            if (!currentUser) return;
-            
-            // Listen for real-time updates to user profile
-            const userRef = rtdb.ref('loanusers/' + currentUser.uid);
-            userRef.on('value', (snapshot) => {
-                const updatedData = snapshot.val();
-                if (updatedData && userData) {
-                    // Update local userData with real-time changes
-                    userData = { ...userData, ...updatedData };
-                    updateUserProfile();
-                    console.log('🔄 User data updated in real-time');
-                }
-            });
-            
-            // Listen for loan updates
-            const loansRef = rtdb.ref('loans').orderByChild('userId').equalTo(currentUser.uid);
-            loansRef.on('value', (snapshot) => {
-                const loans = snapshot.val();
-                if (loans) {
-                    userLoans = Object.keys(loans).map(key => ({
-                        id: key,
-                        ...loans[key]
-                    }));
-                    displayActiveLoans();
-                    console.log('🔄 Loans updated in real-time');
-                }
-            });
-            
-            console.log('👂 Real-time listeners set up successfully');
-        }
-        
-         function updateUserProfile() {
-             if (!userData) return;
-             
-             console.log('🔍 User data loaded from Firebase:', userData);
-             
-             // Update dashboard welcome
-             document.getElementById('welcomeTitle').textContent = `Welcome, ${userData.name}!`;
-             
-             // Update profile section
-             document.getElementById('userAvatar').textContent = userData.name.charAt(0).toUpperCase();
-             document.getElementById('userName').textContent = userData.name;
-             document.getElementById('userMobile').textContent = `+91 ${userData.mobile}`;
-             
-             // Show verification status
-             const statusElement = document.getElementById('userStatus');
-             const isVerified = userData.isVerified || false;
-             statusElement.textContent = isVerified ? 'VERIFIED' : 'UNVERIFIED';
-             
-             // Color code based on verification
-             if (isVerified) {
-                 statusElement.style.background = 'rgba(40, 167, 69, 0.8)'; // Green for verified
-             } else {
-                 statusElement.style.background = 'rgba(255, 193, 7, 0.8)'; // Yellow for unverified
-             }
-             
-             // Admin menu visibility
-             const adminMenuItem = document.getElementById('adminMenuItem');
-             if (adminMenuItem) {
-                 if (userData.role === 'admin') {
-                     adminMenuItem.style.display = 'block';
-                 } else {
-                     adminMenuItem.style.display = 'none';
-                 }
-             }
-             
-             // Check KYC status and update UI
-             updateKYCStatus();
-             
-             // Initialize toggle functionality
-             initializeToggleActions();
-         }
-         
-                 function updateKYCStatus() {
-            const applyBtn = document.getElementById('applyBtn');
-            const accountWarning = document.getElementById('accountWarning');
-            
-            if (!userData.kycVerified) {
-                // Lock the apply button
-                applyBtn.classList.add('locked');
-                applyBtn.textContent = 'Complete Verification';
-                applyBtn.onclick = function() { showSection('kyc'); };
-                
-                // Show simple warning
-                accountWarning.style.display = 'block';
-            } else {
-                // Enable the apply button
-                applyBtn.classList.remove('locked');
-                applyBtn.textContent = 'Apply Now';
-                applyBtn.onclick = function() { showLoanApplicationForm(); };
-                
-                // Hide warning
-                accountWarning.style.display = 'none';
-            }
-        }
-        
-        // Wizard Progress Functions
-        function updateWizardProgress() {
-            const step1 = document.getElementById('step1');
-            const step2 = document.getElementById('step2');
-            const step3 = document.getElementById('step3');
-            const line1 = document.getElementById('line1');
-            const line2 = document.getElementById('line2');
-            
+        function updateUserProfile() {
             if (!userData) return;
             
-            // Step 1: KYC Verification
-            if (userData.kycDocuments && userData.kycDocuments.status === 'verified') {
-                completeStep('step1', 'line1');
-                activateStep('step2');
+            document.getElementById('welcomeTitle').textContent = `Welcome, ${userData.name}!`;
+            document.getElementById('userAvatar').textContent = userData.name.charAt(0).toUpperCase();
+            document.getElementById('userName').textContent = userData.name;
+            document.getElementById('userMobile').textContent = `+91 ${userData.mobile}`;
+            document.getElementById('userRole').textContent = userData.role.toUpperCase();
+            
+            const roleElement = document.getElementById('userRole');
+            if (userData.role === 'admin') {
+                roleElement.style.background = '#ff6584';
             } else {
-                activateStep('step1');
-            }
-            
-            // Step 2: Bank Account (check if financial details added)
-            if (userData.financialDetails && userData.financialDetails.bankAccount && userData.financialDetails.bankAccount.accountNumber) {
-                completeStep('step2', 'line2');
-                activateStep('step3');
-            }
-            
-            // Step 3: First Loan (check if any loan applied)
-            if (userData.loanDetails && userData.loanDetails.totalApplications > 0) {
-                completeStep('step3', null);
+                roleElement.style.background = 'var(--primary)';
             }
         }
-        
-        function completeStep(stepId, lineId) {
-            const step = document.getElementById(stepId);
-            const line = lineId ? document.getElementById(lineId) : null;
-            
-            if (step && !step.classList.contains('completed')) {
-                // Add completing animation
-                step.classList.add('step-completing');
-                
-                setTimeout(() => {
-                    step.classList.remove('active', 'step-completing');
-                    step.classList.add('completed');
-                    
-                    if (line) {
-                        line.classList.add('completed');
-                    }
-                    
-                    // Success sound effect (optional)
-                    console.log(`✅ Step ${stepId} completed!`);
-                }, 500);
-            }
-        }
-        
-        function activateStep(stepId) {
-            const step = document.getElementById(stepId);
-            if (step && !step.classList.contains('completed')) {
-                // Remove active from all steps
-                document.querySelectorAll('.progress-step').forEach(s => s.classList.remove('active'));
-                // Add active to current step
-                step.classList.add('active');
-            }
-        }
-        
-        // Initialize wizard when KYC section is shown
-        function initializeWizard() {
-            updateWizardProgress();
-            
-            // Add click handlers for completed steps
-            document.getElementById('step2').addEventListener('click', function() {
-                if (this.classList.contains('active')) {
-                    showBankAccountForm();
-                }
-            });
-            
-            document.getElementById('step3').addEventListener('click', function() {
-                if (this.classList.contains('active')) {
-                    showLoanApplicationForm();
-                    showSection('dashboard');
-                }
-            });
-        }
-        
-        function showBankAccountForm() {
-            // Hide KYC form and show bank account form
-            document.getElementById('kycForm').style.display = 'none';
-            document.getElementById('bankAccountSection').style.display = 'block';
-        }
-        
-        // Bank Account Form Handler
-        async function handleBankAccountSubmission(e) {
-            e.preventDefault();
-            
-            const accountHolderName = document.getElementById('accountHolderName').value.trim();
-            const accountNumber = document.getElementById('accountNumber').value.trim();
-            const confirmAccountNumber = document.getElementById('confirmAccountNumber').value.trim();
-            const ifscCode = document.getElementById('ifscCode').value.trim().toUpperCase();
-            const bankName = document.getElementById('bankName').value.trim();
-            const branchName = document.getElementById('branchName').value.trim();
-            
-            // Validation
-            if (accountNumber !== confirmAccountNumber) {
-                showNotification('Account numbers do not match!', 'error');
-                return;
-            }
-            
-            if (ifscCode.length !== 11) {
-                showNotification('IFSC code must be 11 characters!', 'error');
-                return;
-            }
-            
-            try {
-                // Save bank details to Firebase
-                const bankData = {
-                    accountHolderName: accountHolderName,
-                    accountNumber: accountNumber,
-                    ifscCode: ifscCode,
-                    bankName: bankName,
-                    branchName: branchName,
-                    accountType: 'Savings',
-                    addedAt: Date.now()
-                };
-                
-                // Update user data in Firebase
-                await rtdb.ref('loanusers/' + currentUser.uid + '/financialDetails/bankAccount').set(bankData);
-                
-                // Update local user data
-                if (!userData.financialDetails) userData.financialDetails = {};
-                userData.financialDetails.bankAccount = bankData;
-                
-                // Complete Step 2 and activate Step 3
-                completeStep('step2', 'line2');
-                activateStep('step3');
-                
-                showNotification('🎉 Bank account added successfully! You can now apply for your first loan.', 'success');
-                
-                // Hide bank form
-                document.getElementById('bankAccountSection').style.display = 'none';
-                
-                // Show completion message
-                setTimeout(() => {
-                    showNotification('All steps completed! Click on "First Loan" to apply.', 'info');
-                }, 2000);
-                
-            } catch (error) {
-                console.error('Bank account save error:', error);
-                showNotification('Error saving bank details. Please try again.', 'error');
-            }
-        }
-         
-         function checkKYCAndApply() {
-             if (!userData.kycVerified) {
-                 showSection('kyc');
-             } else {
-                 showLoanApplicationForm();
-             }
-         }
-         
-         function initializeToggleActions() {
-             const toggleBtn = document.getElementById('toggleActions');
-             const actionsGrid = document.getElementById('actionsGrid');
-             const toggleText = document.getElementById('toggleText');
-             const toggleIcon = document.getElementById('toggleIcon');
-             let isCollapsed = false;
-             
-             if (toggleBtn) {
-                 toggleBtn.addEventListener('click', function() {
-                     isCollapsed = !isCollapsed;
-                     
-                     if (isCollapsed) {
-                         actionsGrid.classList.add('collapsed');
-                         toggleText.textContent = 'Show';
-                         toggleIcon.classList.remove('fa-chevron-up');
-                         toggleIcon.classList.add('fa-chevron-down');
-                         
-                         // Animate items out
-                         const items = actionsGrid.querySelectorAll('.action-btn');
-                         items.forEach((item, index) => {
-                             item.style.animation = `slideOut 0.3s ease-out ${index * 0.1}s forwards`;
-                         });
-                     } else {
-                         actionsGrid.classList.remove('collapsed');
-                         toggleText.textContent = 'Hide';
-                         toggleIcon.classList.remove('fa-chevron-down');
-                         toggleIcon.classList.add('fa-chevron-up');
-                         
-                         // Animate items in
-                         const items = actionsGrid.querySelectorAll('.action-btn');
-                         items.forEach((item, index) => {
-                             item.style.animation = `slideIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55) ${index * 0.1}s forwards`;
-                         });
-                     }
-                 });
-             }
-             
-             // Add animation styles dynamically
-             if (!document.getElementById('toggleAnimationStyles')) {
-                 const style = document.createElement('style');
-                 style.id = 'toggleAnimationStyles';
-                 style.textContent = `
-                     @keyframes slideOut {
-                         to {
-                             opacity: 0;
-                             transform: translateY(-20px) rotate(10deg);
-                         }
-                     }
-                     
-                     @keyframes slideIn {
-                         from {
-                             opacity: 0;
-                             transform: translateY(20px) rotate(-10deg);
-                         }
-                         to {
-                             opacity: 1;
-                             transform: translateY(0) rotate(0);
-                         }
-                     }
-                 `;
-                 document.head.appendChild(style);
-             }
-         }
-         
-         function showStatusCards() {
-             // Hide all status cards first
-             document.querySelectorAll('.status-card').forEach(card => {
-                 card.classList.remove('show');
-             });
-             
-             // Show cards based on user's loans
-             if (userLoans.length === 0) {
-                 // No loans - could show a welcome message or apply prompt
-                 return;
-             }
-             
-             userLoans.forEach(loan => {
-                 if (loan.status === 'approved') {
-                     document.getElementById('approvedStatus').classList.add('show');
-                     document.getElementById('approvedAmount').textContent = `₹${loan.amount.toLocaleString()}`;
-                 } else if (loan.status === 'active') {
-                     document.getElementById('activeStatus').classList.add('show');
-                     document.getElementById('activeAmount').textContent = `₹${loan.amount.toLocaleString()}`;
-                 } else if (loan.status === 'pending') {
-                     document.getElementById('processingStatus').classList.add('show');
-                     document.getElementById('processingAmount').textContent = `₹${loan.amount.toLocaleString()}`;
-                 } else if (loan.status === 'rejected') {
-                     document.getElementById('rejectedStatus').classList.add('show');
-                     document.getElementById('rejectedAmount').textContent = `₹${loan.amount.toLocaleString()}`;
-                 }
-             });
-         }
-         
-         function viewLoanDetails() {
-             showNotification('Loan details feature coming soon!', 'info');
-         }
-         
-         function checkStatus() {
-             showNotification('Status check feature coming soon!', 'info');
-         }
-         
-         function reapply() {
-             showLoanApplicationForm();
-         }
         
         async function loadUserLoans() {
             try {
-                if (!currentUser) {
-                    console.log('⚠️ No current user - skipping loans load');
-                    userLoans = [];
-                    return;
-                }
-                
-                console.log('📖 Loading user loans from Firestore...');
+                if (!currentUser) return;
                 
                 const loansQuery = await db.collection('loans')
                     .where('userId', '==', currentUser.uid)
@@ -3505,43 +809,20 @@
                     userLoans.push({ id: doc.id, ...doc.data() });
                 });
                 
-                console.log(`✅ Loaded ${userLoans.length} loans for user`);
-                
-                // Try to display loans, but don't fail if container doesn't exist
-                try {
-                    displayActiveLoans();
-                } catch (displayError) {
-                    console.log('⚠️ Could not display loans (container not ready):', displayError.message);
-                }
-                
+                displayActiveLoans();
             } catch (error) {
-                console.error('❌ Error loading loans:', error);
-                userLoans = []; // Initialize empty array to prevent crashes
-                
-                // Don't show error notification immediately
-                setTimeout(() => {
-                    if (error.code === 'permission-denied') {
-                        console.log('⚠️ Firestore permission denied - user may not have loans collection access');
-                    } else {
-                        showNotification('Could not load loan history. Please check your connection.', 'warning');
-                    }
-                }, 3000);
+                console.error('Error loading loans:', error);
+                showNotification('Error loading loans', 'error');
             }
         }
         
-                 function displayActiveLoans() {
-             const container = document.getElementById('activeLoansContainer');
-             
-             // Safety check - container might not exist yet
-             if (!container) {
-                 console.log('⚠️ activeLoansContainer not found - skipping display');
-                 return;
-             }
-             
-             if (!userLoans || userLoans.length === 0) {
-                 container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No active loans found. Apply for your first loan!</p>';
-                 return;
-             }
+        function displayActiveLoans() {
+            const container = document.getElementById('activeLoansContainer');
+            
+            if (userLoans.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No active loans found. Apply for your first loan!</p>';
+                return;
+            }
             
             container.innerHTML = userLoans.map(loan => {
                 const statusClass = `status-${loan.status}`;
@@ -3637,78 +918,15 @@
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
                 
-                // Save to Firestore
-                const loanDocRef = await db.collection('loans').add(loanData);
-                const loanId = loanDocRef.id;
+                await db.collection('loans').add(loanData);
                 
-                // Also save to Firebase Realtime Database for real-time updates
-                const rtdbLoanData = {
-                    ...loanData,
-                    id: loanId,
-                    createdAt: firebase.database.ServerValue.TIMESTAMP,
-                    updatedAt: firebase.database.ServerValue.TIMESTAMP
-                };
-                
-                await rtdb.ref('loans/' + loanId).set(rtdbLoanData);
-                console.log('✅ Loan application saved to Realtime Database');
-                
-                // Update user loan statistics in both databases
                 await db.collection('loanuser').doc(currentUser.uid).update({
                     totalLoans: firebase.firestore.FieldValue.increment(1),
                     totalBorrowed: firebase.firestore.FieldValue.increment(amount)
                 });
                 
-                await rtdb.ref('loanusers/' + currentUser.uid).update({
-                    // Update comprehensive loan tracking
-                    'loans/numberOfLoans': firebase.database.ServerValue.increment(1),
-                    'loans/totalLoans': firebase.database.ServerValue.increment(1),
-                    'loans/pendingLoans': firebase.database.ServerValue.increment(1),
-                    'loans/totalBorrowed': firebase.database.ServerValue.increment(amount),
-                    'loans/lastLoanDate': firebase.database.ServerValue.TIMESTAMP,
-                    
-                    // Update financial profile
-                    'financial/monthlyIncome': monthlyIncome,
-                    'financial/riskProfile': (amount / monthlyIncome) > 5 ? 'high' : (amount / monthlyIncome) > 3 ? 'medium' : 'low',
-                    'financial/creditScore': firebase.database.ServerValue.increment(5), // Small boost for application
-                    
-                    // Update timestamps
-                    'timestamps/lastLoanApplication': firebase.database.ServerValue.TIMESTAMP,
-                    'timestamps/lastActivity': firebase.database.ServerValue.TIMESTAMP,
-                    'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
-                    
-                    // Update activity
-                    'activity/lastFeatureUsed': 'loan-application',
-                    
-                    // Backward compatibility - keep old structure
-                    totalLoans: firebase.database.ServerValue.increment(1),
-                    totalBorrowed: firebase.database.ServerValue.increment(amount),
-                    activeLoans: firebase.database.ServerValue.increment(1),
-                    lastLoanApplication: firebase.database.ServerValue.TIMESTAMP,
-                    monthlyIncome: monthlyIncome,
-                    lastActivity: firebase.database.ServerValue.TIMESTAMP,
-                    updatedAt: firebase.database.ServerValue.TIMESTAMP,
-                    maxLoanEligible: Math.min(monthlyIncome * 12, 1000000),
-                    riskProfile: (amount / monthlyIncome) > 5 ? 'high' : (amount / monthlyIncome) > 3 ? 'medium' : 'low'
-                });
-                
-                // Create notification for admin
-                await rtdb.ref('notifications/admin').push({
-                    type: 'new_loan_application',
-                    userId: currentUser.uid,
-                    userName: userData.name,
-                    userMobile: userData.mobile,
-                    loanId: loanId,
-                    amount: amount,
-                    purpose: purpose,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP,
-                    read: false
-                });
-                
                 hidePopup('loanApplicationPopup');
                 showNotification('Loan application submitted successfully!', 'success');
-                
-                // Complete Step 3 (First Loan)
-                completeStep('step3', null);
                 
                 // Reload loans
                 await loadUserLoans();
@@ -3937,37 +1155,12 @@
         
         async function logout() {
             try {
-                // Update user status to offline before logout
-                if (currentUser) {
-                    await rtdb.ref('loanusers/' + currentUser.uid).update({
-                        // Update online status in new structure
-                        online: false,
-                        'timestamps/lastActivity': firebase.database.ServerValue.TIMESTAMP,
-                        'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
-                        'activity/lastFeatureUsed': 'logout',
-                        
-                        // Backward compatibility
-                        isOnline: false,
-                        lastActivity: firebase.database.ServerValue.TIMESTAMP
-                    });
-                    console.log('✅ User status updated to offline');
-                    console.log('📱 User:', userData?.name || 'Unknown');
-                    console.log('🕐 Logout Time:', new Date().toLocaleString());
-                }
-                
                 await auth.signOut();
                 showNotification('Logged out successfully', 'success');
             } catch (error) {
                 showNotification('Error logging out', 'error');
             }
         }
-        
-        // Utility function to generate referral codes
-        function generateReferralCode() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let code = 'QC'; // QuickCash prefix
-            for (let i = 0; i < 6; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return code;
-        }
+    </script>
+</body>
+</html>
