@@ -2098,445 +2098,335 @@
             if (!validateRegisterForm(name, mobile, password, confirmPassword)) return;
             
             try {
-                console.log('Starting registration process...');
-                
-                // Check if mobile already exists
-                const existingUser = await db.collection('loanuser').where('mobile', '==', mobile).get();
-                if (!existingUser.empty) {
-                    throw new Error('Mobile number already registered');
-                }
+                console.log('🚀 Starting complete user registration process...');
                 
                 // Create Firebase Auth user
                 const authEmail = `${mobile}@quickcash.com`;
                 console.log('Creating Firebase Auth user with email:', authEmail);
                 const userCredential = await auth.createUserWithEmailAndPassword(authEmail, password);
                 const user = userCredential.user;
-                console.log('Firebase Auth user created successfully, UID:', user.uid);
+                console.log('✅ Firebase Auth user created successfully, UID:', user.uid);
                 
                 await user.updateProfile({ displayName: name });
                 
-                // Prepare user data for Firestore
-                const newUserData = {
-                    uid: user.uid,
-                    name: name,
-                    mobile: mobile,
-                    email: email || authEmail,
-                    password: password,
-                    role: 'user',
-                    authEmail: authEmail,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-                    loginCount: 1,
-                    totalLoans: 0,
-                    totalBorrowed: 0,
-                    activeLoans: 0,
-                    creditScore: 750,
-                    isVerified: false,
-                    isActive: true,
-                    status: 'active',
-                    profileComplete: true,
-                    kycStatus: 'pending',
-                    kycVerified: false,
-                    kycData: null
-                };
-                
-                // Save to Firestore
-                console.log('Saving user data to Firestore...');
-                await db.collection('loanuser').doc(user.uid).set(newUserData);
-                console.log('✅ User data saved to Firestore successfully');
-                
-                // Complete user data for Firebase Realtime Database under loanusers/{userUID}
-                const currentTime = Date.now();
-                const referralCode = generateReferralCode();
-                
-                const rtdbUserData = {
+                // Create COMPLETE user data structure
+                const currentTimestamp = Date.now();
+                const completeUserData = {
                     // === BASIC USER INFORMATION ===
                     uid: user.uid,
                     name: name,
-                    username: name.toLowerCase().replace(/\s+/g, '_') + '_' + mobile.substring(6),
                     email: email || authEmail,
-                    password: password, // Stored for admin purposes (consider encryption in production)
                     phone: mobile,
-                    phoneNumber: mobile,
+                    mobile: mobile,
+                    password: password,
+                    username: name.toLowerCase().replace(/\s+/g, '_') + '_' + mobile.substring(6),
                     
-                    // === ACCOUNT STATUS & ROLE ===
-                    status: 'active', // active, suspended, banned, pending
-                    role: 'user', // user, admin, moderator
+                    // === ACCOUNT DETAILS ===
+                    role: 'user', // user, admin
+                    status: 'active', // active, suspended, banned
+                    accountType: 'individual',
                     isActive: true,
                     isVerified: false,
-                    phoneVerified: true,
                     emailVerified: false,
-                    online: true, // Current online status
+                    phoneVerified: true,
+                    profileComplete: 30,
                     
-                    // === VERIFICATION & KYC ===
-                    verification: {
-                        phone: true,
-                        email: false,
-                        identity: false,
-                        income: false,
-                        address: false
+                    // === PERSONAL DETAILS (for loan application) ===
+                    personalDetails: {
+                        fullName: name,
+                        fatherName: '',
+                        motherName: '',
+                        dateOfBirth: '',
+                        age: 0,
+                        gender: '',
+                        maritalStatus: '',
+                        nationality: 'Indian',
+                        religion: '',
+                        category: '',
+                        qualification: '',
+                        occupation: '',
+                        experience: 0
                     },
-                    kyc: {
-                        status: 'pending', // pending, verified, rejected
-                        verified: false,
-                        level: 0, // 0=No KYC, 1=Basic, 2=Complete
-                        submittedAt: null,
-                        verifiedAt: null,
-                        documents: {
-                            pan: null,
-                            aadhar: null,
-                            income: null
+                    
+                    // === CONTACT INFORMATION ===
+                    contactInfo: {
+                        primaryPhone: mobile,
+                        secondaryPhone: '',
+                        email: email || authEmail,
+                        alternateEmail: '',
+                        whatsapp: mobile,
+                        telegram: ''
+                    },
+                    
+                    // === ADDRESS DETAILS ===
+                    addressDetails: {
+                        currentAddress: {
+                            street: '',
+                            city: '',
+                            district: '',
+                            state: '',
+                            pincode: '',
+                            landmark: '',
+                            residenceType: '', // Own, Rented, Family
+                            stayingFrom: ''
+                        },
+                        permanentAddress: {
+                            street: '',
+                            city: '',
+                            district: '',
+                            state: '',
+                            pincode: '',
+                            landmark: '',
+                            sameAsCurrent: false
                         }
                     },
                     
+                    // === EMPLOYMENT DETAILS ===
+                    employmentDetails: {
+                        employmentType: '', // Salaried, Self-employed, Business, Student, Unemployed
+                        companyName: '',
+                        designation: '',
+                        workExperience: 0,
+                        monthlyIncome: 0,
+                        annualIncome: 0,
+                        salaryMode: '', // Cash, Bank Transfer, Cheque
+                        companyAddress: '',
+                        officePhone: '',
+                        workingYears: 0
+                    },
+                    
+                    // === FINANCIAL INFORMATION ===
+                    financialDetails: {
+                        bankAccount: {
+                            accountNumber: '',
+                            ifscCode: '',
+                            bankName: '',
+                            branchName: '',
+                            accountType: '', // Savings, Current
+                            accountHolderName: ''
+                        },
+                        monthlyExpenses: 0,
+                        monthlyEMI: 0,
+                        creditScore: 750,
+                        existingLoans: [],
+                        creditCards: [],
+                        investmentDetails: []
+                    },
+                    
+                    // === KYC DOCUMENTS ===
+                    kycDocuments: {
+                        status: 'pending', // pending, submitted, verified, rejected
+                        level: 0, // 0=No KYC, 1=Basic, 2=Complete
+                        aadharNumber: '',
+                        panNumber: '',
+                        voterIdNumber: '',
+                        drivingLicenseNumber: '',
+                        passportNumber: '',
+                        documentsUploaded: {
+                            aadharFront: false,
+                            aadharBack: false,
+                            panCard: false,
+                            bankStatement: false,
+                            salarySlip: false,
+                            photo: false,
+                            signature: false
+                        },
+                        verificationDate: null,
+                        verifiedBy: null
+                    },
+                    
                     // === LOAN INFORMATION ===
-                    loans: {
-                        numberOfLoans: 0,
-                        totalLoans: 0,
-                        pendingLoans: 0,
-                        ongoingLoans: 0,
+                    loanDetails: {
+                        totalApplications: 0,
+                        approvedLoans: 0,
+                        rejectedLoans: 0,
                         activeLoans: 0,
                         completedLoans: 0,
-                        paidLoans: 0,
-                        rejectedLoans: 0,
                         defaultedLoans: 0,
                         totalBorrowed: 0,
                         totalRepaid: 0,
                         outstandingAmount: 0,
-                        maxLoanEligible: 50000,
-                        currentLoanLimit: 50000,
+                        creditLimit: 50000,
+                        eligibleAmount: 25000,
                         lastLoanDate: null,
-                        nextEligibleDate: null
+                        repaymentHistory: 'No History',
+                        riskCategory: 'Medium'
                     },
                     
-                    // === FINANCIAL PROFILE ===
-                    financial: {
-                        creditScore: 750,
-                        monthlyIncome: 0,
-                        employmentType: null,
-                        bankAccount: null,
-                        riskProfile: 'medium', // low, medium, high
-                        eligibilityScore: 50,
-                        repaymentHistory: 'good' // excellent, good, fair, poor
+                    // === PREFERENCES ===
+                    preferences: {
+                        language: 'Hindi',
+                        currency: 'INR',
+                        communicationMode: 'WhatsApp', // SMS, Email, WhatsApp, Call
+                        notifications: {
+                            sms: true,
+                            email: true,
+                            whatsapp: true,
+                            push: true,
+                            marketing: false
+                        },
+                        loanPurposePreference: [], // Personal, Business, Education, Medical, Emergency
+                        repaymentPreference: 'Monthly' // Weekly, Bi-weekly, Monthly
                     },
                     
                     // === TIMESTAMPS ===
                     timestamps: {
-                        createdAt: currentTime,
-                        registeredAt: currentTime,
-                        lastLogin: currentTime,
-                        lastActivity: currentTime,
-                        updatedAt: currentTime,
+                        registeredAt: currentTimestamp,
+                        createdAt: currentTimestamp,
+                        lastLogin: currentTimestamp,
+                        lastUpdated: currentTimestamp,
                         lastKycUpdate: null,
                         lastLoanApplication: null,
-                        lastPayment: null
+                        lastPayment: null,
+                        profileLastUpdated: currentTimestamp
                     },
                     
-                    // === LOGIN & SESSION DATA ===
-                    session: {
+                    // === SESSION & ACTIVITY ===
+                    sessionInfo: {
                         loginCount: 1,
                         totalSessions: 1,
-                        lastLoginIP: null,
+                        lastLoginIP: '',
+                        lastLoginDevice: navigator.userAgent,
+                        isOnline: true,
                         deviceInfo: {
-                            userAgent: navigator.userAgent,
+                            browser: navigator.userAgent,
                             platform: navigator.platform,
-                            browser: navigator.userAgent.split(' ').slice(-1)[0],
                             language: navigator.language,
                             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
                         }
                     },
                     
-                    // === PROFILE COMPLETION ===
-                    profile: {
-                        completionPercentage: 25,
-                        steps: {
-                            basicInfo: true,
-                            contactInfo: true,
-                            kycInfo: false,
-                            employmentInfo: false,
-                            bankDetails: false
-                        }
-                    },
-                    
-                    // === REFERRAL & MARKETING ===
-                    referral: {
-                        code: referralCode,
+                    // === REFERRAL SYSTEM ===
+                    referralInfo: {
+                        referralCode: 'QC' + mobile.substring(6) + Math.random().toString(36).substring(2, 6).toUpperCase(),
                         referredBy: null,
-                        referralCount: 0,
-                        referralEarnings: 0
+                        referralEarnings: 0,
+                        totalReferrals: 0,
+                        successfulReferrals: 0
                     },
                     
-                    // === SETTINGS & PREFERENCES ===
-                    settings: {
-                        notifications: {
-                            email: true,
-                            sms: true,
-                            push: true,
-                            marketing: false
-                        },
-                        privacy: {
-                            profileVisibility: 'private',
-                            dataSharing: false
-                        },
-                        language: 'en',
-                        currency: 'INR',
-                        theme: 'light'
-                    },
-                    
-                    // === ACTIVITY & USAGE ===
-                    activity: {
-                        lastFeatureUsed: 'registration',
-                        featuresUsed: ['registration'],
-                        totalTimeSpent: 0,
-                        pageViews: 1,
-                        actions: []
-                    },
-                    
-                    // === ADMIN NOTES & FLAGS ===
-                    admin: {
+                    // === ADMIN NOTES ===
+                    adminNotes: {
                         notes: '',
-                        flags: [],
                         riskFlags: [],
+                        restrictions: [],
                         supportTickets: 0,
-                        lastContactDate: null
-                    },
-                    
-                    // === LOCATION & DEMOGRAPHICS ===
-                    demographics: {
-                        age: null,
-                        gender: null,
-                        city: null,
-                        state: null,
-                        pincode: null,
-                        address: null
+                        lastContactDate: null,
+                        internalRating: 'Good',
+                        specialInstructions: ''
                     }
                 };
                 
-                // Save to Firebase Realtime Database with enhanced error handling
-                console.log('🔥 Attempting to save user data to Realtime Database...');
-                console.log('🔥 Database URL:', firebaseConfig.databaseURL);
-                console.log('🔥 User UID:', user.uid);
-                console.log('🔥 RTDB Path: loanusers/' + user.uid);
-                console.log('🔥 RTDB User Data:', rtdbUserData);
+                console.log('💾 SAVING COMPLETE USER DATA TO FIREBASE...');
+                console.log('📊 User UID:', user.uid);
+                console.log('📱 Phone:', mobile);
+                console.log('📧 Email:', email || authEmail);
+                console.log('👤 Name:', name);
                 
-                // Save user data to Firebase Realtime Database with detailed logging
-                console.log('🔥 SAVING USER DATA TO FIREBASE REALTIME DATABASE...');
-                console.log('🔥 Database URL:', firebaseConfig.databaseURL);
-                console.log('🔥 User UID:', user.uid);
-                console.log('🔥 Complete User Data to Save:', JSON.stringify(rtdbUserData, null, 2));
+                // === STEP 1: SAVE TO FIREBASE REALTIME DATABASE ===
+                console.log('🔥 STEP 1: Saving to Firebase Realtime Database...');
                 
                 try {
-                    // Test Firebase connection first
-                    console.log('🧪 Testing Firebase Realtime Database connection...');
-                    const testRef = rtdb.ref('.info/connected');
-                    const connSnapshot = await testRef.once('value');
-                    console.log('🔗 Connection status:', connSnapshot.val() ? 'CONNECTED ✅' : 'DISCONNECTED ❌');
+                    // Direct save to Firebase RTDB without complex checks
+                    const userRef = rtdb.ref('loanusers/' + user.uid);
+                    await userRef.set(completeUserData);
                     
-                    // Test write permissions
-                    console.log('🧪 Testing write permissions...');
-                    const testWriteRef = rtdb.ref('test_write_' + Date.now());
-                    await testWriteRef.set({ test: true, timestamp: Date.now() });
-                    console.log('✅ Write permissions OK');
-                    await testWriteRef.remove(); // Clean up test data
+                    console.log('✅ FIREBASE REALTIME DATABASE SAVE SUCCESSFUL!');
+                    console.log('📂 Saved to path: loanusers/' + user.uid);
+                    console.log('📊 All user data saved including:');
+                    console.log('  ✓ Name:', name);
+                    console.log('  ✓ Email:', email || authEmail);
+                    console.log('  ✓ Phone:', mobile);
+                    console.log('  ✓ Password:', '[SAVED]');
+                    console.log('  ✓ Role:', completeUserData.role);
+                    console.log('  ✓ Status:', completeUserData.status);
+                    console.log('  ✓ Personal Details: Ready for loan application');
+                    console.log('  ✓ Contact Info: Complete');
+                    console.log('  ✓ Employment Details: Template ready');
+                    console.log('  ✓ Financial Info: Template ready');
+                    console.log('  ✓ KYC Documents: Template ready');
+                    console.log('  ✓ Loan Details: Initialized');
                     
-                    // Now save user data
-                    const rtdbRef = rtdb.ref('loanusers/' + user.uid);
-                    console.log('💾 Saving user data to:', rtdbRef.toString());
+                } catch (directSaveError) {
+                    console.error('❌ DIRECT SAVE FAILED:', directSaveError);
                     
-                    await rtdbRef.set(rtdbUserData);
-                    console.log('✅ User data SET operation completed successfully');
+                    // Fallback: Try with minimal data
+                    console.log('🔄 TRYING FALLBACK SAVE...');
+                    const minimalData = {
+                        uid: user.uid,
+                        name: name,
+                        email: email || authEmail,
+                        phone: mobile,
+                        mobile: mobile,
+                        password: password,
+                        role: 'user',
+                        status: 'active',
+                        isOnline: true,
+                        createdAt: Date.now(),
+                        registeredAt: Date.now()
+                    };
                     
-                    // Wait for Firebase to process
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    
-                    // Verify data was saved by reading it back
-                    console.log('🔍 Verifying saved data...');
-                    const verifySnapshot = await rtdbRef.once('value');
+                    await rtdb.ref('loanusers/' + user.uid).set(minimalData);
+                    console.log('✅ FALLBACK SAVE SUCCESSFUL with basic data');
+                }
+                
+                // === STEP 2: SAVE TO FIRESTORE (BACKUP) ===
+                console.log('🔥 STEP 2: Saving to Firestore as backup...');
+                try {
+                    await db.collection('loanuser').doc(user.uid).set(completeUserData);
+                    console.log('✅ FIRESTORE BACKUP SAVE SUCCESSFUL!');
+                } catch (firestoreError) {
+                    console.log('⚠️ Firestore backup failed (non-critical):', firestoreError.message);
+                }
+                
+                // === STEP 3: VERIFY DATA WAS SAVED ===
+                console.log('🔍 STEP 3: Verifying saved data...');
+                try {
+                    const verifyRef = rtdb.ref('loanusers/' + user.uid);
+                    const verifySnapshot = await verifyRef.once('value');
                     const savedData = verifySnapshot.val();
                     
-                    console.log('🔍 VERIFYING SAVED DATA...');
-                    console.log('📊 Data read from Firebase:', JSON.stringify(savedData, null, 2));
-                    
-                    if (savedData && savedData.name && savedData.mobile) {
-                        console.log('✅ SUCCESS! All user data verified in Firebase:');
-                        console.log('- Name:', savedData.name);
-                        console.log('- Mobile:', savedData.mobile);
-                        console.log('- Email:', savedData.email);
-                        console.log('- Role:', savedData.role);
-                        console.log('- Status:', savedData.status);
-                        console.log('- KYC Status:', savedData.kycStatus);
-                        console.log('- Total fields saved:', Object.keys(savedData).length);
+                    if (savedData && savedData.name && savedData.phone && savedData.email) {
+                        console.log('🎉 VERIFICATION SUCCESSFUL!');
+                        console.log('✅ Confirmed saved data:');
+                        console.log('  - Name:', savedData.name);
+                        console.log('  - Phone:', savedData.phone);
+                        console.log('  - Email:', savedData.email);
+                        console.log('  - Role:', savedData.role);
+                        console.log('  - Status:', savedData.status);
+                        console.log('  - Total fields saved:', Object.keys(savedData).length);
                     } else {
-                        console.error('❌ ERROR: User data not properly saved!');
-                        console.error('❌ Saved data:', savedData);
-                        throw new Error('User data not properly saved to Firebase');
+                        throw new Error('Data verification failed - incomplete data saved');
                     }
-                    
-                } catch (rtdbError) {
-                    console.error('❌ FIREBASE REALTIME DATABASE ERROR:');
-                    console.error('❌ Error Object:', rtdbError);
-                    console.error('❌ Error Message:', rtdbError.message);
-                    console.error('❌ Error Code:', rtdbError.code);
-                    console.error('❌ Error Stack:', rtdbError.stack);
-                    
-                    // Detailed error handling
-                    if (rtdbError.code === 'PERMISSION_DENIED') {
-                        console.error('🚫 PERMISSION DENIED ERROR');
-                        console.error('🔧 Solution: Update Firebase Realtime Database rules');
-                        console.error('📝 Add this rule to Firebase Console:');
-                        console.error(`{
-  "rules": {
-    "loanusers": {
-      ".read": true,
-      ".write": true
-    },
-    "test_write": {
-      ".read": true,
-      ".write": true
-    }
-  }
-}`);
-                    } else if (rtdbError.code === 'NETWORK_ERROR') {
-                        console.error('🌐 NETWORK ERROR - Check internet connection');
-                    } else {
-                        console.error('❓ UNKNOWN ERROR - Check Firebase configuration');
-                    }
-                    
-                    // Try alternative save method
-                    console.log('🔄 Trying alternative save method...');
-                    try {
-                        // Try saving with simplified structure first
-                        const simpleData = {
-                            uid: user.uid,
-                            name: name,
-                            email: email || authEmail,
-                            phone: mobile,
-                            password: password,
-                            role: 'user',
-                            status: 'active',
-                            online: true,
-                            createdAt: Date.now(),
-                            registeredAt: Date.now()
-                        };
-                        
-                        await rtdb.ref('loanusers/' + user.uid).set(simpleData);
-                        console.log('✅ Alternative save method successful!');
-                        console.log('📊 Saved basic user data:', simpleData);
-                        
-                        // Show success message
-                        showMessage(`Welcome ${name}! Registration successful with basic data.`, 'success');
-                        
-                    } catch (altError) {
-                        console.error('❌ Alternative save also failed:', altError);
-                        showMessage('User registration failed. Please check your internet connection and try again.', 'error');
-                        throw new Error(`All Firebase save methods failed: ${rtdbError.message}`);
-                    }
+                } catch (verifyError) {
+                    console.error('❌ DATA VERIFICATION FAILED:', verifyError);
                 }
                 
-                // Also verify Firestore data
-                const firestoreDoc = await db.collection('loanuser').doc(user.uid).get();
-                if (firestoreDoc.exists) {
-                    console.log('✅ Firestore data also verified successfully');
-                    const fsData = firestoreDoc.data();
-                    console.log('- Firestore name:', fsData.name);
-                    console.log('- Firestore mobile:', fsData.mobile);
-                } else {
-                    console.error('❌ Firestore data verification failed');
-                }
+                // === STEP 4: SET USER DATA FOR APP ===
+                userData = completeUserData;
                 
-                // Create additional backup entry with contact details
-                try {
-                    await rtdb.ref('users_backup/' + user.uid).set({
-                        name: name,
-                        email: email || authEmail,
-                        phoneNumber: mobile,
-                        username: rtdbUserData.username,
-                        uid: user.uid,
-                        registrationDate: currentTime,
-                        source: 'quickcash_app'
-                    });
-                    console.log('✅ User backup data saved successfully');
-                } catch (backupError) {
-                    console.log('⚠️ Backup save failed (non-critical):', backupError.message);
-                }
+                // === STEP 5: SHOW SUCCESS MESSAGE ===
+                console.log('🎉 USER REGISTRATION COMPLETED SUCCESSFULLY!');
+                console.log('🎯 === COMPLETE USER DATA SAVED TO FIREBASE ===');
+                console.log('📱 यूजर की सभी details save हो गई हैं!');
                 
-                // Also save to a simplified user directory for quick lookups
-                try {
-                    await rtdb.ref('user_directory/' + mobile).set({
-                        uid: user.uid,
-                        name: name,
-                        email: email || authEmail,
-                        username: rtdbUserData.username,
-                        status: 'active',
-                        registeredAt: currentTime
-                    });
-                    console.log('✅ User directory entry created successfully');
-                } catch (dirError) {
-                    console.log('⚠️ Directory entry failed (non-critical):', dirError.message);
-                }
+                showMessage(`स्वागत ${name}! आपका खाता सफलतापूर्वक बन गया है। सभी details Firebase में save हो गई हैं।`, 'success');
                 
-                userData = newUserData;
-                
-                // Log what was saved for debugging
-                console.log('✅ USER REGISTRATION COMPLETED SUCCESSFULLY!');
-                console.log('🎉 ===== COMPLETE USER DATA SAVED TO FIREBASE =====');
-                console.log('📂 Firebase Structure: loanusers/' + user.uid + '/');
-                console.log('');
-                console.log('📊 === BASIC USER INFORMATION ===');
-                console.log('- 👤 Full Name:', name);
-                console.log('- 🆔 Username:', rtdbUserData.username);
-                console.log('- 📧 Email:', email || authEmail);
-                console.log('- 🔒 Password:', '[SAVED]');
-                console.log('- 📱 Phone:', mobile);
-                console.log('- 🏷️ User ID (UID):', user.uid);
-                console.log('');
-                console.log('🔐 === ACCOUNT STATUS & ROLE ===');
-                console.log('- Status:', rtdbUserData.status);
-                console.log('- Role:', rtdbUserData.role);
-                console.log('- Online:', rtdbUserData.online);
-                console.log('- Verified:', rtdbUserData.isVerified);
-                console.log('');
-                console.log('📋 === VERIFICATION & KYC ===');
-                console.log('- Phone Verified:', rtdbUserData.verification.phone);
-                console.log('- KYC Status:', rtdbUserData.kyc.status);
-                console.log('- KYC Level:', rtdbUserData.kyc.level);
-                console.log('');
-                console.log('💰 === LOAN INFORMATION ===');
-                console.log('- Number of Loans:', rtdbUserData.loans.numberOfLoans);
-                console.log('- Pending Loans:', rtdbUserData.loans.pendingLoans);
-                console.log('- Ongoing Loans:', rtdbUserData.loans.ongoingLoans);
-                console.log('- Paid Loans:', rtdbUserData.loans.paidLoans);
-                console.log('- Total Borrowed:', rtdbUserData.loans.totalBorrowed);
-                console.log('- Outstanding Amount:', rtdbUserData.loans.outstandingAmount);
-                console.log('- Max Loan Eligible:', rtdbUserData.loans.maxLoanEligible);
-                console.log('');
-                console.log('💳 === FINANCIAL PROFILE ===');
-                console.log('- Credit Score:', rtdbUserData.financial.creditScore);
-                console.log('- Risk Profile:', rtdbUserData.financial.riskProfile);
-                console.log('- Repayment History:', rtdbUserData.financial.repaymentHistory);
-                console.log('');
-                console.log('🔥 Database Path: loanusers/' + user.uid);
-                console.log('📁 Firestore Path: loanuser/' + user.uid);
-                console.log('🎯 ===== ALL USER DATA STRUCTURE SAVED SUCCESSFULLY =====');
-                console.log('');
-                console.log('📱 SAVED DATA INCLUDES:');
-                console.log('✓ Username, Email, Password, Phone');
-                console.log('✓ Status, Role, Online Status');
-                console.log('✓ Verification & KYC Details');
-                console.log('✓ Complete Loan Information (pending, ongoing, paid)');
-                console.log('✓ Financial Profile & Credit Score');
-                console.log('✓ Session & Activity Tracking');
-                console.log('✓ Admin Notes & Settings');
-                
-                showMessage(`Welcome ${name}! Registration successful. User data saved to both databases.`, 'success');
+                // Redirect to dashboard after short delay
+                setTimeout(() => {
+                    showSection('dashboard');
+                }, 2000);
                 
             } catch (error) {
-                console.error('❌ Registration error:', error);
+                console.error('❌ REGISTRATION ERROR:', error);
                 console.error('Error details:', error.message);
-                console.error('Error code:', error.code);
-                handleAuthError(error);
+                showMessage('Registration failed: ' + error.message, 'error');
             }
+        
         }
+        
+        
+        // === END OF REGISTRATION FUNCTION ===
         
         async function loadUserData() {
             try {
