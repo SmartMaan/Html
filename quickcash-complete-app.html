@@ -1712,47 +1712,47 @@
                     purpose: document.getElementById('kycPurpose').value.trim(),
                     income: parseInt(document.getElementById('kycIncome').value),
                     loanAmount: parseInt(document.getElementById('kycLoanAmount').value),
-                    submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'pending' // Changed from 'verified' to 'pending' for admin approval
                 };
                 
                 // Update user document with KYC data in Firestore
                 await db.collection('loanuser').doc(currentUser.uid).update({
                     kycData: kycData,
-                    kycStatus: 'verified',
-                    kycVerified: true,
+                    kycStatus: 'pending', // Changed to pending
+                    kycVerified: false, // Changed to false until admin approves
                     kycSubmittedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
                 // Update comprehensive user data structure in Realtime Database
                 await rtdb.ref('loanusers/' + currentUser.uid).update({
-                    // Update KYC section
-                    'kyc/status': 'verified',
-                    'kyc/verified': true,
-                    'kyc/level': 2, // Complete KYC
+                    // Update KYC section - set to pending for admin approval
+                    'kyc/status': 'pending',
+                    'kyc/verified': false,
+                    'kyc/level': 1, // Submitted but not verified
                     'kyc/submittedAt': firebase.database.ServerValue.TIMESTAMP,
-                    'kyc/verifiedAt': firebase.database.ServerValue.TIMESTAMP,
                     'kyc/documents/pan': kycData.pan.toUpperCase(),
                     'kyc/documents/aadhar': kycData.aadhar,
                     'kyc/documents/income': kycData.income,
                     
-                    // Update verification status
-                    'verification/identity': true,
-                    'verification/income': true,
-                    isVerified: true,
+                    // Update verification status - pending until admin approves
+                    'verification/identity': false,
+                    'verification/income': false,
+                    isVerified: false,
                     
                     // Update financial profile
                     'financial/monthlyIncome': kycData.income,
                     'financial/employmentType': kycData.occupation,
-                    'financial/creditScore': Math.min(850, 750 + (kycData.income / 10000)), // Boost credit score
+                    'financial/creditScore': Math.min(750, 650 + (kycData.income / 10000)), // Lower initial score
                     'financial/riskProfile': kycData.income >= 50000 ? 'low' : kycData.income >= 25000 ? 'medium' : 'high',
-                    'financial/eligibilityScore': Math.min(95, 50 + (kycData.income / 1000)),
+                    'financial/eligibilityScore': Math.min(75, 30 + (kycData.income / 1000)), // Lower until verified
                     
-                    // Update loan eligibility
-                    'loans/maxLoanEligible': Math.min(kycData.income * 10, 500000), // 10x monthly income, max 5L
-                    'loans/currentLoanLimit': Math.min(kycData.income * 10, 500000),
+                    // Update loan eligibility - limited until KYC approved
+                    'loans/maxLoanEligible': Math.min(kycData.income * 5, 100000), // Reduced until verified
+                    'loans/currentLoanLimit': Math.min(kycData.income * 5, 100000),
                     
                     // Update profile completion
-                    'profile/completionPercentage': 90,
+                    'profile/completionPercentage': 60, // Lower until verified
                     'profile/steps/kycInfo': true,
                     'profile/steps/employmentInfo': true,
                     
@@ -1765,79 +1765,78 @@
                     'timestamps/lastKycUpdate': firebase.database.ServerValue.TIMESTAMP,
                     
                     // Update activity
-                    'activity/lastFeatureUsed': 'kyc-verification',
+                    'activity/lastFeatureUsed': 'kyc-submission',
                     
                     // Backward compatibility - keep old structure
                     kycData: kycData,
-                    kycStatus: 'verified',
-                    kycVerified: true,
+                    kycStatus: 'pending',
+                    kycVerified: false,
                     kycSubmittedAt: firebase.database.ServerValue.TIMESTAMP,
-                    kycVerifiedAt: firebase.database.ServerValue.TIMESTAMP,
-                    kycLevel: 2,
-                    profileComplete: 90,
+                    kycLevel: 1,
+                    profileComplete: 60,
                     dateOfBirth: kycData.dob,
                     occupation: kycData.occupation,
                     maritalStatus: kycData.marital,
                     monthlyIncome: kycData.income,
                     panNumber: kycData.pan.toUpperCase(),
                     aadharNumber: kycData.aadhar,
-                    eligibleForLoan: true,
-                    maxLoanEligible: Math.min(kycData.income * 10, 500000),
+                    eligibleForLoan: false, // Will be true after admin approval
+                    maxLoanEligible: Math.min(kycData.income * 5, 100000),
                     riskProfile: kycData.income >= 50000 ? 'low' : kycData.income >= 25000 ? 'medium' : 'high',
-                    eligibilityScore: Math.min(95, 50 + (kycData.income / 1000)),
+                    eligibilityScore: Math.min(75, 30 + (kycData.income / 1000)),
                     phoneVerified: true,
                     updatedAt: firebase.database.ServerValue.TIMESTAMP,
                     lastActivity: firebase.database.ServerValue.TIMESTAMP
                 });
                 
-                // Save KYC submission to separate collection for audit trail
+                // Save KYC submission to separate collection for admin review
                 await rtdb.ref('kyc_submissions/' + currentUser.uid).set({
                     ...kycData,
                     userId: currentUser.uid,
                     userName: userData.name,
                     userMobile: userData.mobile,
                     submittedAt: firebase.database.ServerValue.TIMESTAMP,
-                    verifiedAt: firebase.database.ServerValue.TIMESTAMP,
-                    status: 'verified',
-                    verifiedBy: 'system' // or admin ID
+                    status: 'pending',
+                    reviewStatus: 'under_review'
                 });
                 
-                // Create admin notification for KYC verification
+                // Create admin notification for KYC review
                 await rtdb.ref('notifications/admin').push({
-                    type: 'kyc_verification_completed',
+                    type: 'kyc_submission_pending',
                     userId: currentUser.uid,
                     userName: userData.name,
                     userMobile: userData.mobile,
                     timestamp: firebase.database.ServerValue.TIMESTAMP,
-                    read: false
+                    read: false,
+                    priority: 'high',
+                    message: `New KYC submission from ${userData.name} (${userData.mobile}) - Amount: ₹${kycData.loanAmount.toLocaleString()}`
                 });
                 
                 // Update system statistics
-                const kycStatsRef = rtdb.ref('statistics/totalKycVerified');
+                const kycStatsRef = rtdb.ref('statistics/totalKycSubmissions');
                 await kycStatsRef.transaction((currentCount) => {
                     return (currentCount || 0) + 1;
                 });
                 
                 // Update local userData
                 userData.kycData = kycData;
-                userData.kycStatus = 'verified';
-                userData.kycVerified = true;
+                userData.kycStatus = 'pending';
+                userData.kycVerified = false;
                 
-                showMessage('KYC verification completed successfully!', 'success');
+                showMessage('KYC submitted successfully! Please wait for admin approval.', 'success');
                 
-                // Complete Step 1 and activate Step 2
-                completeStep('step1', 'line1');
-                activateStep('step2');
+                // Complete Step 1 but don't activate Step 2 until approved
+                completeStep('step1', null);
                 
                 // Update UI
                 updateKYCStatus();
                 
-                // Show success message and auto-move to next step
+                // Show success message
                 setTimeout(() => {
-                    showNotification('🎉 KYC Completed! Now add your bank account details.', 'success');
-                    // Automatically show bank account form
-                    showBankAccountForm();
-                }, 1500);
+                    showNotification('📋 KYC Submitted! Your application is under review. You will be notified once approved.', 'info');
+                    // Go back to dashboard
+                    showSection('dashboard');
+                }, 2000);
                 
             } catch (error) {
                 console.error('KYC submission error:', error);
@@ -2024,6 +2023,378 @@
              // For now, just show user data in console
              console.log('Viewing user:', userId);
              showNotification('User details logged to console', 'info');
+         }
+         
+         // Admin Functions for KYC Management
+         async function approveKYC(userId) {
+             try {
+                 const reason = prompt('Enter approval reason (optional):') || 'KYC documents verified successfully';
+                 
+                 // Update user KYC status in Realtime Database
+                 await rtdb.ref('loanusers/' + userId).update({
+                     'kyc/status': 'verified',
+                     'kyc/verified': true,
+                     'kyc/level': 2,
+                     'kyc/verifiedAt': firebase.database.ServerValue.TIMESTAMP,
+                     'kyc/verifiedBy': 'admin',
+                     'kyc/approvalReason': reason,
+                     
+                     // Update verification status
+                     'verification/identity': true,
+                     'verification/income': true,
+                     isVerified: true,
+                     
+                     // Boost financial profile after verification
+                     'financial/creditScore': firebase.database.ServerValue.increment(100),
+                     'financial/eligibilityScore': firebase.database.ServerValue.increment(25),
+                     
+                     // Increase loan eligibility after verification
+                     'loans/maxLoanEligible': firebase.database.ServerValue.increment(400000), // Increase by 4L
+                     'loans/currentLoanLimit': firebase.database.ServerValue.increment(400000),
+                     
+                     // Update profile completion
+                     'profile/completionPercentage': 90,
+                     
+                     // Update timestamps
+                     'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
+                     'timestamps/lastKycUpdate': firebase.database.ServerValue.TIMESTAMP,
+                     
+                     // Backward compatibility
+                     kycStatus: 'verified',
+                     kycVerified: true,
+                     kycVerifiedAt: firebase.database.ServerValue.TIMESTAMP,
+                     kycLevel: 2,
+                     profileComplete: 90,
+                     eligibleForLoan: true,
+                     updatedAt: firebase.database.ServerValue.TIMESTAMP
+                 });
+                 
+                 // Update KYC submission status
+                 await rtdb.ref('kyc_submissions/' + userId).update({
+                     status: 'verified',
+                     reviewStatus: 'approved',
+                     verifiedAt: firebase.database.ServerValue.TIMESTAMP,
+                     verifiedBy: 'admin',
+                     approvalReason: reason
+                 });
+                 
+                 // Also update Firestore
+                 await db.collection('loanuser').doc(userId).update({
+                     kycStatus: 'verified',
+                     kycVerified: true,
+                     kycVerifiedAt: firebase.firestore.FieldValue.serverTimestamp()
+                 });
+                 
+                 // Create notification for user
+                 await rtdb.ref('notifications/users/' + userId).push({
+                     type: 'kyc_approved',
+                     title: 'KYC Verification Approved! 🎉',
+                     message: 'Your KYC has been verified successfully. You can now apply for loans up to ₹5,00,000.',
+                     timestamp: firebase.database.ServerValue.TIMESTAMP,
+                     read: false,
+                     priority: 'high'
+                 });
+                 
+                 // Update statistics
+                 await rtdb.ref('statistics/totalKycVerified').transaction((current) => (current || 0) + 1);
+                 await rtdb.ref('statistics/totalKycPending').transaction((current) => Math.max(0, (current || 1) - 1));
+                 
+                 showNotification('KYC approved successfully!', 'success');
+                 loadAdminData(); // Reload admin data
+                 
+             } catch (error) {
+                 console.error('Error approving KYC:', error);
+                 showNotification('Error approving KYC', 'error');
+             }
+         }
+         
+         async function rejectKYC(userId) {
+             try {
+                 const reason = prompt('Enter rejection reason (required):');
+                 if (!reason || reason.trim() === '') {
+                     showNotification('Rejection reason is required', 'error');
+                     return;
+                 }
+                 
+                 // Update user KYC status in Realtime Database
+                 await rtdb.ref('loanusers/' + userId).update({
+                     'kyc/status': 'rejected',
+                     'kyc/verified': false,
+                     'kyc/level': 0,
+                     'kyc/rejectedAt': firebase.database.ServerValue.TIMESTAMP,
+                     'kyc/rejectedBy': 'admin',
+                     'kyc/rejectionReason': reason,
+                     
+                     // Update verification status
+                     'verification/identity': false,
+                     'verification/income': false,
+                     isVerified: false,
+                     
+                     // Reset financial profile
+                     'profile/completionPercentage': 30,
+                     
+                     // Update timestamps
+                     'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
+                     'timestamps/lastKycUpdate': firebase.database.ServerValue.TIMESTAMP,
+                     
+                     // Backward compatibility
+                     kycStatus: 'rejected',
+                     kycVerified: false,
+                     kycRejectedAt: firebase.database.ServerValue.TIMESTAMP,
+                     kycLevel: 0,
+                     profileComplete: 30,
+                     eligibleForLoan: false,
+                     kycRejectionReason: reason,
+                     updatedAt: firebase.database.ServerValue.TIMESTAMP
+                 });
+                 
+                 // Update KYC submission status
+                 await rtdb.ref('kyc_submissions/' + userId).update({
+                     status: 'rejected',
+                     reviewStatus: 'rejected',
+                     rejectedAt: firebase.database.ServerValue.TIMESTAMP,
+                     rejectedBy: 'admin',
+                     rejectionReason: reason
+                 });
+                 
+                 // Also update Firestore
+                 await db.collection('loanuser').doc(userId).update({
+                     kycStatus: 'rejected',
+                     kycVerified: false,
+                     kycRejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                     kycRejectionReason: reason
+                 });
+                 
+                 // Create notification for user
+                 await rtdb.ref('notifications/users/' + userId).push({
+                     type: 'kyc_rejected',
+                     title: 'KYC Verification Rejected ❌',
+                     message: `Your KYC was rejected. Reason: ${reason}. Please resubmit with correct documents.`,
+                     timestamp: firebase.database.ServerValue.TIMESTAMP,
+                     read: false,
+                     priority: 'high',
+                     rejectionReason: reason
+                 });
+                 
+                 // Update statistics
+                 await rtdb.ref('statistics/totalKycRejected').transaction((current) => (current || 0) + 1);
+                 await rtdb.ref('statistics/totalKycPending').transaction((current) => Math.max(0, (current || 1) - 1));
+                 
+                 showNotification('KYC rejected successfully!', 'success');
+                 loadAdminData(); // Reload admin data
+                 
+             } catch (error) {
+                 console.error('Error rejecting KYC:', error);
+                 showNotification('Error rejecting KYC', 'error');
+             }
+         }
+         
+         async function viewKYC(userId) {
+             try {
+                 const kycSnapshot = await rtdb.ref('kyc_submissions/' + userId).once('value');
+                 const kycData = kycSnapshot.val();
+                 
+                 if (kycData) {
+                     const details = `
+         KYC Details for ${kycData.userName}:
+         
+         📱 Mobile: ${kycData.userMobile}
+         🆔 PAN: ${kycData.pan}
+         🔢 Aadhar: ${kycData.aadhar}
+         💰 Monthly Income: ₹${kycData.income.toLocaleString()}
+         💼 Occupation: ${kycData.occupation}
+         💍 Marital Status: ${kycData.marital}
+         📅 DOB: ${kycData.dob}
+         💵 Loan Amount Requested: ₹${kycData.loanAmount.toLocaleString()}
+         📝 Purpose: ${kycData.purpose}
+         📅 Submitted: ${new Date(kycData.submittedAt).toLocaleString()}
+         ⏰ Status: ${kycData.status.toUpperCase()}
+                     `;
+                     
+                     alert(details);
+                     console.log('KYC Data:', kycData);
+                 } else {
+                     showNotification('KYC data not found', 'error');
+                 }
+             } catch (error) {
+                 console.error('Error viewing KYC:', error);
+                 showNotification('Error loading KYC details', 'error');
+             }
+         }
+         
+         // Admin Functions for Loan Management
+         async function approveLoan(loanId) {
+             try {
+                 const reason = prompt('Enter approval reason (optional):') || 'Loan approved based on eligibility criteria';
+                 
+                 // Update loan status in Realtime Database
+                 await rtdb.ref('loans/' + loanId).update({
+                     status: 'approved',
+                     approvedAt: firebase.database.ServerValue.TIMESTAMP,
+                     approvedBy: 'admin',
+                     approvalReason: reason,
+                     updatedAt: firebase.database.ServerValue.TIMESTAMP
+                 });
+                 
+                 // Also update Firestore
+                 await db.collection('loans').doc(loanId).update({
+                     status: 'approved',
+                     approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                     approvedBy: 'admin',
+                     approvalReason: reason,
+                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                 });
+                 
+                 // Get loan data for notification
+                 const loanSnapshot = await rtdb.ref('loans/' + loanId).once('value');
+                 const loanData = loanSnapshot.val();
+                 
+                 if (loanData) {
+                     // Update user loan statistics
+                     await rtdb.ref('loanusers/' + loanData.userId).update({
+                         'loans/approvedLoans': firebase.database.ServerValue.increment(1),
+                         'loans/pendingLoans': firebase.database.ServerValue.increment(-1),
+                         'loans/activeLoans': firebase.database.ServerValue.increment(1),
+                         'financial/creditScore': firebase.database.ServerValue.increment(10),
+                         'timestamps/lastLoanApproval': firebase.database.ServerValue.TIMESTAMP,
+                         'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
+                         
+                         // Backward compatibility
+                         approvedLoans: firebase.database.ServerValue.increment(1),
+                         activeLoans: firebase.database.ServerValue.increment(1),
+                         lastLoanApproval: firebase.database.ServerValue.TIMESTAMP,
+                         updatedAt: firebase.database.ServerValue.TIMESTAMP
+                     });
+                     
+                     // Create notification for user
+                     await rtdb.ref('notifications/users/' + loanData.userId).push({
+                         type: 'loan_approved',
+                         title: 'Loan Approved! 🎉',
+                         message: `Your loan of ₹${loanData.amount.toLocaleString()} has been approved. Amount will be credited to your account within 24 hours.`,
+                         timestamp: firebase.database.ServerValue.TIMESTAMP,
+                         read: false,
+                         priority: 'high',
+                         loanId: loanId,
+                         amount: loanData.amount
+                     });
+                 }
+                 
+                 // Update statistics
+                 await rtdb.ref('statistics/totalLoansApproved').transaction((current) => (current || 0) + 1);
+                 await rtdb.ref('statistics/totalLoansPending').transaction((current) => Math.max(0, (current || 1) - 1));
+                 
+                 showNotification('Loan approved successfully!', 'success');
+                 loadAdminData(); // Reload admin data
+                 
+             } catch (error) {
+                 console.error('Error approving loan:', error);
+                 showNotification('Error approving loan', 'error');
+             }
+         }
+         
+         async function rejectLoan(loanId) {
+             try {
+                 const reason = prompt('Enter rejection reason (required):');
+                 if (!reason || reason.trim() === '') {
+                     showNotification('Rejection reason is required', 'error');
+                     return;
+                 }
+                 
+                 // Update loan status in Realtime Database
+                 await rtdb.ref('loans/' + loanId).update({
+                     status: 'rejected',
+                     rejectedAt: firebase.database.ServerValue.TIMESTAMP,
+                     rejectedBy: 'admin',
+                     rejectionReason: reason,
+                     updatedAt: firebase.database.ServerValue.TIMESTAMP
+                 });
+                 
+                 // Also update Firestore
+                 await db.collection('loans').doc(loanId).update({
+                     status: 'rejected',
+                     rejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                     rejectedBy: 'admin',
+                     rejectionReason: reason,
+                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                 });
+                 
+                 // Get loan data for notification
+                 const loanSnapshot = await rtdb.ref('loans/' + loanId).once('value');
+                 const loanData = loanSnapshot.val();
+                 
+                 if (loanData) {
+                     // Update user loan statistics
+                     await rtdb.ref('loanusers/' + loanData.userId).update({
+                         'loans/rejectedLoans': firebase.database.ServerValue.increment(1),
+                         'loans/pendingLoans': firebase.database.ServerValue.increment(-1),
+                         'timestamps/lastLoanRejection': firebase.database.ServerValue.TIMESTAMP,
+                         'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
+                         
+                         // Backward compatibility
+                         rejectedLoans: firebase.database.ServerValue.increment(1),
+                         lastLoanRejection: firebase.database.ServerValue.TIMESTAMP,
+                         updatedAt: firebase.database.ServerValue.TIMESTAMP
+                     });
+                     
+                     // Create notification for user
+                     await rtdb.ref('notifications/users/' + loanData.userId).push({
+                         type: 'loan_rejected',
+                         title: 'Loan Application Rejected ❌',
+                         message: `Your loan application for ₹${loanData.amount.toLocaleString()} was rejected. Reason: ${reason}`,
+                         timestamp: firebase.database.ServerValue.TIMESTAMP,
+                         read: false,
+                         priority: 'high',
+                         loanId: loanId,
+                         amount: loanData.amount,
+                         rejectionReason: reason
+                     });
+                 }
+                 
+                 // Update statistics
+                 await rtdb.ref('statistics/totalLoansRejected').transaction((current) => (current || 0) + 1);
+                 await rtdb.ref('statistics/totalLoansPending').transaction((current) => Math.max(0, (current || 1) - 1));
+                 
+                 showNotification('Loan rejected successfully!', 'success');
+                 loadAdminData(); // Reload admin data
+                 
+             } catch (error) {
+                 console.error('Error rejecting loan:', error);
+                 showNotification('Error rejecting loan', 'error');
+             }
+         }
+         
+         async function viewLoan(loanId) {
+             try {
+                 const loanSnapshot = await rtdb.ref('loans/' + loanId).once('value');
+                 const loanData = loanSnapshot.val();
+                 
+                 if (loanData) {
+                     const details = `
+         Loan Details:
+         
+         👤 User: ${loanData.userName}
+         📱 Mobile: ${loanData.userMobile}
+         💰 Amount: ₹${loanData.amount.toLocaleString()}
+         📝 Purpose: ${loanData.purpose}
+         💵 Monthly Income: ₹${loanData.monthlyIncome.toLocaleString()}
+         📊 Interest Rate: ${loanData.interestRate}%
+         📅 Tenure: ${loanData.tenure} months
+         ⏰ Status: ${loanData.status.toUpperCase()}
+         📅 Applied: ${new Date(loanData.createdAt).toLocaleString()}
+         ${loanData.approvedAt ? `✅ Approved: ${new Date(loanData.approvedAt).toLocaleString()}` : ''}
+         ${loanData.rejectedAt ? `❌ Rejected: ${new Date(loanData.rejectedAt).toLocaleString()}` : ''}
+         ${loanData.rejectionReason ? `📝 Rejection Reason: ${loanData.rejectionReason}` : ''}
+                     `;
+                     
+                     alert(details);
+                     console.log('Loan Data:', loanData);
+                 } else {
+                     showNotification('Loan data not found', 'error');
+                 }
+             } catch (error) {
+                 console.error('Error viewing loan:', error);
+                 showNotification('Error loading loan details', 'error');
+             }
          }
          
          function updateLoansTable(loans) {
@@ -3493,189 +3864,3 @@
             }
             return code;
         }
-        
-                // Simple Firebase test function for users
-        window.testFirebase = async function() {
-            console.log('🧪 === FIREBASE CONNECTION TEST ===');
-            
-            try {
-                // Test 1: Connection check
-                console.log('1️⃣ Testing connection...');
-                const connRef = rtdb.ref('.info/connected');
-                const connSnapshot = await connRef.once('value');
-                const isConnected = connSnapshot.val();
-                console.log('🔗 Connected:', isConnected ? '✅ YES' : '❌ NO');
-                
-                if (!isConnected) {
-                    console.error('❌ Firebase is not connected. Check your internet.');
-                    return false;
-                }
-                
-                // Test 2: Write test
-                console.log('2️⃣ Testing write permissions...');
-                const testData = {
-                    test: true,
-                    timestamp: Date.now(),
-                    message: 'Test data from QuickCash app'
-                };
-                
-                const testRef = rtdb.ref('test_data_' + Date.now());
-                await testRef.set(testData);
-                console.log('✅ Write test successful');
-                
-                // Test 3: Read test  
-                console.log('3️⃣ Testing read permissions...');
-                const readSnapshot = await testRef.once('value');
-                const readData = readSnapshot.val();
-                console.log('✅ Read test successful:', readData);
-                
-                // Clean up
-                await testRef.remove();
-                console.log('🧹 Test data cleaned up');
-                
-                console.log('🎉 === ALL TESTS PASSED ===');
-                console.log('✅ Firebase is working correctly!');
-                console.log('✅ User registration should work now!');
-                return true;
-                
-            } catch (error) {
-                console.error('❌ === FIREBASE TEST FAILED ===');
-                console.error('Error:', error);
-                console.error('❌ User registration will fail');
-                
-                if (error.code === 'PERMISSION_DENIED') {
-                    console.error('🚫 PERMISSION DENIED');
-                    console.error('🔧 SOLUTION: Go to Firebase Console > Realtime Database > Rules');
-                    console.error('📝 Replace with:');
-                    console.error(`{
-  "rules": {
-    ".read": true,
-    ".write": true
-  }
-}`);
-                }
-                return false;
-            }
-        };
-        
-        // Firebase Utilities for debugging
-        window.firebaseUtils = {
-            // Get all users from RTDB
-            getAllUsers: async () => {
-                try {
-                    console.log('🔍 Fetching all users from Firebase...');
-                    const snapshot = await rtdb.ref('loanusers').once('value');
-                    const users = snapshot.val();
-                    console.log('👥 All Users in Firebase Realtime Database:');
-                    if (users) {
-                        console.table(users);
-                        console.log('📊 Total users found:', Object.keys(users).length);
-                    } else {
-                        console.log('❌ No users found in Firebase Realtime Database');
-                    }
-                    return users;
-                } catch (error) {
-                    console.error('❌ Error fetching users:', error);
-                    console.error('❌ Error details:', error.message);
-                }
-            },
-            
-            // Check database connection
-            checkConnection: () => {
-                console.log('🔍 Checking Firebase Realtime Database connection...');
-                rtdb.ref('.info/connected').once('value', (snapshot) => {
-                    const connected = snapshot.val();
-                    console.log(`🔗 Firebase Connection: ${connected ? '✅ Connected' : '❌ Disconnected'}`);
-                    if (connected) {
-                        console.log('✅ Firebase Realtime Database is accessible');
-                    } else {
-                        console.log('❌ Firebase Realtime Database connection issue');
-                    }
-                });
-            },
-            
-            // Test write operation
-            testWrite: async () => {
-                try {
-                    console.log('🧪 Testing Firebase write operation...');
-                    const testRef = rtdb.ref('test_write');
-                    const testData = {
-                        message: 'Test write from QuickCash',
-                        timestamp: Date.now()
-                    };
-                    
-                    await testRef.set(testData);
-                    console.log('✅ Test write successful');
-                    
-                    // Verify the write
-                    const readData = await testRef.once('value');
-                    console.log('✅ Test read successful:', readData.val());
-                    
-                    // Clean up
-                    await testRef.remove();
-                    console.log('✅ Test data cleaned up');
-                    
-                    return true;
-                } catch (error) {
-                    console.error('❌ Test write failed:', error);
-                    return false;
-                }
-            },
-            
-            // Check specific user data
-            getUser: async (userId) => {
-                try {
-                    console.log('🔍 Fetching user data for:', userId);
-                    const snapshot = await rtdb.ref('loanusers/' + userId).once('value');
-                    const userData = snapshot.val();
-                    if (userData) {
-                        console.log('✅ User data found:');
-                        console.log(JSON.stringify(userData, null, 2));
-                    } else {
-                        console.log('❌ No data found for user:', userId);
-                    }
-                    return userData;
-                } catch (error) {
-                    console.error('❌ Error fetching user:', error);
-                }
-            }
-        };
-        
-        // Developer helper: Log Firebase RTDB structure on page load
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                console.log('🔍 QuickCash Firebase Realtime Database Integration');
-                console.log('📂 Database Structure:');
-                console.log('├── loanusers/          (User profiles & data)');
-                console.log('├── users_backup/       (Backup user data)');
-                console.log('├── loans/              (Loan applications)');
-                console.log('├── kyc_submissions/    (KYC verification data)');
-                console.log('├── notifications/      (System notifications)');
-                console.log('├── user_activity/      (Login & activity logs)');
-                console.log('└── statistics/         (System statistics)');
-                console.log('');
-                console.log('🚨 IF USER DATA IS NOT SAVING:');
-                console.log('   1. Run testFirebase() in console to check Firebase connection');
-                console.log('   2. Go to Firebase Console > Realtime Database > Rules');
-                console.log('   3. Set rules to: { "rules": { ".read": true, ".write": true } }');
-                console.log('   4. Make sure database URL is correct in config');
-                console.log('');
-                console.log('💡 Use these functions to debug:');
-                console.log('   • testFirebase() - Test Firebase connection & permissions');
-                console.log('   • firebaseUtils.getAllUsers() - View all saved users');
-                console.log('   • firebaseUtils.checkConnection() - Check connection status');
-                console.log('   • firebaseUtils.testWrite() - Test write permissions');
-                console.log('');
-                console.log('🎯 User registration saves to: loanusers/{userId}');
-                console.log('📱 Expected data: name, email, phone, password, status, role, etc.');
-                console.log('');
-                console.log('🔧 QUICK FIX FOR PERMISSION DENIED:');
-                console.log('   Go to: https://console.firebase.google.com/');
-                console.log('   Project: aviator-pr01');
-                console.log('   Realtime Database > Rules > Edit > Save:');
-                console.log('   { "rules": { ".read": true, ".write": true } }');
-            }, 2000);
-        });
-    </script>
-</body>
-</html>
