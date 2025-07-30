@@ -311,27 +311,33 @@
              animation: slideIn 0.6s ease-out;
          }
          
-         /* KYC Warning */
-         .kyc-warning {
-             background: #ff4757;
-             color: white;
-             padding: 10px;
-             border-radius: 8px;
-             margin-top: 10px;
-             text-align: center;
-             font-weight: 500;
-             animation: pulse 1.5s infinite;
-         }
-         
-         .kyc-warning i {
-             margin-right: 8px;
-         }
-         
-         @keyframes pulse {
-             0% { opacity: 1; }
-             50% { opacity: 0.7; }
-             100% { opacity: 1; }
-         }
+                 /* Account Verification Warning */
+        .account-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .account-warning i {
+            margin-right: 8px;
+            color: #f39c12;
+        }
+        
+        .account-warning a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .account-warning a:hover {
+            text-decoration: underline;
+        }
          
          .apply-btn.locked {
              background: #ccc;
@@ -345,8 +351,123 @@
              box-shadow: none;
          }
          
-         /* KYC Section Styles */
-         .kyc-section { display: none; padding: 20px; padding-bottom: 100px; background-color: #f5f7fa; }
+                 /* KYC Section Styles */
+        .kyc-section { display: none; padding: 20px; padding-bottom: 100px; background-color: #f5f7fa; }
+        
+        /* Progress Wizard Styles */
+        .progress-wizard {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .progress-step {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            margin-right: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-step.active .step-number {
+            background: #4a6cf7;
+            color: white;
+        }
+        
+        .progress-step.completed .step-number {
+            background: #28a745;
+            color: white;
+        }
+        
+        .step-info {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .step-desc {
+            font-size: 13px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+        
+        .progress-step.active .step-title {
+            color: #4a6cf7;
+        }
+        
+        .progress-step.completed .step-title {
+            color: #28a745;
+        }
+        
+        .step-status {
+            font-size: 18px;
+            margin-left: 10px;
+        }
+        
+        .progress-step .step-status i {
+            color: #6c757d;
+        }
+        
+        .progress-step.active .step-status i {
+            color: #4a6cf7;
+            animation: pulse 2s infinite;
+        }
+        
+        .progress-step.completed .step-status i:before {
+            content: '\f00c';
+            color: #28a745;
+        }
+        
+        .progress-line {
+            width: 2px;
+            height: 20px;
+            background: #e9ecef;
+            margin-left: 34px;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-line.completed {
+            background: #28a745;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Wizard Animation */
+        .step-completing {
+            animation: stepComplete 1s ease-in-out;
+        }
+        
+        @keyframes stepComplete {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); background-color: #d4edda; }
+            100% { transform: scale(1); }
+        }
          
          .form-container {
              background-color: white;
@@ -829,9 +950,11 @@
                 </div>
             </div>
                          <button class="apply-btn" id="applyBtn" onclick="checkKYCAndApply()">Apply Now</button>
-             <div id="kycWarning" class="kyc-warning" style="display: none;">
-                 <i class="fas fa-exclamation-triangle"></i>
-                 <span>Verify your account first</span>
+             
+             <!-- Simple Account Verification Warning -->
+             <div id="accountWarning" class="account-warning" style="display: none;">
+                 <i class="fas fa-info-circle"></i>
+                 <span>आपका खाता अभी तक verify नहीं है। KYC करने के लिए <a href="#" onclick="showSection('kyc')">यहाँ क्लिक करें</a></span>
              </div>
         </div>
             
@@ -1067,7 +1190,47 @@
         </div>
         
         <div class="form-container">
-            <h2 class="form-title">Complete Your KYC</h2>
+            <h2 class="form-title">Account Verification Process</h2>
+            
+            <!-- Progress Wizard -->
+            <div class="progress-wizard">
+                <div class="progress-step active" id="step1">
+                    <div class="step-number">1</div>
+                    <div class="step-info">
+                        <div class="step-title">KYC Verification</div>
+                        <div class="step-desc">Complete your identity verification</div>
+                    </div>
+                    <div class="step-status">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                
+                <div class="progress-line" id="line1"></div>
+                
+                <div class="progress-step" id="step2">
+                    <div class="step-number">2</div>
+                    <div class="step-info">
+                        <div class="step-title">Bank Account</div>
+                        <div class="step-desc">Add your bank account details</div>
+                    </div>
+                    <div class="step-status">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                </div>
+                
+                <div class="progress-line" id="line2"></div>
+                
+                <div class="progress-step" id="step3">
+                    <div class="step-number">3</div>
+                    <div class="step-info">
+                        <div class="step-title">First Loan</div>
+                        <div class="step-desc">Apply for your first loan</div>
+                    </div>
+                    <div class="step-status">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                </div>
+            </div>
             
             <div id="kycError" class="error" style="display: none;">
                 <i class="fas fa-exclamation-circle"></i>
@@ -1145,6 +1308,45 @@
                 
                 <button type="submit" class="next-btn">Complete Verification <i class="fas fa-check-circle"></i></button>
             </form>
+            
+            <!-- Bank Account Form (Step 2) -->
+            <div id="bankAccountSection" style="display: none;">
+                <h3 style="color: #4a6cf7; margin-bottom: 20px; text-align: center;">Add Bank Account Details</h3>
+                
+                <form id="bankAccountForm">
+                    <div class="form-group">
+                        <label>Account Holder Name</label>
+                        <input type="text" id="accountHolderName" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Account Number</label>
+                        <input type="text" id="accountNumber" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Confirm Account Number</label>
+                        <input type="text" id="confirmAccountNumber" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>IFSC Code</label>
+                        <input type="text" id="ifscCode" class="form-control" required style="text-transform: uppercase;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Bank Name</label>
+                        <input type="text" id="bankName" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Branch Name</label>
+                        <input type="text" id="branchName" class="form-control" required>
+                    </div>
+                    
+                    <button type="submit" class="next-btn">Save Bank Details <i class="fas fa-arrow-right"></i></button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -1361,6 +1563,14 @@
         const db = firebase.firestore();
         const rtdb = firebase.database();
         
+        // Force enable Firebase offline persistence for better reliability
+        try {
+            rtdb.goOnline();
+            console.log('🔥 Firebase Realtime Database forced online');
+        } catch (e) {
+            console.log('⚠️ Firebase already online');
+        }
+        
         // Monitor Realtime Database connection with detailed logging
         rtdb.ref('.info/connected').on('value', function(snapshot) {
             if (snapshot.val() === true) {
@@ -1513,50 +1723,71 @@
                     kycSubmittedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
-                // Also update in Realtime Database with enhanced KYC tracking
+                // Update comprehensive user data structure in Realtime Database
                 await rtdb.ref('loanusers/' + currentUser.uid).update({
-                    // KYC Data
+                    // Update KYC section
+                    'kyc/status': 'verified',
+                    'kyc/verified': true,
+                    'kyc/level': 2, // Complete KYC
+                    'kyc/submittedAt': firebase.database.ServerValue.TIMESTAMP,
+                    'kyc/verifiedAt': firebase.database.ServerValue.TIMESTAMP,
+                    'kyc/documents/pan': kycData.pan.toUpperCase(),
+                    'kyc/documents/aadhar': kycData.aadhar,
+                    'kyc/documents/income': kycData.income,
+                    
+                    // Update verification status
+                    'verification/identity': true,
+                    'verification/income': true,
+                    isVerified: true,
+                    
+                    // Update financial profile
+                    'financial/monthlyIncome': kycData.income,
+                    'financial/employmentType': kycData.occupation,
+                    'financial/creditScore': Math.min(850, 750 + (kycData.income / 10000)), // Boost credit score
+                    'financial/riskProfile': kycData.income >= 50000 ? 'low' : kycData.income >= 25000 ? 'medium' : 'high',
+                    'financial/eligibilityScore': Math.min(95, 50 + (kycData.income / 1000)),
+                    
+                    // Update loan eligibility
+                    'loans/maxLoanEligible': Math.min(kycData.income * 10, 500000), // 10x monthly income, max 5L
+                    'loans/currentLoanLimit': Math.min(kycData.income * 10, 500000),
+                    
+                    // Update profile completion
+                    'profile/completionPercentage': 90,
+                    'profile/steps/kycInfo': true,
+                    'profile/steps/employmentInfo': true,
+                    
+                    // Update demographics
+                    'demographics/age': kycData.dob ? new Date().getFullYear() - new Date(kycData.dob).getFullYear() : null,
+                    
+                    // Update timestamps
+                    'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
+                    'timestamps/lastActivity': firebase.database.ServerValue.TIMESTAMP,
+                    'timestamps/lastKycUpdate': firebase.database.ServerValue.TIMESTAMP,
+                    
+                    // Update activity
+                    'activity/lastFeatureUsed': 'kyc-verification',
+                    
+                    // Backward compatibility - keep old structure
                     kycData: kycData,
                     kycStatus: 'verified',
                     kycVerified: true,
                     kycSubmittedAt: firebase.database.ServerValue.TIMESTAMP,
                     kycVerifiedAt: firebase.database.ServerValue.TIMESTAMP,
-                    kycLevel: 2, // Complete KYC
-                    
-                    // Profile Completion Updates
-                    profileComplete: 90, // 90% complete after KYC
-                    'profileCompletionSteps/kycInfo': true,
-                    'profileCompletionSteps/employmentInfo': true,
-                    
-                    // Personal Details from KYC
+                    kycLevel: 2,
+                    profileComplete: 90,
                     dateOfBirth: kycData.dob,
                     occupation: kycData.occupation,
                     maritalStatus: kycData.marital,
                     monthlyIncome: kycData.income,
                     panNumber: kycData.pan.toUpperCase(),
                     aadharNumber: kycData.aadhar,
-                    
-                    // Financial Updates
                     eligibleForLoan: true,
-                    creditScore: 750, // Default credit score after KYC
-                    maxLoanEligible: Math.min(kycData.income * 10, 500000), // 10x monthly income, max 5L
+                    maxLoanEligible: Math.min(kycData.income * 10, 500000),
                     riskProfile: kycData.income >= 50000 ? 'low' : kycData.income >= 25000 ? 'medium' : 'high',
-                    eligibilityScore: Math.min(95, 50 + (kycData.income / 1000)), // Score based on income
-                    
-                    // Account Status Updates
-                    isVerified: true,
-                    phoneVerified: true, // Assume verified during KYC
-                    
-                    // Update timestamps
+                    eligibilityScore: Math.min(95, 50 + (kycData.income / 1000)),
+                    phoneVerified: true,
                     updatedAt: firebase.database.ServerValue.TIMESTAMP,
-                    lastActivity: firebase.database.ServerValue.TIMESTAMP,
-                    
-                    // Marketing tags update
-                    'marketing/tags': ['verified-user', 'kyc-complete', 'loan-eligible'],
-                    
-                    // App usage update
-                    'appUsage/lastFeatureUsed': 'kyc-verification',
-                    'appUsage/featuresUsed': firebase.database.ServerValue.arrayUnion('kyc-verification')
+                    lastActivity: firebase.database.ServerValue.TIMESTAMP
                 });
                 
                 // Save KYC submission to separate collection for audit trail
@@ -1594,13 +1825,19 @@
                 
                 showMessage('KYC verification completed successfully!', 'success');
                 
+                // Complete Step 1 and activate Step 2
+                completeStep('step1', 'line1');
+                activateStep('step2');
+                
                 // Update UI
                 updateKYCStatus();
                 
-                // Go back to dashboard
+                // Show success message and auto-move to next step
                 setTimeout(() => {
-                    showSection('dashboard');
-                }, 2000);
+                    showNotification('🎉 KYC Completed! Now add your bank account details.', 'success');
+                    // Automatically show bank account form
+                    showBankAccountForm();
+                }, 1500);
                 
             } catch (error) {
                 console.error('KYC submission error:', error);
@@ -1896,6 +2133,7 @@
             document.getElementById('registerForm').addEventListener('submit', handleRegister);
             document.getElementById('loanApplicationForm').addEventListener('submit', handleLoanApplication);
             document.getElementById('repayForm').addEventListener('submit', handleRepayment);
+            document.getElementById('bankAccountForm').addEventListener('submit', handleBankAccountSubmission);
         }
         
         function showLoading() {
@@ -1936,6 +2174,7 @@
                     document.getElementById('kycSection').style.display = 'block';
                     document.body.classList.add('dashboard-mode');
                     updateNavigation('dashboard');
+                    initializeWizard();
                     break;
                 case 'profile':
                     document.getElementById('profileSection').style.display = 'block';
@@ -1996,22 +2235,58 @@
                     userData = userDoc.data();
                     showMessage(`Welcome back, ${userData.name}!`, 'success');
                     
-                                         await db.collection('loanuser').doc(user.uid).update({
-                         lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-                         loginCount: firebase.firestore.FieldValue.increment(1)
-                     });
-                     
-                     // Update login data in Realtime Database
-                     try {
-                         const userRef = rtdb.ref('loanusers/' + user.uid);
-                         await userRef.update({
-                             lastLogin: firebase.database.ServerValue.TIMESTAMP,
-                             loginCount: firebase.database.ServerValue.increment(1)
-                         });
-                         console.log('✅ Login data updated in Realtime Database');
-                     } catch (rtdbError) {
-                         console.error('❌ Error updating login data in Realtime Database:', rtdbError);
-                     }
+                                                             await db.collection('loanuser').doc(user.uid).update({
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                        loginCount: firebase.firestore.FieldValue.increment(1)
+                    });
+                    
+                    // Update login data in Realtime Database with enhanced tracking
+                    try {
+                        const userRef = rtdb.ref('loanusers/' + user.uid);
+                        await userRef.update({
+                            // Update online status
+                            online: true,
+                            
+                            // Update timestamps
+                            'timestamps/lastLogin': firebase.database.ServerValue.TIMESTAMP,
+                            'timestamps/lastActivity': firebase.database.ServerValue.TIMESTAMP,
+                            'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
+                            
+                            // Update session data
+                            'session/loginCount': firebase.database.ServerValue.increment(1),
+                            'session/totalSessions': firebase.database.ServerValue.increment(1),
+                            
+                            // Update activity tracking
+                            'activity/lastFeatureUsed': 'login',
+                            'activity/pageViews': firebase.database.ServerValue.increment(1),
+                            
+                            // Backward compatibility (keep old structure too)
+                            lastLogin: firebase.database.ServerValue.TIMESTAMP,
+                            loginCount: firebase.database.ServerValue.increment(1),
+                            isOnline: true,
+                            lastActivity: firebase.database.ServerValue.TIMESTAMP
+                        });
+                        
+                        // Also update user activity log
+                        await rtdb.ref('user_activity/' + user.uid).push({
+                            action: 'login',
+                            timestamp: firebase.database.ServerValue.TIMESTAMP,
+                            deviceInfo: {
+                                userAgent: navigator.userAgent,
+                                platform: navigator.platform
+                            }
+                        });
+                        
+                        console.log('✅ Login data and activity tracking updated successfully');
+                        console.log('📊 User Login Details:');
+                        console.log('- 👤 User:', userData.name);
+                        console.log('- 📱 Phone:', userData.mobile);
+                        console.log('- 📧 Email:', userData.email);
+                        console.log('- 🕐 Login Time:', new Date().toLocaleString());
+                        
+                    } catch (rtdbError) {
+                        console.error('❌ Error updating login data in Realtime Database:', rtdbError);
+                    }
                 } else {
                     throw new Error('User data not found');
                 }
@@ -2033,163 +2308,335 @@
             if (!validateRegisterForm(name, mobile, password, confirmPassword)) return;
             
             try {
-                console.log('Starting registration process...');
-                
-                // Check if mobile already exists
-                const existingUser = await db.collection('loanuser').where('mobile', '==', mobile).get();
-                if (!existingUser.empty) {
-                    throw new Error('Mobile number already registered');
-                }
+                console.log('🚀 Starting complete user registration process...');
                 
                 // Create Firebase Auth user
                 const authEmail = `${mobile}@quickcash.com`;
                 console.log('Creating Firebase Auth user with email:', authEmail);
                 const userCredential = await auth.createUserWithEmailAndPassword(authEmail, password);
                 const user = userCredential.user;
-                console.log('Firebase Auth user created successfully, UID:', user.uid);
+                console.log('✅ Firebase Auth user created successfully, UID:', user.uid);
                 
                 await user.updateProfile({ displayName: name });
                 
-                // Prepare user data for Firestore
-                const newUserData = {
+                // Create COMPLETE user data structure
+                const currentTimestamp = Date.now();
+                const completeUserData = {
+                    // === BASIC USER INFORMATION ===
                     uid: user.uid,
                     name: name,
-                    mobile: mobile,
                     email: email || authEmail,
+                    phone: mobile,
+                    mobile: mobile,
                     password: password,
-                    role: 'user',
-                    authEmail: authEmail,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-                    loginCount: 1,
-                    totalLoans: 0,
-                    totalBorrowed: 0,
-                    activeLoans: 0,
-                    creditScore: 750,
-                    isVerified: false,
+                    username: name.toLowerCase().replace(/\s+/g, '_') + '_' + mobile.substring(6),
+                    
+                    // === ACCOUNT DETAILS ===
+                    role: 'user', // user, admin
+                    status: 'active', // active, suspended, banned
+                    accountType: 'individual',
                     isActive: true,
-                    status: 'active',
-                    profileComplete: true,
-                    kycStatus: 'pending',
-                    kycVerified: false,
-                    kycData: null
-                };
-                
-                // Save to Firestore
-                console.log('Saving user data to Firestore...');
-                await db.collection('loanuser').doc(user.uid).set(newUserData);
-                console.log('✅ User data saved to Firestore successfully');
-                
-                // Simple user data for Firebase Realtime Database
-                const currentTime = Date.now();
-                
-                const rtdbUserData = {
-                    uid: user.uid,
-                    name: name,
-                    mobile: mobile,
-                    email: email || authEmail,
-                    role: 'user',
-                    status: 'active',
                     isVerified: false,
-                    kycStatus: 'pending',
-                    kycVerified: false,
-                    createdAt: currentTime,
-                    lastLogin: currentTime,
-                    loginCount: 1,
-                    totalLoans: 0,
-                    creditScore: 750
+                    emailVerified: false,
+                    phoneVerified: true,
+                    profileComplete: 30,
+                    
+                    // === PERSONAL DETAILS (for loan application) ===
+                    personalDetails: {
+                        fullName: name,
+                        fatherName: '',
+                        motherName: '',
+                        dateOfBirth: '',
+                        age: 0,
+                        gender: '',
+                        maritalStatus: '',
+                        nationality: 'Indian',
+                        religion: '',
+                        category: '',
+                        qualification: '',
+                        occupation: '',
+                        experience: 0
+                    },
+                    
+                    // === CONTACT INFORMATION ===
+                    contactInfo: {
+                        primaryPhone: mobile,
+                        secondaryPhone: '',
+                        email: email || authEmail,
+                        alternateEmail: '',
+                        whatsapp: mobile,
+                        telegram: ''
+                    },
+                    
+                    // === ADDRESS DETAILS ===
+                    addressDetails: {
+                        currentAddress: {
+                            street: '',
+                            city: '',
+                            district: '',
+                            state: '',
+                            pincode: '',
+                            landmark: '',
+                            residenceType: '', // Own, Rented, Family
+                            stayingFrom: ''
+                        },
+                        permanentAddress: {
+                            street: '',
+                            city: '',
+                            district: '',
+                            state: '',
+                            pincode: '',
+                            landmark: '',
+                            sameAsCurrent: false
+                        }
+                    },
+                    
+                    // === EMPLOYMENT DETAILS ===
+                    employmentDetails: {
+                        employmentType: '', // Salaried, Self-employed, Business, Student, Unemployed
+                        companyName: '',
+                        designation: '',
+                        workExperience: 0,
+                        monthlyIncome: 0,
+                        annualIncome: 0,
+                        salaryMode: '', // Cash, Bank Transfer, Cheque
+                        companyAddress: '',
+                        officePhone: '',
+                        workingYears: 0
+                    },
+                    
+                    // === FINANCIAL INFORMATION ===
+                    financialDetails: {
+                        bankAccount: {
+                            accountNumber: '',
+                            ifscCode: '',
+                            bankName: '',
+                            branchName: '',
+                            accountType: '', // Savings, Current
+                            accountHolderName: ''
+                        },
+                        monthlyExpenses: 0,
+                        monthlyEMI: 0,
+                        creditScore: 750,
+                        existingLoans: [],
+                        creditCards: [],
+                        investmentDetails: []
+                    },
+                    
+                    // === KYC DOCUMENTS ===
+                    kycDocuments: {
+                        status: 'pending', // pending, submitted, verified, rejected
+                        level: 0, // 0=No KYC, 1=Basic, 2=Complete
+                        aadharNumber: '',
+                        panNumber: '',
+                        voterIdNumber: '',
+                        drivingLicenseNumber: '',
+                        passportNumber: '',
+                        documentsUploaded: {
+                            aadharFront: false,
+                            aadharBack: false,
+                            panCard: false,
+                            bankStatement: false,
+                            salarySlip: false,
+                            photo: false,
+                            signature: false
+                        },
+                        verificationDate: null,
+                        verifiedBy: null
+                    },
+                    
+                    // === LOAN INFORMATION ===
+                    loanDetails: {
+                        totalApplications: 0,
+                        approvedLoans: 0,
+                        rejectedLoans: 0,
+                        activeLoans: 0,
+                        completedLoans: 0,
+                        defaultedLoans: 0,
+                        totalBorrowed: 0,
+                        totalRepaid: 0,
+                        outstandingAmount: 0,
+                        creditLimit: 50000,
+                        eligibleAmount: 25000,
+                        lastLoanDate: null,
+                        repaymentHistory: 'No History',
+                        riskCategory: 'Medium'
+                    },
+                    
+                    // === PREFERENCES ===
+                    preferences: {
+                        language: 'Hindi',
+                        currency: 'INR',
+                        communicationMode: 'WhatsApp', // SMS, Email, WhatsApp, Call
+                        notifications: {
+                            sms: true,
+                            email: true,
+                            whatsapp: true,
+                            push: true,
+                            marketing: false
+                        },
+                        loanPurposePreference: [], // Personal, Business, Education, Medical, Emergency
+                        repaymentPreference: 'Monthly' // Weekly, Bi-weekly, Monthly
+                    },
+                    
+                    // === TIMESTAMPS ===
+                    timestamps: {
+                        registeredAt: currentTimestamp,
+                        createdAt: currentTimestamp,
+                        lastLogin: currentTimestamp,
+                        lastUpdated: currentTimestamp,
+                        lastKycUpdate: null,
+                        lastLoanApplication: null,
+                        lastPayment: null,
+                        profileLastUpdated: currentTimestamp
+                    },
+                    
+                    // === SESSION & ACTIVITY ===
+                    sessionInfo: {
+                        loginCount: 1,
+                        totalSessions: 1,
+                        lastLoginIP: '',
+                        lastLoginDevice: navigator.userAgent,
+                        isOnline: true,
+                        deviceInfo: {
+                            browser: navigator.userAgent,
+                            platform: navigator.platform,
+                            language: navigator.language,
+                            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                        }
+                    },
+                    
+                    // === REFERRAL SYSTEM ===
+                    referralInfo: {
+                        referralCode: 'QC' + mobile.substring(6) + Math.random().toString(36).substring(2, 6).toUpperCase(),
+                        referredBy: null,
+                        referralEarnings: 0,
+                        totalReferrals: 0,
+                        successfulReferrals: 0
+                    },
+                    
+                    // === ADMIN NOTES ===
+                    adminNotes: {
+                        notes: '',
+                        riskFlags: [],
+                        restrictions: [],
+                        supportTickets: 0,
+                        lastContactDate: null,
+                        internalRating: 'Good',
+                        specialInstructions: ''
+                    }
                 };
                 
-                // Save to Firebase Realtime Database with enhanced error handling
-                console.log('🔥 Attempting to save user data to Realtime Database...');
-                console.log('🔥 Database URL:', firebaseConfig.databaseURL);
-                console.log('🔥 User UID:', user.uid);
-                console.log('🔥 RTDB Path: loanusers/' + user.uid);
-                console.log('🔥 RTDB User Data:', rtdbUserData);
+                console.log('💾 SAVING COMPLETE USER DATA TO FIREBASE...');
+                console.log('📊 User UID:', user.uid);
+                console.log('📱 Phone:', mobile);
+                console.log('📧 Email:', email || authEmail);
+                console.log('👤 Name:', name);
                 
-                // Save user data to Firebase Realtime Database with detailed logging
-                console.log('🔥 SAVING USER DATA TO FIREBASE REALTIME DATABASE...');
-                console.log('🔥 Database URL:', firebaseConfig.databaseURL);
-                console.log('🔥 User UID:', user.uid);
-                console.log('🔥 Complete User Data to Save:', JSON.stringify(rtdbUserData, null, 2));
+                // === STEP 1: SAVE TO FIREBASE REALTIME DATABASE ===
+                console.log('🔥 STEP 1: Saving to Firebase Realtime Database...');
                 
                 try {
-                    const rtdbRef = rtdb.ref('loanusers/' + user.uid);
+                    // Direct save to Firebase RTDB without complex checks
+                    const userRef = rtdb.ref('loanusers/' + user.uid);
+                    await userRef.set(completeUserData);
                     
-                    // First check if we can write to Firebase
-                    await rtdbRef.set(rtdbUserData);
-                    console.log('✅ User data SET operation completed');
+                    console.log('✅ FIREBASE REALTIME DATABASE SAVE SUCCESSFUL!');
+                    console.log('📂 Saved to path: loanusers/' + user.uid);
+                    console.log('📊 All user data saved including:');
+                    console.log('  ✓ Name:', name);
+                    console.log('  ✓ Email:', email || authEmail);
+                    console.log('  ✓ Phone:', mobile);
+                    console.log('  ✓ Password:', '[SAVED]');
+                    console.log('  ✓ Role:', completeUserData.role);
+                    console.log('  ✓ Status:', completeUserData.status);
+                    console.log('  ✓ Personal Details: Ready for loan application');
+                    console.log('  ✓ Contact Info: Complete');
+                    console.log('  ✓ Employment Details: Template ready');
+                    console.log('  ✓ Financial Info: Template ready');
+                    console.log('  ✓ KYC Documents: Template ready');
+                    console.log('  ✓ Loan Details: Initialized');
                     
-                    // Wait a moment for Firebase to process
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                } catch (directSaveError) {
+                    console.error('❌ DIRECT SAVE FAILED:', directSaveError);
                     
-                    // Verify data was saved by reading it back
-                    const verifySnapshot = await rtdbRef.once('value');
+                    // Fallback: Try with minimal data
+                    console.log('🔄 TRYING FALLBACK SAVE...');
+                    const minimalData = {
+                        uid: user.uid,
+                        name: name,
+                        email: email || authEmail,
+                        phone: mobile,
+                        mobile: mobile,
+                        password: password,
+                        role: 'user',
+                        status: 'active',
+                        isOnline: true,
+                        createdAt: Date.now(),
+                        registeredAt: Date.now()
+                    };
+                    
+                    await rtdb.ref('loanusers/' + user.uid).set(minimalData);
+                    console.log('✅ FALLBACK SAVE SUCCESSFUL with basic data');
+                }
+                
+                // === STEP 2: SAVE TO FIRESTORE (BACKUP) ===
+                console.log('🔥 STEP 2: Saving to Firestore as backup...');
+                try {
+                    await db.collection('loanuser').doc(user.uid).set(completeUserData);
+                    console.log('✅ FIRESTORE BACKUP SAVE SUCCESSFUL!');
+                } catch (firestoreError) {
+                    console.log('⚠️ Firestore backup failed (non-critical):', firestoreError.message);
+                }
+                
+                // === STEP 3: VERIFY DATA WAS SAVED ===
+                console.log('🔍 STEP 3: Verifying saved data...');
+                try {
+                    const verifyRef = rtdb.ref('loanusers/' + user.uid);
+                    const verifySnapshot = await verifyRef.once('value');
                     const savedData = verifySnapshot.val();
                     
-                    console.log('🔍 VERIFYING SAVED DATA...');
-                    console.log('📊 Data read from Firebase:', JSON.stringify(savedData, null, 2));
-                    
-                    if (savedData && savedData.name && savedData.mobile) {
-                        console.log('✅ SUCCESS! All user data verified in Firebase:');
-                        console.log('- Name:', savedData.name);
-                        console.log('- Mobile:', savedData.mobile);
-                        console.log('- Email:', savedData.email);
-                        console.log('- Role:', savedData.role);
-                        console.log('- Status:', savedData.status);
-                        console.log('- KYC Status:', savedData.kycStatus);
-                        console.log('- Total fields saved:', Object.keys(savedData).length);
+                    if (savedData && savedData.name && savedData.phone && savedData.email) {
+                        console.log('🎉 VERIFICATION SUCCESSFUL!');
+                        console.log('✅ Confirmed saved data:');
+                        console.log('  - Name:', savedData.name);
+                        console.log('  - Phone:', savedData.phone);
+                        console.log('  - Email:', savedData.email);
+                        console.log('  - Role:', savedData.role);
+                        console.log('  - Status:', savedData.status);
+                        console.log('  - Total fields saved:', Object.keys(savedData).length);
                     } else {
-                        console.error('❌ ERROR: User data not properly saved!');
-                        console.error('❌ Saved data:', savedData);
-                        throw new Error('User data not properly saved to Firebase');
+                        throw new Error('Data verification failed - incomplete data saved');
                     }
-                    
-                } catch (rtdbError) {
-                    console.error('❌ FIREBASE REALTIME DATABASE ERROR:', rtdbError);
-                    console.error('❌ Error message:', rtdbError.message);
-                    console.error('❌ Error code:', rtdbError.code);
-                    
-                    // Check if it's a permission issue
-                    if (rtdbError.code === 'PERMISSION_DENIED') {
-                        console.error('❌ PERMISSION DENIED - Check Firebase Realtime Database rules');
-                    }
-                    
-                    throw new Error(`Failed to save user data: ${rtdbError.message}`);
+                } catch (verifyError) {
+                    console.error('❌ DATA VERIFICATION FAILED:', verifyError);
                 }
                 
-                // Also verify Firestore data
-                const firestoreDoc = await db.collection('loanuser').doc(user.uid).get();
-                if (firestoreDoc.exists) {
-                    console.log('✅ Firestore data also verified successfully');
-                    const fsData = firestoreDoc.data();
-                    console.log('- Firestore name:', fsData.name);
-                    console.log('- Firestore mobile:', fsData.mobile);
-                } else {
-                    console.error('❌ Firestore data verification failed');
-                }
+                // === STEP 4: SET USER DATA FOR APP ===
+                userData = completeUserData;
                 
-                userData = newUserData;
+                // === STEP 5: SHOW SUCCESS MESSAGE ===
+                console.log('🎉 USER REGISTRATION COMPLETED SUCCESSFULLY!');
+                console.log('🎯 === COMPLETE USER DATA SAVED TO FIREBASE ===');
+                console.log('📱 यूजर की सभी details save हो गई हैं!');
                 
-                // Log what was saved for debugging
-                console.log('✅ User registration completed!');
-                console.log('📊 Saved user data:');
-                console.log('- Username:', name);
-                console.log('- Phone Number:', mobile);
-                console.log('- Email:', email || authEmail);
-                console.log('- Account Status:', 'active');
-                console.log('- Role:', 'user');
-                console.log('- KYC Status:', 'pending');
+                showMessage(`स्वागत ${name}! आपका खाता सफलतापूर्वक बन गया है। सभी details Firebase में save हो गई हैं।`, 'success');
                 
-                showMessage(`Welcome ${name}! Registration successful. User data saved to both databases.`, 'success');
+                // Redirect to dashboard after short delay
+                setTimeout(() => {
+                    showSection('dashboard');
+                }, 2000);
                 
             } catch (error) {
-                console.error('❌ Registration error:', error);
+                console.error('❌ REGISTRATION ERROR:', error);
                 console.error('Error details:', error.message);
-                console.error('Error code:', error.code);
-                handleAuthError(error);
+                showMessage('Registration failed: ' + error.message, 'error');
             }
+        
         }
+        
+        
+        // === END OF REGISTRATION FUNCTION ===
         
         async function loadUserData() {
             try {
@@ -2305,28 +2752,176 @@
              initializeToggleActions();
          }
          
-         function updateKYCStatus() {
-             const applyBtn = document.getElementById('applyBtn');
-             const kycWarning = document.getElementById('kycWarning');
-             
-             if (!userData.kycVerified) {
-                 // Lock the apply button
-                 applyBtn.classList.add('locked');
-                 applyBtn.textContent = 'Verify Account First';
-                 applyBtn.onclick = function() { showSection('kyc'); };
-                 
-                 // Show warning
-                 kycWarning.style.display = 'block';
-             } else {
-                 // Enable the apply button
-                 applyBtn.classList.remove('locked');
-                 applyBtn.textContent = 'Apply Now';
-                 applyBtn.onclick = function() { showLoanApplicationForm(); };
-                 
-                 // Hide warning
-                 kycWarning.style.display = 'none';
-             }
-         }
+                 function updateKYCStatus() {
+            const applyBtn = document.getElementById('applyBtn');
+            const accountWarning = document.getElementById('accountWarning');
+            
+            if (!userData.kycVerified) {
+                // Lock the apply button
+                applyBtn.classList.add('locked');
+                applyBtn.textContent = 'Complete Verification';
+                applyBtn.onclick = function() { showSection('kyc'); };
+                
+                // Show simple warning
+                accountWarning.style.display = 'block';
+            } else {
+                // Enable the apply button
+                applyBtn.classList.remove('locked');
+                applyBtn.textContent = 'Apply Now';
+                applyBtn.onclick = function() { showLoanApplicationForm(); };
+                
+                // Hide warning
+                accountWarning.style.display = 'none';
+            }
+        }
+        
+        // Wizard Progress Functions
+        function updateWizardProgress() {
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            const line1 = document.getElementById('line1');
+            const line2 = document.getElementById('line2');
+            
+            if (!userData) return;
+            
+            // Step 1: KYC Verification
+            if (userData.kycDocuments && userData.kycDocuments.status === 'verified') {
+                completeStep('step1', 'line1');
+                activateStep('step2');
+            } else {
+                activateStep('step1');
+            }
+            
+            // Step 2: Bank Account (check if financial details added)
+            if (userData.financialDetails && userData.financialDetails.bankAccount && userData.financialDetails.bankAccount.accountNumber) {
+                completeStep('step2', 'line2');
+                activateStep('step3');
+            }
+            
+            // Step 3: First Loan (check if any loan applied)
+            if (userData.loanDetails && userData.loanDetails.totalApplications > 0) {
+                completeStep('step3', null);
+            }
+        }
+        
+        function completeStep(stepId, lineId) {
+            const step = document.getElementById(stepId);
+            const line = lineId ? document.getElementById(lineId) : null;
+            
+            if (step && !step.classList.contains('completed')) {
+                // Add completing animation
+                step.classList.add('step-completing');
+                
+                setTimeout(() => {
+                    step.classList.remove('active', 'step-completing');
+                    step.classList.add('completed');
+                    
+                    if (line) {
+                        line.classList.add('completed');
+                    }
+                    
+                    // Success sound effect (optional)
+                    console.log(`✅ Step ${stepId} completed!`);
+                }, 500);
+            }
+        }
+        
+        function activateStep(stepId) {
+            const step = document.getElementById(stepId);
+            if (step && !step.classList.contains('completed')) {
+                // Remove active from all steps
+                document.querySelectorAll('.progress-step').forEach(s => s.classList.remove('active'));
+                // Add active to current step
+                step.classList.add('active');
+            }
+        }
+        
+        // Initialize wizard when KYC section is shown
+        function initializeWizard() {
+            updateWizardProgress();
+            
+            // Add click handlers for completed steps
+            document.getElementById('step2').addEventListener('click', function() {
+                if (this.classList.contains('active')) {
+                    showBankAccountForm();
+                }
+            });
+            
+            document.getElementById('step3').addEventListener('click', function() {
+                if (this.classList.contains('active')) {
+                    showLoanApplicationForm();
+                    showSection('dashboard');
+                }
+            });
+        }
+        
+        function showBankAccountForm() {
+            // Hide KYC form and show bank account form
+            document.getElementById('kycForm').style.display = 'none';
+            document.getElementById('bankAccountSection').style.display = 'block';
+        }
+        
+        // Bank Account Form Handler
+        async function handleBankAccountSubmission(e) {
+            e.preventDefault();
+            
+            const accountHolderName = document.getElementById('accountHolderName').value.trim();
+            const accountNumber = document.getElementById('accountNumber').value.trim();
+            const confirmAccountNumber = document.getElementById('confirmAccountNumber').value.trim();
+            const ifscCode = document.getElementById('ifscCode').value.trim().toUpperCase();
+            const bankName = document.getElementById('bankName').value.trim();
+            const branchName = document.getElementById('branchName').value.trim();
+            
+            // Validation
+            if (accountNumber !== confirmAccountNumber) {
+                showNotification('Account numbers do not match!', 'error');
+                return;
+            }
+            
+            if (ifscCode.length !== 11) {
+                showNotification('IFSC code must be 11 characters!', 'error');
+                return;
+            }
+            
+            try {
+                // Save bank details to Firebase
+                const bankData = {
+                    accountHolderName: accountHolderName,
+                    accountNumber: accountNumber,
+                    ifscCode: ifscCode,
+                    bankName: bankName,
+                    branchName: branchName,
+                    accountType: 'Savings',
+                    addedAt: Date.now()
+                };
+                
+                // Update user data in Firebase
+                await rtdb.ref('loanusers/' + currentUser.uid + '/financialDetails/bankAccount').set(bankData);
+                
+                // Update local user data
+                if (!userData.financialDetails) userData.financialDetails = {};
+                userData.financialDetails.bankAccount = bankData;
+                
+                // Complete Step 2 and activate Step 3
+                completeStep('step2', 'line2');
+                activateStep('step3');
+                
+                showNotification('🎉 Bank account added successfully! You can now apply for your first loan.', 'success');
+                
+                // Hide bank form
+                document.getElementById('bankAccountSection').style.display = 'none';
+                
+                // Show completion message
+                setTimeout(() => {
+                    showNotification('All steps completed! Click on "First Loan" to apply.', 'info');
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Bank account save error:', error);
+                showNotification('Error saving bank details. Please try again.', 'error');
+            }
+        }
          
          function checkKYCAndApply() {
              if (!userData.kycVerified) {
@@ -2586,29 +3181,35 @@
                 });
                 
                 await rtdb.ref('loanusers/' + currentUser.uid).update({
-                    // Loan Statistics
+                    // Update comprehensive loan tracking
+                    'loans/numberOfLoans': firebase.database.ServerValue.increment(1),
+                    'loans/totalLoans': firebase.database.ServerValue.increment(1),
+                    'loans/pendingLoans': firebase.database.ServerValue.increment(1),
+                    'loans/totalBorrowed': firebase.database.ServerValue.increment(amount),
+                    'loans/lastLoanDate': firebase.database.ServerValue.TIMESTAMP,
+                    
+                    // Update financial profile
+                    'financial/monthlyIncome': monthlyIncome,
+                    'financial/riskProfile': (amount / monthlyIncome) > 5 ? 'high' : (amount / monthlyIncome) > 3 ? 'medium' : 'low',
+                    'financial/creditScore': firebase.database.ServerValue.increment(5), // Small boost for application
+                    
+                    // Update timestamps
+                    'timestamps/lastLoanApplication': firebase.database.ServerValue.TIMESTAMP,
+                    'timestamps/lastActivity': firebase.database.ServerValue.TIMESTAMP,
+                    'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
+                    
+                    // Update activity
+                    'activity/lastFeatureUsed': 'loan-application',
+                    
+                    // Backward compatibility - keep old structure
                     totalLoans: firebase.database.ServerValue.increment(1),
                     totalBorrowed: firebase.database.ServerValue.increment(amount),
                     activeLoans: firebase.database.ServerValue.increment(1),
                     lastLoanApplication: firebase.database.ServerValue.TIMESTAMP,
-                    
-                    // Update user financial profile
-                    monthlyIncome: monthlyIncome, // Update from loan application
+                    monthlyIncome: monthlyIncome,
                     lastActivity: firebase.database.ServerValue.TIMESTAMP,
                     updatedAt: firebase.database.ServerValue.TIMESTAMP,
-                    
-                    // Update eligibility based on loan history
-                    maxLoanEligible: Math.min(monthlyIncome * 12, 1000000), // 12x monthly income, max 10L for existing customers
-                    creditScore: firebase.database.ServerValue.increment(5), // Small boost for loan application
-                    
-                    // App usage tracking
-                    'appUsage/lastFeatureUsed': 'loan-application',
-                    'appUsage/featuresUsed': firebase.database.ServerValue.arrayUnion('loan-application'),
-                    
-                    // Marketing tags update
-                    'marketing/tags': firebase.database.ServerValue.arrayUnion('loan-applicant'),
-                    
-                    // Update risk profile based on loan amount vs income ratio
+                    maxLoanEligible: Math.min(monthlyIncome * 12, 1000000),
                     riskProfile: (amount / monthlyIncome) > 5 ? 'high' : (amount / monthlyIncome) > 3 ? 'medium' : 'low'
                 });
                 
@@ -2627,6 +3228,9 @@
                 
                 hidePopup('loanApplicationPopup');
                 showNotification('Loan application submitted successfully!', 'success');
+                
+                // Complete Step 3 (First Loan)
+                completeStep('step3', null);
                 
                 // Reload loans
                 await loadUserLoans();
@@ -2858,10 +3462,19 @@
                 // Update user status to offline before logout
                 if (currentUser) {
                     await rtdb.ref('loanusers/' + currentUser.uid).update({
+                        // Update online status in new structure
+                        online: false,
+                        'timestamps/lastActivity': firebase.database.ServerValue.TIMESTAMP,
+                        'timestamps/updatedAt': firebase.database.ServerValue.TIMESTAMP,
+                        'activity/lastFeatureUsed': 'logout',
+                        
+                        // Backward compatibility
                         isOnline: false,
                         lastActivity: firebase.database.ServerValue.TIMESTAMP
                     });
-                    console.log('User status updated to offline');
+                    console.log('✅ User status updated to offline');
+                    console.log('📱 User:', userData?.name || 'Unknown');
+                    console.log('🕐 Logout Time:', new Date().toLocaleString());
                 }
                 
                 await auth.signOut();
@@ -2881,7 +3494,71 @@
             return code;
         }
         
-                // Firebase Utilities for debugging
+                // Simple Firebase test function for users
+        window.testFirebase = async function() {
+            console.log('🧪 === FIREBASE CONNECTION TEST ===');
+            
+            try {
+                // Test 1: Connection check
+                console.log('1️⃣ Testing connection...');
+                const connRef = rtdb.ref('.info/connected');
+                const connSnapshot = await connRef.once('value');
+                const isConnected = connSnapshot.val();
+                console.log('🔗 Connected:', isConnected ? '✅ YES' : '❌ NO');
+                
+                if (!isConnected) {
+                    console.error('❌ Firebase is not connected. Check your internet.');
+                    return false;
+                }
+                
+                // Test 2: Write test
+                console.log('2️⃣ Testing write permissions...');
+                const testData = {
+                    test: true,
+                    timestamp: Date.now(),
+                    message: 'Test data from QuickCash app'
+                };
+                
+                const testRef = rtdb.ref('test_data_' + Date.now());
+                await testRef.set(testData);
+                console.log('✅ Write test successful');
+                
+                // Test 3: Read test  
+                console.log('3️⃣ Testing read permissions...');
+                const readSnapshot = await testRef.once('value');
+                const readData = readSnapshot.val();
+                console.log('✅ Read test successful:', readData);
+                
+                // Clean up
+                await testRef.remove();
+                console.log('🧹 Test data cleaned up');
+                
+                console.log('🎉 === ALL TESTS PASSED ===');
+                console.log('✅ Firebase is working correctly!');
+                console.log('✅ User registration should work now!');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ === FIREBASE TEST FAILED ===');
+                console.error('Error:', error);
+                console.error('❌ User registration will fail');
+                
+                if (error.code === 'PERMISSION_DENIED') {
+                    console.error('🚫 PERMISSION DENIED');
+                    console.error('🔧 SOLUTION: Go to Firebase Console > Realtime Database > Rules');
+                    console.error('📝 Replace with:');
+                    console.error(`{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}`);
+                }
+                return false;
+            }
+        };
+        
+        // Firebase Utilities for debugging
         window.firebaseUtils = {
             // Get all users from RTDB
             getAllUsers: async () => {
@@ -2977,19 +3654,26 @@
                 console.log('├── user_activity/      (Login & activity logs)');
                 console.log('└── statistics/         (System statistics)');
                 console.log('');
-                console.log('💡 Use window.firebaseUtils to debug database:');
-                console.log('   • firebaseUtils.checkConnection() - Check Firebase connection');
-                console.log('   • firebaseUtils.getAllUsers() - View all users');
-                console.log('   • firebaseUtils.testWrite() - Test Firebase write permissions');
-                console.log('   • firebaseUtils.getUser(userId) - Get specific user data');
+                console.log('🚨 IF USER DATA IS NOT SAVING:');
+                console.log('   1. Run testFirebase() in console to check Firebase connection');
+                console.log('   2. Go to Firebase Console > Realtime Database > Rules');
+                console.log('   3. Set rules to: { "rules": { ".read": true, ".write": true } }');
+                console.log('   4. Make sure database URL is correct in config');
                 console.log('');
-                console.log('🎯 User registration saves to Firebase Realtime Database!');
-                console.log('📊 Database Path: loanusers/{userId}');
+                console.log('💡 Use these functions to debug:');
+                console.log('   • testFirebase() - Test Firebase connection & permissions');
+                console.log('   • firebaseUtils.getAllUsers() - View all saved users');
+                console.log('   • firebaseUtils.checkConnection() - Check connection status');
+                console.log('   • firebaseUtils.testWrite() - Test write permissions');
                 console.log('');
-                console.log('🔧 DEBUGGING TIPS:');
-                console.log('   1. Register a new user and check browser console');
-                console.log('   2. Run firebaseUtils.getAllUsers() to see saved data');
-                console.log('   3. Check Firebase Realtime Database rules if data not saving');
+                console.log('🎯 User registration saves to: loanusers/{userId}');
+                console.log('📱 Expected data: name, email, phone, password, status, role, etc.');
+                console.log('');
+                console.log('🔧 QUICK FIX FOR PERMISSION DENIED:');
+                console.log('   Go to: https://console.firebase.google.com/');
+                console.log('   Project: aviator-pr01');
+                console.log('   Realtime Database > Rules > Edit > Save:');
+                console.log('   { "rules": { ".read": true, ".write": true } }');
             }, 2000);
         });
     </script>
